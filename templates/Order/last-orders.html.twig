@@ -1,0 +1,38 @@
+{% if app.session.get('hide_block_last_orders') is defined and app.session.get('hide_block_last_orders') == true %}
+    {% set hblo = true %}
+{% endif %}
+<div class="last-orders-container table-responsive-sm table-responsive">
+    <table class="last-orders-table generic-table">
+        <caption class="pt-0 pb-0">Прошлые заявки<div class="show-hide-button" id="last_orders">
+                {% if hblo is defined %}
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                {% else %}
+                    <i class="fa fa-minus" aria-hidden="true"></i>
+                {% endif %}
+            </div>
+        </caption>
+        {% if hblo is defined %}<thead style="display: none;">{% else %}<thead>{% endif %}
+        <tr>
+            <th>Номер</th>
+            <th>Дата</th>
+            <th>Комментарий</th>
+            <th>Выполнил</th>
+            <th>Статус</th>
+            <th>Закрыл</th>
+        </tr>
+        </thead>
+
+        {% if hblo is defined %}<tbody style="display: none;">{% else %}<tbody>{% endif %}
+        {% for order in orders %}
+        <tr {% if order.isDeleted == false %}class="open"{% endif %}>
+            <td>{{ order.id }}</td>
+            <td>{{ order.created|date('d-m-Y')}}</td>
+            <td>{{ order.comment }}</td>
+            <td>{{ order.executed is not empty?order.executed.fullName:'last_orders.no_data'|trans }}</td>
+            <td>{{ order.status.description }}</td>
+            <td>{{ order.isDeleted and order.deletedId is not empty?order.deletedId.fullName:'last_orders.no_data'|trans }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

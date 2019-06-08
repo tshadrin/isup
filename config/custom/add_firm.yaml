@@ -1,0 +1,4 @@
+parameters:
+    add_firm:
+        files_dir: '%files_dir%'
+        ippark_group: '%ippark_group%'

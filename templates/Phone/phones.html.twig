@@ -1,0 +1,84 @@
+{#{% trans_default_domain 'phone' %}#}
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} | {{ 'phone.list_title'|trans }} {% endblock %}
+
+{% block context %}
+    {{ 'phone.list_title'|trans }}
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+        {{ form_start(phone_filter_form, {'action': path('phone_find_process'), 'attr': {'class': 'form-inline'} }) }}
+                {{ form_label(phone_filter_form.search) }}
+                {{ form_widget(phone_filter_form.search) }}
+                {{ form_widget(phone_filter_form.submit_button) }}
+        {{ form_end(phone_filter_form) }}
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center ml-0 mr-0 mt-1">
+        <div class="col-xl-10 col-lg-12 p-2">
+            <table class="isup-table isup-table-bordered isup-table-zebra  isup-table-wide isup-table-header-nowrap isup-table-hovered table-phone">
+                <caption>{{ 'phone.list_title'|trans }}</caption>
+                <tr>
+                    <th>{{ knp_pagination_sortable(phones, 'phone.number'|trans, 'number') }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone.moscow_number'|trans, 'moscownumber') }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone.location'|trans, 'location') }}</th>
+                    <th>{{ 'phone.name'|trans }}</th>
+                    <th>{{ 'phone.contact_number'|trans }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone.ip'|trans, 'ip') }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone.login'|trans, 'login') }}</th>
+                    <th>{{ 'phone.password'|trans }}</th>
+                    <th>{{ 'phone.notes'|trans }}</th>
+                    <th></th>
+                </tr>
+                {% for phone in phones %}
+                    <tr>
+                        <td><a href="{{ path('phone_edit', {'id': phone.id }) }}">{{ phone.number }}</a></td>
+                        <td>{{ phone.moscownumber }}</td>
+                        <td>{{ phone.location }}</td>
+                        <td>{{ phone.name }}</td>
+                        <td>{{ phone.contactnumber }}</td>
+                        <td><a href="http://{{ phone.ip }}">{{ phone.ip }}</a></td>
+                        <td>{{ phone.login }}</td>
+                        <td>{{ phone.password }}</td>
+                        <td>{{ phone.notes }}</td>
+                        <td>
+                            <div class="edit-button-link m-2 text-nowrap">
+                                <a href="{{ path('phone_edit', {'id': phone.id }) }}">
+                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i> Редактировать
+                                </a>
+                            </div>
+                            <div class="edit-button-link m-2 text-nowrap">
+                                {% if is_granted('ROLE_MODERATOR') %}
+                                    <a class="delete-order-button" href="{{ path('phone_delete', {'id': phone.id }) }}" data-toggle="confirmation">
+                                        <i class="fa fa-trash" aria-hidden="true"></i> Удалить
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tfoot>
+                <tr>
+                    <td colspan="10">
+                        <div class="d-flex justify-content-end">
+                            {{ form_start(form, {'attr': {'class': 'form-inline'} }) }}
+                            {{ form_label(form.rows, null, { 'label_attr': {'class': 'col-auto col-form-label-sm col-form-label'} }) }}
+                            {{ form_widget(form.rows, {'attr': {'class': 'form-control form-control-sm'}}) }}
+                            {{ form_errors(form.rows) }}
+                            {{ form_widget(form.apply, {'attr': {'class': 'btn btn-sm pbn-rpimary btn-primary-sham m-1'}}) }}
+                            {{ form_end(form) }}
+                        </div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+            <div class="mt-2">
+                {{ knp_pagination_render(phones) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ parent() }} |
+    {% if commutator is defined %}
+        {{ 'Switch info %ip%'|trans({'%ip%': commutator.ip}) }}
+    {% else %}
+        {{ 'Switch info'|trans }}
+    {% endif %}
+{% endblock %}
+
+{% block context %}
+    {% if commutator is defined %}
+    {{ 'Switch info %ip%'|trans({'%ip%': commutator.ip}) }}
+    {% else %}
+        {{ 'Switch info'|trans }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="row ml-0 mr-0 mt-1 justify-content-between">
+            <div class=" col-12 col-sm-6 col-md-6 col-lg-6 col-xl-7 p-0">
+                <div class="row ml-0 mr-0">
+        {% if commutator is defined %}
+                    <div class="user-info-main user-info-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 p-2">
+                        <div class="user-info-block-main-inner pt-2 pb-2 pl-3 pr-3">
+                            <h4>{{ 'Switch info'|trans }}</h4>
+                            <ol>
+                                <li><span>{{ 'IP'|trans }}:</span> <a href="http://{{ commutator.ip }}" target="_blank">{{ commutator.ip }}</a></li>
+                                <li><span>{{ 'Model'|trans }}:</span> {{ commutator.model }}</li>
+                                <li><span>{{ 'Name'|trans }}:</span> {{ commutator.name }}</li>
+                                <li><span>{{ 'MAC'|trans }}:</span> {{ commutator.mac }}</li>
+                                <li><span>{{ 'Notes'|trans }}:</span> {{ commutator.notes }}
+                                    {% if commutator.ports is not empty %}
+                                <li><span>{{ 'Ports'|trans }}</span>
+                                    <ol>
+                                        {% for port in commutator.ports %}
+                                            <li><span>{{ 'Number'|trans }}</span> {{ port.number }} {{ 'Description'|trans }}</span> {{ port.description }}
+                                                <span>{{ 'Type'|trans }}</span> {{ port.type }} <span>{{ 'Speed'|trans }}</span> {{ port.speed }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                </li>
+                                {% endif %}
+                            </ol>
+                        </div>
+                    </div>
+           {% endif %}
+                    <div class="user-info-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 p-2">
+                        <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
+                            <h4>{{ 'Bot switch info'|trans }}</h4>
+                            <ol>
+                                <li><span>{{ 'Model'|trans }}:</span> {{ model }}</li>
+                                <li><span>{{ 'Config file'|trans }}:</span> <a href="{{ config_path }}">{{ 'Download'|trans }}</a></li>
+                                <li>
+                                    <a href="{{ map_image_url }}" target="_blank">
+                                        <img class="img-fluid" src="{{ map_image_url }}" alt="{{ 'Map image'|trans }}">
+                                    </a>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-5 p-2">
+                <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3 mh-100">
+                    <h4>{{ "Switch log"|trans }}</h4>
+                    <div class="overflow-auto " style="height: calc(100vh - 176px);">{# 124 без вложенного div#}
+                    {{ log|raw }}
+                    </div>
+                </div>
+            </div>
+    </div>
+{% endblock %}

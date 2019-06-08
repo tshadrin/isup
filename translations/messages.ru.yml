@@ -1,0 +1,266 @@
+phone:
+    list_title: 'Телефоны пользователей'
+    add_title: 'Добавить телефон'
+    edit_title: 'Редактировать телефон'
+    number: 'Номер'
+    moscow_number: 'Московский номер'
+    location: 'Адрес'
+    name: 'Имя'
+    contact_number: 'Контактный номер'
+    ip: 'IP'
+    login: 'Логин'
+    password: 'Пароль'
+    notes: 'Заметки'
+phone_form:
+    save: 'Сохранить'
+    back: 'Вернуться'
+    placeholder:
+        name: 'Иван Иванович Иванов'
+        number: 'x-xx-xx'
+        moscow_number: 'xxx-xx-xx'
+        contact_number: '8(xxx)xxx-xx-xx'
+        location: 'г. Истра, ул.Адасько, дом 2'
+        ip: 'xxx.xxx.xxx.xxx'
+        login: 'admin'
+        password: 'pa$$w0rd'
+        notes: 'введите текст заметки...'
+phone_filter_form:
+    search_data: 'Поиск'
+    search_placeholder: 'например 6-41-00'
+    search_button: 'Найти'
+form_rows:
+    rows_on_page: 'Записей на странице'
+    apply: 'Применить'
+20: '20'
+50: '50'
+100: '100'
+200: '200'
+300: '300'
+500: '500'
+all: 'Все'
+'Phones not found.': 'Телефоны не найдены.'
+'Phone not found.': 'Телефон не найден.'
+'Phone changes are saved.': 'Изменения сохранены.'
+'Phone added.': 'Телефон добавлен.'
+
+#vlan
+vlan.title_list: 'Список Vlan'
+vlan.form.add_header: 'Добавиь VLAN'
+vlan.form.edit_header: 'Редактировать VLAN'
+vlan.name: 'Имя'
+vlan.number: 'Номер'
+vlan.points: 'Конечные точки'
+vlan_filter_form.search_data: 'Поиск'
+vlan_filter_form.search_placeholder: 'например Мякинино'
+vlan_filter_form.search_button: 'Найти'
+vlan.add_point: 'Добавить точку'
+vlan.placeholder.name: 'Бишкек'
+vlan.placeholder.number: '21'
+vlan.placeholder.points: 'г. Истра, ул.Адасько, дом 2, Дедовск СПМК'
+Back: 'Назад'
+vlan.save: 'Сохранить'
+#sonata admin
+vlans: 'Вланы'
+Number: 'Номер'
+Points: 'Точки'
+Deleted: 'Удален'
+Vlans: 'Вланы'
+'Vlan List': 'Список вланов'
+#menu
+Home: 'Главная'
+Nagios: 'Nagios'
+Dedovsk: 'Дедовск'
+Monast: 'Monast'
+Records: 'Записи звонков'
+Wi-Fi: 'Wi-Fi'
+Channels: 'Каналы'
+Phones: 'Телефоны'
+Add: 'Добавить'
+Exit: 'Выход'
+Map: 'Карта'
+Profile: 'Профиль'
+Intercoms: 'Домофоны'
+FreePBX: 'FreePBX'
+List: 'Список'
+know_base: 'База знаний'
+admin: 'Администрирование'
+Control: 'Управление'
+Bot: 'Бот'
+Tools: 'Инструменты'
+sberbank: 'Сбербанк'
+'UTM5 Admin': 'UTM Админка'
+#intercom
+Id: Номер
+Phone: Телефон
+Address: Адрес
+Status: Статус
+Type: Тип
+Created: Создана
+'Task List': 'Список заявок'
+statuses: 'Статусы заявок'
+tasks_types: 'Типы заявок'
+tasks: Заявки
+task_delete: Удалить
+list_tasks.id: Номер
+list_tasks.opened_tasks: 'Открытые заявки'
+list_tasks.created: 'Создана'
+list_tasks.phone: 'Контактный телефон'
+list_tasks.fullname: 'Контактное лицо'
+list_tasks.address: Адрес
+list_tasks.description: Описание
+list_tasks.operator: Оператор
+list_tasks.status: Статус
+list_tasks.type: Тип
+list_tasks.delete: Удалить
+list_tasks.intercom_tasks: 'Заявки на ремонт домофонов'
+list_tasks.delete_confirm: 'Вы точно хотите удалить заявку?'
+task.phone: 'Контактный номер'
+task.fullname: 'Контактное лицо'
+task.address: Адрес
+task.description: Описание
+task.status: Статус
+task.type: Тип
+task.edited: 'Параметры задачи изменены'
+task.not_found: 'Задача не найдена'
+task.deleted: 'Задача удалена'
+task.created: 'Задача создана'
+task.back: 'Вернустья с ксписку задач'
+task.save: Сохранить
+task.saveandlist: 'Сохранить и вернуться к списку'
+task.form.edit_header: 'Редактировать заявку'
+task.form.add_header: 'Добавить заявку'
+task.form.to_list: 'Вернуться к списку'
+task.placeholder.phone: 8(xxx)xxx-xx-xx
+task.placeholder.fullname: Ф.И.О.
+task.placeholder.address: 'Адрес контактного лица'
+task.placeholder.description: 'Введите краткое описание...'
+list_tasks.edit: 'Редактировать'
+list_tasks.actions: 'Действия'
+#orders
+today_orders: 'Сегодняшние заявки'
+previlous_orders: 'Заявки от прошлых дней'
+orders: Заявки
+orders.title: 'Заявки пользователей'
+Orders: Заявки
+'Utm Id': 'ID в UTM5'
+'Server Name': Сервер
+'Ip Address': IP
+Comment: Комментарий
+Executed: Исполнитель
+'Deleted Id': Удалил
+Completed: Выполнена
+'Is Deleted': Удалена
+'Mobile Telephone': 'Контактный номер'
+'Order List': 'Список заявок'
+order.form.add_header: 'Добавить заявку'
+order.form.utm_id: 'ID в UTM5'
+order.form.full_name: Ф.И.О.
+order.form.address: Адрес
+order.form.server_name: Сервер
+order.form.ip: IP-адрес
+order.form.comment: Комментарий
+order.form.phone: 'Контактный телефон'
+order.form.executed: 'Назначить на выполнение'
+order.form.status: 'Статус заявки'
+order.form.saveandlist: 'Сохранить и перейти к заявкам'
+order.form.saveandback: 'Сохранить и вернуться'
+order.placeholder.utm_id: 'id в UTM5...'
+order.placeholder.full_name: 'введите Ф.И.О...'
+order.placeholder.address: 'введите адрес...'
+order.placeholder.server_name: сервер...
+order.placeholder.ip: 'IP адрес...'
+order.placeholder.comment: комментарий...
+order.placeholder.phone: 'введите номер...'
+order.order_created: 'Заявка создана'
+'order.print.title %num%': 'Isup | Печать заявки %num%'
+order.print.back: Вернуться
+delete_order.not_permited: 'Невозможно удалить завку со статусом %status%'
+delete_order.executed_clear: 'Невозможно удалить заявку которая никому не назначена'
+delete_order.not_found_order: 'Завявка %id% не существует'
+delete_order.success: 'Заявка %id% удалена'
+last_orders.no_data: 'Нет данных'
+order.form.edit_header: __order.form.edit_header
+task.form.delete: __task.form.delete
+filter_set: 'Фильтр изменен'
+filter_not_set: 'Фильтр не изменен'
+#utm5
+'user_with_id_not_found %id%': Пользователь с идентификатором %id% не найден
+'user_with_login_not_found %login%': Пользователь с логином %login% не найден
+'ip_not_found %account%': Для пользователя c лицевым счетом %account% нет ip адресов
+'groups_not_found %id%': Для пользователя c идентификатором %id% нет активных групп
+'Search in UTM5': 'Поиск'
+comment_deleted: 'Комментарий удален'
+utm5_user_comment:
+    save: 'Добавить'
+    created: 'Комментарий добавлен'
+    deleted: 'Комментарий удален'
+    placeholder:
+        comment: 'текст комментария...'
+#user
+Name: 'Имя'
+Description: 'Название'
+show: 'Показать'
+edit: 'Редактировать'
+'Regions list': 'Список регионов'
+Actions: 'Действия'
+'Create a new region': 'Добавить новый регион'
+'Region creation': 'Создание региона'
+Create: 'Создать'
+'Back to the list': 'Вернуться к списку'
+'Region edit': 'Редактировать регион'
+Edit: 'Редактировать'
+Delete: 'Удалить'
+Region: 'Регион'
+'Full name': 'Ф.И.О.'
+'On work': 'Работает'
+Username: 'Логин'
+'Yes': 'Да'
+'No': 'Нет'
+User: 'Пользователь'
+Enabled: 'Разблокирован'
+Roles: 'Роли'
+'User creation': 'Создание пользователя'
+Email: 'E-mail'
+'User edit': 'Редактирование пользователя'
+'Users list': 'Список пользователей'
+'Create a new user': 'Добавить нового пользователя'
+'Users': 'Пользователи'
+'Regions': 'Регионы'
+'Region List': 'Список регионов'
+'Full Name': 'Полное имя'
+'On Work': 'Работает'
+'User List': 'Список пользователей'
+'Region Create': 'Создать регион'
+'Last Login': 'Последний вход'
+'Action': 'Действие'
+profile: 'Профиль'
+profit_for_townships: 'Платежи в поселках'
+#Findmoney service
+"Users not found by address %address%": "Пользователи в населенном пункте %address% не найдены"
+"Request of users by the address ended with an error: %error%": "Запрос поиска пользователей по адресу закончился ошибкой: %error%"
+"Request of archive tables ended with an error: %error%": "Запрос на получение архивных таблиц закончился ошибкой: %error%"
+"Request of payments sum for table %table% ended with an error: %error%": "Запрос на получение суммы платежей для таблицы %table% закончился ошибкой: %error%"
+"Archive tables not found": "Архивные таблицы не найдены"
+#Task repository errors
+"Tasks not found": "Задачи не найдены"
+"Task not found": "Задача не найдена"
+"Task query error: %error%": "Ошибка получения задач: %error%"
+"Task delete error: %error%": "Ошибка удаления задачи: %error%"
+#Intercom service errors
+"Task getting error: %error%": "Ошибка получения задачи: %error%"
+"Task flush error: %error%": "Ошибка очистки задачи: %error%"
+"Current user not found": "Текущий пользователь не найден"
+#Intercom controller
+"Task deleted": "Задача удалена"
+#Commutator
+"Switch info %ip%": "Информация о свиче %ip%"
+"Switch info": "Информация о свиче"
+"MAC": "MAC"
+"IP": "IP"
+"Model": "Модель"
+"Notes": "Заметки"
+"Bot switch info": "Информация от бота"
+"Config file": "Файл конфигурации"
+"Download": "Скачать"
+"Map image": "Карта сегмента"
+"Switch log": "Журнал свича"

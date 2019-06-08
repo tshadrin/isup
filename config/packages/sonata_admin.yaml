@@ -1,0 +1,22 @@
+sonata_admin:
+    title: 'Isup Admin'
+    dashboard:
+        blocks: #не было у меня
+            - { type: sonata.admin.block.admin_list, position: left  }
+        groups:
+            intercom:
+                icon: <i class="fa fa-calculator"></i>
+            fos_user:
+                icon: <i class="fa fa-users"></i>
+            orders:
+                icon: <i class="fa fa-tasks"></i>
+            vlans:
+                icon: <i class="fa fa-share-alt"></i>
+            commutators:
+                icon: <i class="fa fa-th"></i>
+sonata_block:
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts: [admin]
+        sonata.admin.block.search_result: #было у меня
+            contexts: [admin]               #было у меня

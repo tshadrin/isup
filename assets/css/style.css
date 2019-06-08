@@ -1,0 +1,652 @@
+/* раскладка */
+/* app/base */
+html,
+body {
+    font-size: 1rem;
+    height: 100%;
+}
+/* app/base */
+body {
+    display: flex;
+    flex-direction: column;  /* главная ось вертикально */
+
+    /* оформление */
+    color: #000;
+    font-family: 'Open Sans', Frutiger, Calibri, 'Myriad Pro', Myriad, sans-serif;
+    background-color: #1d2d44;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#35537a), color-stop(100%,#1d2d44));
+    background-image: -webkit-linear-gradient(top, #35537a, #1d2d44);
+    background-image:    -moz-linear-gradient(top, #35537a, #1d2d44);
+    background-image:     -ms-linear-gradient(top, #35537a, #1d2d44);
+    background-image:      -o-linear-gradient(top, #35537a, #1d2d44);
+    background-image:         linear-gradient(top, #35537a, #1d2d44);
+    background-repeat: no-repeat;
+}
+/* app/base */
+header.main-header{
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column; /* главная ось вертикально */
+
+    /* оформление */
+    background: #2e4475;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2e4475), color-stop(100%,#11192b));
+    background-image: -webkit-linear-gradient(top, #2e4475, #11192b);
+    background-image:    -moz-linear-gradient(top, #2e4475, #11192b);
+    background-image:     -ms-linear-gradient(top, #2e4475, #11192b);
+    background-image:      -o-linear-gradient(top, #2e4475, #11192b);
+    background-image:         linear-gradient(top, #2e4475, #11192b);
+}
+/* app/base */
+div.content{
+    display: flex;
+    flex: 1 0 auto; /* этот элемент будет растягиваться вдоль главной оси(горизонтально) */
+    flex-direction: column;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0 15px 0 15px;
+}
+/* app/base */
+footer.main-footer{
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column; /* главная ось вертикально */
+
+    /* оформление */
+    color: #f9f2f4;
+    background: #114773;
+    background: -moz-linear-gradient(top,#35537a 0%,#253b57 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#35537a), color-stop(100%,#253b57)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,#35537a 0%,#253b57 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,#35537a 0%,#253b57 100%); /* Opera11.10+ */
+    background: -ms-linear-gradient(top,#35537a 0%,#253b57 100%); /* IE10+ */
+    background: linear-gradient(top,#35537a 0%,#253b57 100%);
+}
+/***********************
+ конец раскладки
+***********************/
+
+/* app/base */
+nav.bg-nav{
+    background: #2e4475;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2e4475), color-stop(100%,#11192b));
+    background-image: -webkit-linear-gradient(top, #2e4475, #11192b);
+    background-image:    -moz-linear-gradient(top, #2e4475, #11192b);
+    background-image:     -ms-linear-gradient(top, #2e4475, #11192b);
+    background-image:      -o-linear-gradient(top, #2e4475, #11192b);
+    background-image:         linear-gradient(top, #2e4475, #11192b);
+}
+/* app/base и еще в старых стилях */
+div.big-hr {
+    display: flex;
+    width: 100%;
+    height: 7px;
+
+    /* оформление */
+    border-bottom: 1px solid #253b57;
+    border-top: 1px solid #253b57;
+    background: -moz-linear-gradient(top,#39b3d7 0%,#66afe9 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#39b3d7), color-stop(100%,#66afe9)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,#39b3d7 0%,#66afe9 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,#39b3d7 0%,#66afe9 100%); /* Opera11.10+ */
+    background: -ms-linear-gradient(top,#39b3d7 0%,#66afe9 100%); /* IE10+ */
+    background: linear-gradient(top,#39b3d7 0%,#66afe9 100%);
+}
+/* app/base */
+div.footer-content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+/* app/base */
+div.footer-content a{
+    color: #f9f2f4;
+}
+/* utm/find  phone/phones sberbankreportbundle/default/index vlan/vlans order/index */
+header.main-header nav.bg-nav2{
+    background: #5a83b8;
+}
+/* intercom/index */
+div.table-wrapper {
+    padding:5px;
+}
+/* phone/phones vlan/vlans intercom/index */
+div.edit-button-link a {
+    background:#66afe9;
+    border:1px solid #1d7fcf;
+    padding:3px;
+    font-family: 'Open Sans', Frutiger, Calibri, 'Myriad Pro', Myriad, sans-serif;
+    font-size:1em;
+    font-weight: normal;
+    border-radius:3px;
+    color: #ffffff;
+    text-decoration: none;
+    margin:3px;
+}
+/* utm/userinfo */
+div.comments-block {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+/* utm/userinfo */
+div.comments-block ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+/* utm/userinfo */
+div.comments-block li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+/* utm/userinfo */
+div.comments-block a {
+    float: right;
+}
+/* utm/userinfo */
+div.comments-block button.show-hide-comments {
+    width: 100px;
+    position: relative;
+    float: right;
+    top: -20px;
+}
+/* utm/userinfo */
+div.comments-container {
+    overflow-y: auto;
+    display: none;
+    max-height: 490px;
+}
+/* utm/userinfo */
+div.comments-container >ul>li{
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+/* utm/userinfo */
+div.comments-container >ul>li>a{
+    float: right;
+}
+/* utm/userinfo findmoney/index */
+div.user-info-block ol {
+    margin:0 0 0 10px;
+    padding:0 0 0 10px;
+    font-size:0.9em;
+}
+/* utm/userinfo */
+div.user-info-block li {
+    list-style-type:none;
+}
+/* utm/userinfo */
+div.user-info-block span{
+    font-weight:bold;
+}
+/* utm/userinfo */
+div.user-info-block span.itu-green {
+    background: #99cb84;
+    padding:0 5px;
+}
+/* utm/userinfo */
+div.user-info-block a {
+    text-decoration: none;
+    color: #000;
+}
+/* utm/userinfo */
+div.user-info-block-main-inner {
+    font-size: 1rem;
+    height: 100%;
+    background: #e3f3ff;
+    box-shadow: 0 0 10px #000;
+}
+/* utm/userinfo */
+div.user-info-block-inner {
+    font-size: 1rem;
+    height: 100%;
+    background: white;
+    box-shadow: 0 0 5px #000;
+}
+/* utm/userinfo */
+div.user-info-block-utm5-comments {
+    background: #ffffcc;
+}
+/* utm/userinfo */
+div.user-info-block-zabbix-notices {
+    background: #c4ccaf;
+    height: 100%;
+}
+/* utm/userinfo */
+div.user-info-block-zabbix-notices > div {
+    max-height: 350px;
+    overflow-y: auto;
+}
+/* region/index region/show region/new region/edit
+   user/index user/show user/new user/edit
+   findmoney/index order/index */
+div.content-wrapper{
+    font-family: Arial, Helvetica, sans-serif;
+    margin:10px;
+}
+/* sshbundle/diagnostic */
+div.diagnostic li{
+    list-style-type: none;
+}
+/* sshbundle/diagnostic */
+div.diagnostic a{
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 1.1rem;
+}
+/* sshbundle/diagnostic */
+div.diagnostic pre{
+    margin: 0;
+    padding: 5px;
+    background: #000;
+    color: #c0c0c0;
+    font-size:0.8rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+}
+/* sshbundle/diagnostic */
+div.block-commands-inner {
+    background:#e6e6e6;
+    height:100%;
+    box-shadow: 0 0 5px #000;
+}
+/* sshbundle/diagnostic */
+div.block-data-inner {
+    background:#000;
+    height:100%;
+    box-shadow: 0 0 5px #000;
+}
+/* sshbundle/diagnostic */
+ul.diagnostic-commands-list {
+    max-height:300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+/* utm/last-payments */
+table.last-payments-table td:nth-child(6){
+    text-align: left;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders */
+table.generic-table {
+    width:100%;
+    border-collapse: collapse;
+    box-shadow: 0 0 3px 1px #1A283D;
+    text-align: center;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders */
+table.generic-table th {
+    background: #66afe9;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders */
+table.generic-table td:nth-child(odd){
+    background: #E3F3FF;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders */
+table.generic-table td:nth-child(even) {
+    background: #f9f9f9;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders */
+table.generic-table th,
+table.generic-table td {
+    padding:3px 5px;
+    border: 1px solid #243854;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders */
+table.generic-table tr:hover td{
+    background: none;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders */
+table.generic-table tr:hover{
+    background-color: #AABCD1;
+}
+/* utm/usersinfo utm/last-payments order/order-list order/last-orders sshbundle/diagnostic */
+table.generic-table caption,
+div.caption {
+    height:25px;
+    line-height:25px;
+    padding-left: 10px;
+    font-size: 1.1em;
+    text-align: left;
+    color: #fff;
+    background:#11192b;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2e4475), color-stop(100%,#11192b));
+    background-image: -webkit-linear-gradient(top, #2e4475, #11192b);
+    background-image:    -moz-linear-gradient(top, #2e4475, #11192b);
+    background-image:     -ms-linear-gradient(top, #2e4475, #11192b);
+    background-image:      -o-linear-gradient(top, #2e4475, #11192b);
+    background-image:         linear-gradient(top, #2e4475, #11192b);
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 0 3px #000;
+}
+/* utm/last-payments order/order-list order/last-orders */
+div.show-hide-button  {
+    float: right;
+    padding-right: 10px;
+    cursor:pointer;
+}
+/* phone/phones intercom/index */
+table.table-phone th:first-child{
+    width: 40px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:nth-child(2),
+table.table-phone th:nth-child(3){
+    width: 100px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:nth-child(4),
+table.table-phone th:nth-child(5){
+    width: 240px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:nth-child(6){
+    width: 150px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:nth-child(7){
+    width: 115px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:nth-child(8){
+    width: 70px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:nth-child(9){
+    width: 80px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:nth-child(10){
+    width: 140px;
+}
+/* phone/phones intercom/index */
+table.table-phone th:last-child{
+    width: 20px;
+}
+/* phone/phones intercom/index */
+table.table-phone td{
+    text-align: center;
+}
+/* phone/phones intercom/index */
+table.table-phone td:nth-child(1)>a,
+table.table-phone td:nth-child(6)>a{
+    text-decoration: none;
+    font-weight: 500;
+    color: #232F91;
+}
+/* phone/phones intercom/index */
+table.table-phone td:nth-child(1)>a:hover,
+table.table-phone td:nth-child(6)>a:hover{
+    text-decoration: underline;
+}
+/* phone/phones intercom/index */
+table.table-phone td:nth-child(7)>a:active{
+    color: #161E5C;
+}
+/* security/login */
+div.login-content {
+    width: 320px;
+    margin: auto;
+}
+/* security/login */
+div.login-content div.logo {
+    width: 100%;
+    height: 120px;
+    background:url('/images/isup.png');
+}
+/* security/login */
+div.login-form-block {
+    width: 100%;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+/* security/login */
+/* div.login-form-block input[type=password]{
+    margin: 10px 0;
+}*/
+/* security/login */
+/*
+div.login-form-block input[type=text],
+div.login-form-block input[type=password] {
+    width: 100%;
+    height: 25px;
+    padding-left: 5px;
+    font-size: 20px;
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 5px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+*/
+/* security/login */
+/*
+div.login-form-block input[type=text]:focus,
+div.login-form-block input[type=password]:focus {
+    border: 1px solid #c0c0c0;
+    background: #f7f7f7;
+}*/
+/* security/login */
+/*
+div.login-form-block div.inline-form-fields {
+    display: flex;
+    justify-content: space-between;
+    height: 25px;
+}*/
+/* security/login */
+/*
+div.login-form-block input[type=checkbox] {
+    height:25px;
+    margin-right: 5px;
+}*/
+/* security/login */
+/*
+div.login-form-block label {
+    display: flex;
+    line-height: 25px;
+    font-size: 18px;
+    color: #444;
+}*/
+/* security/login */
+/*
+div.login-form-block input[type=submit] {
+    width: 80px;
+    height: 25px;
+    line-height: 21px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 18px;
+    color: #444;
+}*/
+/* security/login */
+div.login-form-block div.form-error {
+    padding:0 0 5px 6px;
+    color:red;
+    font-size:14px;
+}
+/* sberbankreportbundle/default/more */
+table.payments-log-table td:nth-child(1),
+table.payments-log-table td:nth-child(2),
+table.payments-log-table td:nth-child(5),
+table.payments-log-table td:nth-child(6) {
+    text-align: center;
+}
+
+/* order/order-list */
+table.orders-table {
+    width:100%;
+}
+/* order/order-list */
+table.orders-table td:nth-child(1),
+table.orders-table td:nth-child(2){
+    text-align: center;
+    width:50px;
+}
+/* order/order-list */
+table.orders-table td:nth-child(3) {
+    text-align: left;
+    min-width:300px;
+    max-width:400px;
+}
+/* order/order-list */
+table.orders-table td:nth-child(4){
+     min-width:250px;
+     min-height:100px;
+    text-align: left;
+ }
+/* order/order-list */
+table.orders-table td:nth-child(5){
+    text-align: center;
+    width:90px;
+    min-width:90px;
+}
+/* order/order-list */
+table.orders-table td:nth-child(6){
+    text-align: center;
+    width:180px;
+}
+/* order/order-list */
+table.orders-table td:nth-child(7){
+    text-align: center;
+    width:115px;
+}
+/* order/order-list */
+table.orders-table td:nth-child(8){
+    text-align:left;
+    width:115px;
+}
+/* order/order-list */
+
+table.orders-table textarea {
+    font-size: 0.9rem;
+}
+/* order/order-list */
+table.orders-table tr.dynamic-flash td {
+    text-align:left;
+    padding:0;
+}
+
+/* utm/usersinfo order/order-list */
+div.orders-container {
+    min-width: 1000px;
+    margin:0 auto;
+    width:90%;
+}
+/* order/last-orders */
+div.last-orders-container {
+    margin-top:15px;
+}
+/* order/last-orders */
+table.last-orders-table td:nth-child(3) {
+    text-align: left;
+}
+/* order/last-orders */
+table.last-orders-table tr.open td {
+    background-color: #e3afc3;
+}
+
+/* order/order-list */
+table.orders-table input.del {
+    border:0;
+    color:#1d2d44;
+    background: none;
+}
+/* order/order-list */
+table.orders-table input.dd {
+    text-indent: -9999px;
+    background: url(/images/delete.svg) no-repeat;
+    background-size: 20px 20px;
+    border:0;
+    width:20px;
+    height:20px;
+}
+
+/* order/order-list */
+/*
+table.orders-table tr:hover textarea {
+    background-color: #aabcd1;
+}*/
+/* order/order-list */
+table.orders-table input.del:hover {
+    background:#e6e6fa;
+}
+/* order/order-list */
+table.orders-table input.dd:hover {
+    background: url(/images/delete.svg) no-repeat;
+    background-size: 20px 20px;
+    cursor: pointer;
+}
+
+table.table-sham {
+    box-shadow: 0 0 3px 1px #1A283D;
+}
+table.table-sham th {
+    background: #66afe9;
+}
+table.table-sham td:nth-child(odd){
+    background: #E3F3FF;
+}
+table.table-sham td:nth-child(even) {
+    background: #f9f9f9;
+}
+table.table-sham th,
+table.table-sham td {
+    border: 1px solid #243854;
+}
+table.table-sham tr:hover td {
+    background: none;
+}
+table.table-sham tr:hover {
+    background-color: #AABCD1;
+}
+table.table-sham caption {
+    height:25px;
+    line-height:25px;
+    padding-left: 10px;
+    font-size: 1.1em;
+    text-align: left;
+    color: #fff;
+    background:#11192b;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2e4475), color-stop(100%,#11192b));
+    background-image: -webkit-linear-gradient(top, #2e4475, #11192b);
+    background-image:    -moz-linear-gradient(top, #2e4475, #11192b);
+    background-image:     -ms-linear-gradient(top, #2e4475, #11192b);
+    background-image:      -o-linear-gradient(top, #2e4475, #11192b);
+    background-image:         linear-gradient(top, #2e4475, #11192b);
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 0 3px #000;
+}
+
+.x-editable {
+    cursor: pointer;
+    border-bottom: dashed 1px #0088cc;
+}
+.fa-times-square,
+.fa-check-square {
+    font-size:1.3rem;
+}

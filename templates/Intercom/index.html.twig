@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} | {{ 'list_tasks.intercom_tasks'|trans }}{% endblock %}
+
+{% block context %}
+    {{ 'list_tasks.intercom_tasks'|trans }}
+{% endblock %}
+{% block body %}
+    {% if tasks is defined and tasks|length %}
+        <div class="table-wrapper">
+            <table class="isup-table isup-table-bordered isup-table-zebra isup-table-vert-margin isup-table-wide isup-table-header-nowrap isup-table-hovered table-phone ">
+                <caption>{{ 'list_tasks.opened_tasks'|trans}}</caption>
+                <tr>
+                    <th>{{ knp_pagination_sortable(tasks, 'list_tasks.id'|trans, 'id') }}</th>
+                    <th>{{ knp_pagination_sortable(tasks, 'list_tasks.phone'|trans, 'phone') }}</th>
+                    <th>{{ knp_pagination_sortable(tasks, 'list_tasks.fullname'|trans, 'full_name') }}</th>
+                    <th>{{ knp_pagination_sortable(tasks, 'list_tasks.address'|trans, 'address') }}</th>
+                    <th>{{ 'list_tasks.description'|trans }}</th>
+                    <th>{{ 'list_tasks.operator'|trans }}</th>
+                    <th>{{ 'list_tasks.created'|trans }}</th>
+                    <th>{{ knp_pagination_sortable(tasks, 'list_tasks.status'|trans, 'id') }}</th>
+                    <th>{{ knp_pagination_sortable(tasks, 'list_tasks.type'|trans, 'id') }}</th>
+                    <th>{{ 'list_tasks.actions'|trans }}</th>
+                </tr>
+                {% for task in tasks %}
+                    <tr>
+                        <td><a href="{{ path('intercom_edit', {'id': task.id }) }}">{{ task.id }}</a></td>
+                        <td>{{ task.phone }}</td>
+                        <td>{{ task.fullname }}</td>
+                        <td>{{ task.address }}</td>
+                        <td>{{ task.description }}</td>
+                        <td>{{ task.user.fullname }}</td>
+                        <td>{{ task.created|date('d-m-Y H:i') }}</td>
+                        <td>{{ task.status.description }}</td>
+                        <td>{{ task.type.description }}</td>
+                        <td>
+                            <div class="edit-button-link m-2 text-nowrap">
+                                <a href="{{ path('intercom_edit', {'id': task.id}) }}">
+                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+                                    {{ 'list_tasks.edit'|trans }}
+                                </a>
+                            </div>
+                            <div class="edit-button-link m-2 text-nowrap">
+                                {% if is_granted('ROLE_INTERCOMS_MODERATOR') %}
+                                    <a class="delete-order-button" href="{{ path('intercom_delete', {'id': task.id }) }}" data-toggle="confirmation">
+                                        <i class="fa fa-trash" aria-hidden="true"></i> Удалить
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tfoot><tr><td colspan="9"></td></tr></tfoot>
+            </table>
+        </div>
+    {{ knp_pagination_render(tasks) }}
+    {% endif %}
+{% endblock %}

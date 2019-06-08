@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'sber' %}
+
+{% block title %} {{ parent() }} | {{ 'log.detail_payment_title'|trans }}{% endblock %}
+
+{% block context %}
+    {{ 'log.detail_payment_title'|trans }}
+{% endblock %}
+
+{% block header %}
+    <nav class="info-finder">
+        <ul>
+            <li>
+                <a href="{{ app.request.server.get('HTTP_REFERER')}}">{{ 'log.back'|trans  }}</a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
+
+{% block body %}
+
+    <table class="payments-log-table isup-table isup-table-bordered isup-table-zebra isup-table-vert-margin isup-table-center isup-table-header-nowrap">
+        <caption>{{ 'log.found_items'|trans }}</caption>
+        <thead>
+        <tr>
+            <th>{{ 'log.date'|trans }}</th>
+            <th>{{ 'log.ip'|trans }}</th>
+            <th>{{ 'log.in_data'|trans }}</th>
+            <th>{{ 'log.out_data'|trans }}</th>
+            <th>{{ 'log.code'|trans }}</th>
+            <th>{{ 'log.message'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in info %}
+        <tr>
+            <td>{{ row.date  | date('d-m-Y H:i:s')}}</td>
+            <td>{{ row.ip }}</td>
+            <td><code>{{ row.indata }}</code></td>
+            <td><code>{{ row.outdata }}</code></td>
+            <td>{{ row.errcode }}</td>
+            <td>{{ row.errtext }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr><td colspan="7">{{ 'log.items_found'|trans }}: {{ info | length }}</td></tr></tfoot>
+    </table>
+{% endblock %}

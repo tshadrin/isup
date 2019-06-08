@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{ parent() }} | {{ 'orders.title'|trans }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block context %}
+    {{ 'orders.title'|trans }}
+{% endblock %}
+{% block header %}
+    <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+        <form class="form-inline" action="{{ path('order_filter') }}" method="POST">
+            <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1">Фильтр</label>
+            <select onchange="editField(this)" name="filter" class="form-control form-control-sm m-1">
+                <option {{ filter=='all'?'selected':'' }} value="all">Все заявки</option>
+                <option {{ filter=='dedovsk'?'selected':'' }} value="dedovsk">Дедовск</option>
+                <option {{ filter=='istra'?'selected':'' }} value="istra">Истра</option>
+                <option {{ filter=='iptv'?'selected':'' }} value="iptv">IPTV</option>
+                <option {{ filter=='layoff'?'selected':'' }} value="layoff">Отложенные</option>
+                <option {{ filter=='my'?'selected':'' }} value="my">Мои</option>
+            </select>
+        </form>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center ml-0 mr-0 mt-1">
+        <div class="col-xl-10 col-lg-12 p-2">
+        {% if today_orders is defined and today_orders is not empty %}
+            {% include 'Order/order-list.html.twig' with {'title': 'today_orders'|trans, 'orders': today_orders, 'hide_name': 'today_orders'} %}
+        {% endif %}
+        {% if orders is defined and orders is not empty %}
+            {% include 'Order/order-list.html.twig' with {'title': 'previlous_orders'|trans, 'hide_name': 'previlous_orders'} %}
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('orders') }}
+{% endblock %}

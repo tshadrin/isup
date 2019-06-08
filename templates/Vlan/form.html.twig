@@ -1,0 +1,86 @@
+{% set context = edit is defined ? 'vlan.form.edit_header'|trans : 'vlan.form.add_header'|trans %}
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} | {{ context }}{% endblock %}
+
+{% block context %}
+    {{ context }}
+{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    <div class="row m-2 block-shadow-10 form-wrapper">
+        <div class="col-12 ml-2">
+            <h4>
+                {{ context }}
+            </h4>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.number) }}
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {{ form_widget(form.number) }}
+                        </div>
+                        <div class="col-sm-12 form-text text-muted ml-4">
+                            {{ form_errors(form.number) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.name) }}
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {{ form_widget(form.name) }}
+                        </div>
+                        <div class="col-sm-12 form-text text-muted ml-4">
+                            {{ form_errors(form.name) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.points) }}
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="points"
+                                 id="point-fields-list"
+                                 data-prototype="{{ form_widget(form.points.vars.prototype)|e }}"
+                                 data-widget-tags="{{ '<div class="input-group dynamic-filed d-flex flex-row mt-1 mb-1"></div>'|e }}">
+                                {% for point in form.points %}
+                                    <div class="input-group dynamic-filed d-flex flex-row mt-1 mb-1">
+                                        {{ form_widget(point) }}
+                                        {% if not loop.first %}
+                                            <div class="input-group-append"><button class="btn btn-secondary remove-field-button">-</button></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-sm-12 form-text text-muted ml-4">
+                                        {{ form_errors(point) }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button"
+                                    class="add-another-collection-widget btn btn-success mt-1"
+                                    data-list="#point-fields-list">{{ 'vlan.add_point'|trans }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_widget(form.save) }}
+                <div class="btn btn-primary btn-primary-sham m-1">
+                    <a href="{{ app.request.server.get('HTTP_REFERER') }}">
+                        {{ 'Back'|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('vlans') }}
+{% endblock %}

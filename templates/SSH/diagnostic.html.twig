@@ -1,0 +1,36 @@
+{% block body %}
+<div class="diagnostic row no-gutters">
+    <div class="col-12">
+        <div class="caption">Диагностика</div>
+    </div>
+    <div class="col-12 col-sm-4 col-xl-3 col-md-4 block-commands">
+        <div class="block-commands-inner">
+            <ul class="diagnostic-commands-list pl-0">
+                <li class="pl-2">
+                    <a class="diagnostic-command"
+                       data-target="#diagnostic-status"
+                       href="{{ path('ssh_diagnostic', {'command':'ping', 'ip': user.ips.0, 'server': user.routers.ip} ) }}">arping</a>
+                </li>
+                <li class="pl-2">
+                    <a class="diagnostic-command"
+                       data-target="#diagnostic-status"
+                       href="{{ path('ssh_diagnostic', {'command':'itu', 'ip': user.ips.0, 'server': user.routers.ip} ) }}">Быстрая проверка</a>
+                </li>
+                <li class="pl-2">
+                    <a class="diagnostic-command"
+                       data-target="#diagnostic-status"
+                       href="{{ path('ssh_diagnostic', {'command':'kk', 'ip': user.ips.0, 'server': user.routers.ip} ) }}">arp таблица</a>
+                </li>
+                <li class="pl-2">
+                    <a class="diagnostic-command"
+                       data-target="#diagnostic-status"
+                       href="#">очистить</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-12 col-sm-8 col-xl-9 col-md-8">
+        <div id="diagnostic-status" class="block-data-inner"><pre></pre></div>
+    </div>
+</div>
+{% endblock %}

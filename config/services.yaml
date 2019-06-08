@@ -1,0 +1,193 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+imports:
+    - { resource: custom/parameters.yaml }
+    - { resource: custom/bitrix_cal.yaml }
+    - { resource: custom/bitrix.yaml }
+    - { resource: custom/ssh.yaml }
+    - { resource: custom/urfa.yaml }
+    - { resource: custom/add_firm.yaml }
+    - { resource: custom/bot.yaml }
+parameters:
+    locale: 'ru'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $connection: '@doctrine.dbal.utm5_connection'
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Admin,DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+    App\Controller\UTM5\ApiController:
+        bind:
+            $logger: '@monolog.logger.bitrix_create'
+    App\Controller\UTM5\AlarmZabbixController:
+        bind:
+            $logger: '@monolog.logger.alarm_zabbix'
+    App\Controller\SMS\SMSController:
+        bind:
+            $logger: '@monolog.logger.sms'
+    # Репозитори
+    App\Repository\Phone\PhoneRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Phone\Phone'
+    App\Repository\Vlan\VlanRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Vlan\Vlan'
+    App\Repository\Intercom\TaskRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Intercom\Task'
+        calls:
+            - method: setTranslator
+    App\Repository\Commutator\CommutatorRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Commutator\Commutator'
+        calls:
+            - method: setTranslator
+    ### Сервисы ###
+    App\Service\SSH\SSHService:
+        bind:
+            $parameters: '%ssh%'
+    App\Service\Commutator\BotService:
+        bind:
+            $parameters: '%bot%'
+    App\Service\SberbankReport\SberbankReportService:
+        bind:
+            $entityManager: '@doctrine.orm.sberbank_entity_manager'
+    App\Service\UTM5\URFAService:
+        bind:
+            $parameters: '%urfa%'
+    App\Service\UTM5\BitrixRestService:
+        bind:
+            $parameters: '%bitrix%'
+    App\Service\BitrixCal\BitirixCalService:
+        bind:
+            $parameters: '%bitrix_cal%'
+    ### Обработчики событий ###
+    App\EventListener\SberbankReport\ConfigureMenuListener:
+        tags:
+            - { name: kernel.event_listener, event: 'menu.menu_configure', method: onMenuConfigure }
+    App\EventListener\Intercom\ConfigureMenuListener:
+        tags:
+            - { name: kernel.event_listener, event: 'menu.menu_configure', method: onMenuConfigure }
+    App\EventListener\Order\ConfigureMenuListener:
+        tags: #что за priority?
+            - { name: kernel.event_listener, event: 'menu.menu_configure', method: onMenuConfigure, priority: -1 }
+    App\EventListener\UTM5\ConfigureMenuListener:
+        tags: #что за priority?
+            - { name: kernel.event_listener, event: 'menu.menu_configure', method: onMenuConfigure, priority: -2 }
+    App\EventListener\SSH\UTM5UserFoundListener:
+        tags:
+            - { name: kernel.event_listener, event: 'utm5.user_found', method: onUTM5UserFound }
+    App\EventListener\Order\UTM5UserFoundListener:
+        tags:
+            - { name: kernel.event_listener, event: 'utm5.user_found', method: onUTM5UserFound }
+    App\EventListener\SberbankReport\KNPPagerItemsListener:
+        tags:
+            - { name: kernel.event_listener, event: knp_pager.items, method: onKNPPagerItems}
+    App\EventListener\Intercom\SecurityListener:
+        tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
+    #команды
+    App\Command\UTM5\AddFirmForPaymentsCommand:
+        bind:
+            $parameters: '%add_firm%'
+        tags:
+            - { name: 'console.command', command: 'utm5:add-firm-for-payments' }
+    App\Command\UTM5\AddFirmForAcquiroPaymentsCommand:
+        bind:
+            $parameters: '%add_firm%'
+        tags:
+            - { name: 'console.command', command: 'utm5:add-firm-for-acquiropay-payments' }
+    App\Command\Commutator\ParseData:
+        bind:
+            $parameters: '%add_firm%'
+        tags:
+            - { name: 'console.command', command: 'commutator:add-switches' }
+    App\Command\Commutator\ParseNagios:
+        bind:
+            $parameters: '%add_firm%'
+        tags:
+            - { name: 'console.command', command: 'commutator:add-nagios-link' }
+    #меню
+    app.menu_builder: #сделан алиас чтоб не орал type-hint
+        alias: App\Menu\Builder
+    app.main_menu:
+        class: Knp\Menu\MenuItem
+        factory: ["@app.menu_builder", build]
+        tags:
+            - { name: knp_menu.menu, alias: main }
+    #Админка
+    admin.region:
+        class: 'App\Admin\User\RegionAdmin'
+        arguments: [~, App\Entity\User\Region, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: fos_user, label: Regions }
+        public: true
+    admin.intecomstatus:
+        class: 'App\Admin\Intercom\StatusAdmin'
+        arguments: [~, App\Entity\Intercom\Status, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: intercom, label: statuses }
+        public: true
+    admin.intecomtype:
+        class: 'App\Admin\Intercom\TypeAdmin'
+        arguments: [~, App\Entity\Intercom\Type, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: intercom, label: tasks_types }
+        public: true
+    admin.tasktype:
+        class: 'App\Admin\Intercom\TaskAdmin'
+        arguments: [~, App\Entity\Intercom\Task, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: intercom, label: tasks }
+        public: true
+    admin.user:
+        calls:
+            - method: setUserManager
+              arguments:
+                  - '@fos_user.user_manager.default'
+        class: 'App\Admin\User\UserAdmin'
+        arguments: [~, App\Entity\User\User, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: fos_user, label: Users, icon: '<i class="fa fa-users "></i>'}
+        public: true
+    admin.order:
+        class: 'App\Admin\Order\OrderAdmin'
+        arguments: [~, App\Entity\Order\Order, ~]
+        tags:
+            - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'orders' }
+        public: true
+    admin.vlan:
+        class: 'App\Admin\Vlan\VlanAdmin'
+        arguments: [~, App\Entity\Vlan\Vlan, ~]
+        tags:
+            - { name: 'sonata.admin', manager_type: 'orm', group: 'vlans', label: 'Vlans' }
+        public: true
+    admin.commutator_port_type:
+        class: 'App\Admin\Commutator\PortTypeAdmin'
+        arguments: [~, App\Entity\Commutator\PortType, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: commutators, label: port_types }
+        public: true
+    admin.commutator:
+        class: 'App\Admin\Commutator\CommutatorAdmin'
+        arguments: [~, App\Entity\Commutator\Commutator, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: commutators, label: commutators }
+        public: true

@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% set context = edit is defined ?  'task.form.edit_header'|trans : 'task.form.add_header'|trans %}
+
+{% block title %} {{ parent() }} | {{ 'list_tasks.intercom_tasks'|trans }}{% endblock %}
+
+{% block context %}
+    {{ context }}
+{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    <div class="row m-2 block-shadow-10 form-wrapper">
+        <div class="col-12 ml-2">
+            <h3>
+                {{ context }}
+            </h3>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.phone) }}
+                <div class="col-sm-6">
+                    {{ form_widget(form.phone) }}
+                </div>
+                {{ form_errors(form.phone) }}
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.fullname) }}
+                <div class="col-sm-6">
+                    {{ form_widget(form.fullname) }}
+                </div>
+                {{ form_errors(form.fullname) }}
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.address) }}
+                <div class="col-sm-6">
+                    {{ form_widget(form.address) }}
+                </div>
+                {{ form_errors(form.address) }}
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.description) }}
+                <div class="col-sm-6">
+                    {{ form_widget(form.description) }}
+                </div>
+                {{ form_errors(form.description) }}
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.status) }}
+                <div class="col-sm-6">
+                    {{ form_widget(form.status) }}
+                </div>
+                {{ form_errors(form.status) }}
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.type) }}
+                <div class="col-sm-6">
+                    {{ form_widget(form.type) }}
+                </div>
+                {{ form_errors(form.type) }}
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                <div class="col-sm-10">
+                    {{ form_widget(form.save) }}
+                    {{ form_widget(form.saveandlist) }}
+                    {% if edit is defined and is_granted('ROLE_INTERCOMS_MODERATOR') %}
+                        <div class="btn btn-primary btn-lg btn-primary-sham m-1">
+                            <a data-toggle="confirmation" href="{{ path('intercom_delete', {'id': form.vars.value.id}) }}">
+                                {{ 'task_delete'|trans }}
+                            </a>
+                        </div>
+                    {% endif %}
+                    <div class="btn btn-primary btn-lg btn-primary-sham m-1">
+                        <a href="{{ app.request.server.get('HTTP_REFERER') }}">{{ 'Back'|trans }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}

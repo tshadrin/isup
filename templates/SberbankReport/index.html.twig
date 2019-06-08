@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'sber' %}
+
+{% block title %} {{ parent() }} | {{ 'payments.title'|trans }}{% endblock %}
+
+{% block context %}
+    {{ 'payments.title'|trans }}
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+        {{ form_start(form, {'attr': {'class': 'form-inline'} }) }}
+        {{ form_label(form.account_id) }}
+        {{ form_widget(form.account_id) }}
+        {{ form_label(form.pay_num) }}
+        {{ form_widget(form.pay_num) }}
+        {{ form_label(form.reg_date_interval) }}
+        {{ form_widget(form.reg_date_interval) }}
+        {{ form_widget(form.submit_button) }}
+        {{ form_end(form) }}
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <table class="isup-table isup-table-bordered isup-table-wide isup-table-zebra isup-table-vert-margin isup-table-hovered">
+        <caption>{{ 'log.found_items'|trans }}</caption>
+        <thead class="table-primary">
+        <tr>
+            <th>{{ knp_pagination_sortable(payments, 'payments.uid'|trans, 'p.account_id') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.pay_num'|trans, 'p.pay_num') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.amount'|trans, 'p.amount') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.pay_date'|trans, 'p.reg_date') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for payment in payments %}
+            <tr {% if payment.logcount > 1 %}class="isup-table-critical-row"{% endif %}>
+                <td><a href="{{ path('search', {'type': 'id', 'value': payment.accountid }) }}">{{ payment.accountid }}</a></td>
+                <td><a href="{{ path('sberbank_log', {'pay_num': payment.paynum}) }}">{{ payment.paynum }}</a></td>
+                <td>{{ payment.amount }}</td>
+                <td>{{ payment.regdate | date('Y-m-d') }} {{ payment.regdate | date('H:i:s') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="5">{{ 'log.items_found'|trans }}: {{ payments.getTotalItemCount }}</td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(payments) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('sberbank') }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('sberbank') }}
+{% endblock %}
+

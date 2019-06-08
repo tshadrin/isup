@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Isup{% endblock %}</title>
+    {{ encore_entry_link_tags('app') }}
+    <link rel="stylesheet" href="{{ asset('css/isup.css') }}">
+    {% block stylesheets %}{% endblock %}
+    {{ encore_entry_script_tags('app') }}
+</head>
+<body>
+{% if is_granted('ROLE_USER') %}
+    <header class="main-header ">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-nav m-0 p-0">
+            <span class="navbar-brand ml-2">{% block context %}{% endblock %}</span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1" aria-controls="navbar1" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="justify-content-end collapse navbar-collapse ml-2 mr-2" id="navbar1">
+                {{ knp_menu_render('main', {'depth': 2, 'currentAsLink': true, 'currentClass': 'active'}) }}
+            </div>
+        </nav>
+        {% block header %}
+        {% endblock %}
+        <div class="big-hr"></div>
+    </header>
+    {% for message in app.session.flashBag.get('notice') %}
+        <div class="alert alert-success m-2" role="alert">
+            {{ message|trans }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    {% for message in app.session.flashBag.get('error') %}
+        <div class="alert alert-danger m-2" role="alert">
+            {{ message }}
+            <button type="button" class="close pl-2" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="content container-fluid">
+    {% block body %}{% endblock %}
+</div>
+{% for message in app.session.flashBag.get('info') %}
+    <div class="alert alert-warning m-2" role="alert">{{ message }}</div>
+{% endfor %}
+<footer class="main-footer">
+    <div class="big-hr"></div>
+    <div class="footer-content row justify-content-center">
+        <div class="col-auto">
+        <span>Istranet Support Utilities 2010-{{ "now"|date('Y') }}. Programming and design: <a href="mailto:s@istranet.ru">Anatoly Shadrin</a>.</span>
+        </div>
+    </div>
+</footer>
+{% block javascripts %}
+{% endblock %}
+</body>
+</html>

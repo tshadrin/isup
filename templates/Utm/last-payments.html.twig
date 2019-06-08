@@ -1,0 +1,42 @@
+{% if app.session.get('hide_block_last_payments') is defined and app.session.get('hide_block_last_payments') == true %}
+    {% set hblp = true %}
+{% endif %}
+<div class="last-payments-container table-responsive-sm table-responsive">
+    <table class="last-payments-table generic-table">
+        <caption class="pt-0 pb-0">
+            Последние платежи
+            <div class="show-hide-button" id="last_payments">
+                {% if hblp is defined  %}
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                {% else %}
+                    <i class="fa fa-minus" aria-hidden="true"></i>
+                {% endif %}
+            </div>
+        </caption>
+{% if hblp is defined %}<thead style="display: none;">{% else %}<thead>{% endif %}
+        <tr>
+            <th>Сумма</th>
+            <th>Дата</th>
+            <th>Номер транзакции</th>
+            <th>Метод</th>
+            <th>Пользователь</th>
+            <th>Комментарии</th>
+        </tr>
+        </thead>
+{% if hblp is defined %}<tbody style="display: none;">{% else %}<tbody>{% endif %}
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.amount }}</td>
+            <td>{{ payment.payment_date|date('d-m-Y H:i') }}</td>
+            <td>{{ payment.transaction_number }}</td>
+            <td>{{ payment.method }}</td>
+            <td>{{ payment.receive }}</td>
+            <td>{% if payment.user_comment|length %}Для пользователя: {{ payment.user_comment }}{% endif %}<br></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+

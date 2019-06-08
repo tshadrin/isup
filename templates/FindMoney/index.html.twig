@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ parent() }} |
+        Поиск платежей по поселку
+{% endblock %}
+
+{% block context %}
+    {{ 'Поиск платежей по поселку' }}
+{% endblock %}
+{% block header %}
+   <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+        <form class="form-inline" method="GET" action="{{ path('find_money') }}">
+            <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1">Введите название поселка в любом виде</label>
+                <input class="form-control form-control-sm m-1" type="text" name="address" required="required" {% if address is defined %} value="{{ address }}" {% endif %}>
+            <input class="btn btn-sm btn-primary btn-primary-sham" type="submit" value="Посчитать" id="search-button">
+        </form>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <div class="content-wrapper">
+        {% if sum is defined %}
+            <div class="user-info-block text-light">Общая сумма платежей: {{ sum|number_format(0, ',', ' ') }} рублей.</div>
+        {% endif %}
+    </div>
+{% endblock %}

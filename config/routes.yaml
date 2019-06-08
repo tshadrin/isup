@@ -1,0 +1,31 @@
+# Редиректы
+App_phone:
+  path: /phone/
+  controller: FrameworkBundle:Redirect:redirect
+  defaults:
+    route: phone_default
+    permanent: true
+App_phones:
+  path: /phones/
+  controller: FrameworkBundle:Redirect:redirect
+  defaults:
+    route: phone_default
+    permanent: true
+App_vlan:
+  path: /vlan/
+  controller: FrameworkBundle:Redirect:redirect
+  defaults:
+    route: vlan_default
+    permanent: true
+App_vlans:
+  path: /vlans/
+  controller: FrameworkBundle:Redirect:redirect
+  defaults:
+    route: vlan_default
+    permanent: true
+default:
+  path: /
+  controller: FrameworkBundle:Redirect:redirect
+  defaults:
+    route: search_default
+    permanent: true

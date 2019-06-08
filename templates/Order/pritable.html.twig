@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+    <title>{{ 'order.print.title %num%'|trans({'%num%': order.id}) }}</title>
+    {{ encore_entry_link_tags('order-print') }}
+</head>
+<body>
+<div id="wrapper">
+    <h1>Заявка № {{ order.id }}</h1>
+    <h2>от {{ order.created|date("d-m-Y H:i") }}</h2>
+    <p><span>Абонент: </span>{{ order.fullname }}</p>
+    {% if order.utmid > 1 %}
+    <p><span>Id: {{ order.utmid }} адрес: {{ order.address }}</span></p>
+    <p><span>IP: {{ order.ipaddress }}</span></p>
+    {% else %}
+    <p><span>Aдрес: {{ order.address }}</span></p>
+    {% endif %}
+    <p><span>Контактные телефоны: {{ order.phone }}</span></p>
+    <p><span>Комментарий: {{ order.comment }}</span></p>
+    <p><span>Заявку выписал: {{ order.user.fullname }}</span></p>
+    <p><span>Заявку выполнил__________________дата______________</span></p>
+    <p><span>Подпись абонента_________________дата______________</span></p>
+    <p><span><a href="{{ path('orders_index') }}">{{ 'order.print.back'|trans }}</a></span></p>
+</div>
+{{ encore_entry_script_tags('order-print') }}
+</body>
+</html>

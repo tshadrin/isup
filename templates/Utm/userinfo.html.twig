@@ -1,0 +1,229 @@
+<div class="user-info-main user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
+    <div class="user-info-block-main-inner pt-2 pb-2 pl-3 pr-3">
+        <h4>Основная информация</h4>
+        <ol>
+            <li><span>ID</span>: {{ user.id }}</li>
+            <li><span>Имя</span>: {{ user.fullName }}</li>
+            <li><span>Логин</span>: {{ user.login }}</li>
+            <li><span>Пароль</span>: <span class="password" onclick="this.innerHTML='{{ user.password }}'">Показать</span></li>
+            <li><span>Лицевой счет</span>: {{ user.account }}</li>
+            {% if user.addresses.juridical %}<li><span>Юр. адрес</span>: {{ user.addresses.juridical }}</li>{% endif %}
+            <li><span>Факт. адрес</span>: {{ user.addresses.actual }}</li>
+            {% if user.phones.home %}<li><span>Домашний телефон</span>:{{ user.phones.home }}</li>{% endif %}
+            {% if user.phones.work %}<li><span>Рабочий телефон</span>: {{ user.phones.work }}</li>{% endif %}
+            <li><span>Мобильный телефон</span>: {{ user.phones.mobile }}</li>
+            <li><span>Дата подключения</span>: {{ user.createDate|date("d-m-Y") }}</li>
+        </ol>
+    </div>
+</div>
+<div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
+    <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
+        <h4>Статус пользователя</h4>
+        <ol>
+            <li>
+                <span>Статус интернет</span> :
+                <a href="{{ path('utm_change_intstatus', {'id': user.id, 'status': user.intStatus }) }}">
+                    {%  if user.intStatus %}
+                        <span class="itu-green">Включен</span>
+                    {% else %}
+                        Выключен
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                <span>Баланс</span> : {{ user.balance }}
+            </li>
+            <li>
+                <span>Кредит</span> : {{ user.credit }}
+            </li>
+            <li>
+                <span>Рекомендуемый платеж</span> : {{ user.requirementPayment }}
+            </li>
+            <li>
+                <span>Тип блокировки</span> : {{ user.block }}
+            </li>
+        </ol>
+        <h4>IP адреса</h4>
+        <ol>
+            {% for ip in user.ips %}
+                <li>{{ ip }}</li>
+            {% endfor %}
+        </ol>
+        <h4>Цепочка свичей</h4>
+        <ol>
+            <li>{% if user.chain is not empty %}{{ user.chain|raw }} {% else %} Нет данных {% endif %}</li>
+        </ol>
+
+    </div>
+</div>
+<!--
+<div class="user-info-block user-info-block-zabbix col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 p-2">
+    <div class="user-info-block-inner user-info-block-zabbix-notices pt-2 pb-2 pl-3 pr-3">
+        <div>
+        <h4>Уведомления Zabbix</h4>
+        <ol>
+            <li><span>Заголовок</span>
+                <p>Текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст</p></li>
+        </ol>
+        <ol>
+            <li><span>Заголовок</span>
+                <p>Текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст</p></li>
+        </ol>
+        </div>
+    </div>
+</div>
+-->
+<div class="w-100"></div>
+<div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
+    <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
+    <h4>Тарифный план</h4>
+    <ol>
+        <li>
+            <span>Актуальный: </span>{{ user.tariff.actual_tariff }}
+        </li>
+        <li>
+            <span>Следующий: </span>{{ user.tariff.next_tariff }}
+        </li>
+    </ol>
+    <h4>Услуги</h4>
+    <ol>
+        {% set sum = 0 %}
+        {% for service in user.services %}
+            {% set sum = sum + service.cost %}
+            <li>
+                <span class="font-weight-bold">{{ service.service_name }}:</span>
+                {{ service.cost }} р/мес.
+            </li>
+        {% endfor %}
+        <li><span class="font-weight-bold">Всего:</span> {{ sum }} р/мес.</li>
+    </ol>
+    <h4>Рассчетный период</h4>
+    <ol>
+        <li>
+            <span>Номер: </span>{{ user.tariff.discount_period }}
+        </li>
+        <li>
+            <span>Интервал: </span>{{ user.tariff.discount_period_start|date("d-m-Y") }} - {{ user.tariff.discount_period_end|date("d-m-Y") }}
+        </li>
+    </ol>
+    </div>
+</div>
+<div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
+    <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
+    <h4>Группы пользователя</h4>
+    <ol>
+        {% for group in user.groups %}
+            <li>{{ group.group_name }}</li>
+        {% endfor %}
+    </ol>
+    <h4>Информация о сервере</h4>
+    <ol>
+        <li>{{ user.routers.name }} : {{ user.routers.ip }}</li>
+    </ol>
+    </div>
+</div>
+
+{% if user.utmComments is not empty %}
+    <div class="user-info-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 p-2">
+        <div class="user-info-block-inner user-info-block-utm5-comments pt-2 pb-2 pl-3 pr-3">
+            <h4>Комментарии в UTM5</h4>
+            <ol>
+                <li>{{ user.utmComments }}</li>
+            </ol>
+        </div>
+    </div>
+{% endif %}
+<div class="w-100"></div>
+<div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
+    <div class="user-info-block-inner comments-block inner pt-2 pb-2 pl-3 pr-3">
+    <h4>Комментарии</h4>
+    {% if user.comments|length > 0 %}
+        <button id="view-comments"
+                data-toggle="show-hide-block"
+                data-target="#comments-container"
+                data-show="Скрыть"
+                data-hide="Показать"
+                class="btn btn-primary btn-sm btn-primary-sham show-hide-comments">Показать</button>
+    {% endif %}
+    {{ form_start(form, {'attr': {'class': '', 'action': path('utm5_user_comment_add')} }) }}
+        {{ form_widget(form.utmId) }}
+        <div class="form-row">
+            <div class="col-sm-5">
+    {{ form_widget(form.comment) }}
+            </div>
+            <div class="col-sm-5">
+    {{ form_widget(form.save) }}
+            </div>
+        </div>
+    {{ form_end(form) }}
+        <div id="comments-container" class="comments-container">
+            <ul>
+                {% for comment in user.comments %}
+                    <li>{{ comment.comment }}
+                        <br><i>{{ comment.datetime|date('d-m-Y H:i') }}-{{ comment.userid.fullname }}</i>
+                        <a data-toggle="confirmation" class="comment-delete" href="{{ path('utm5_user_comment_delete', {'id': comment.id}) }}">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="user-info-block add-order-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
+    <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
+    <h4>Добавление заявки</h4>
+    <form  method="POST" action="{{  path('order_add') }}">
+        <input type="hidden" name="create" value="full">
+        <input type="hidden" name="id" value="{{ user.id }}">
+        <div class="form-row">
+            <div class="col-sm-5">
+            <input class="form-control form-control-sm" type="text" name="comment" value="" placeholder="оставьте комментарий...">
+            </div>
+            <div class="col-sm-5">
+            <button class="btn btn-primary btn-sm btn-primary-sham" name="createorder" type="submit" value="Добавить заявку">Добавить заявку</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+{% if diagnostic is defined %}
+    <div class="user-info-block add-order-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 p-2">
+        {{ diagnostic|raw }}
+    </div>
+{% endif %}
+
+{% if user.payments|length %}
+    <div class="user-info-block add-order-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 p-2">
+    {{ include('Utm/last-payments.html.twig', {'payments': user.payments}) }}
+    </div>
+{% endif %}
+
+{% if last_orders is defined %}
+    <div class="user-info-block add-order-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 p-2">
+    {{ last_orders|raw }}
+</div>
+{% endif %}
+<!--
+<div class="user-info-block user-info-block-zabbix2 col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 p-2" style="display: none;">
+    <div class="user-info-block-inner user-info-block-zabbix-notices pt-2 pb-2 pl-3 pr-3">
+        <h4>Уведомления Zabbix</h4>
+        <ol>
+            <li><span>Заголовок</span>
+                <p>Текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст</p></li>
+        </ol>
+        <ol>
+            <li><span>Заголовок</span>
+                <p>Текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст текст
+                    текст текст текст текст текст текст текст текст текст текст текст текст</p></li>
+        </ol>
+    </div>
+</div>
+-->

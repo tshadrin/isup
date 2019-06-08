@@ -1,0 +1,3 @@
+parameters:
+    bot:
+        bot_path: '%bot_url%'

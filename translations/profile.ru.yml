@@ -1,0 +1,11 @@
+security.login.username_or_email: 'Логин или e-mail'
+security.login.password: Пароль
+security.login.remember_me: 'Запомнить меня'
+security.login.submit: Войти
+profile.show.region: Регион
+profile.show.on_work: 'Выполняет заявки'
+profile.show.on_work_yes: Да
+profile.show.on_work_no: Нет
+profile.show.username: 'Имя пользователя'
+profile.show.email: E-mail
+profile.show.login: 'Логин'
