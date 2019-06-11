@@ -125,6 +125,8 @@ class Order
      */
     private $created;
 
+    private $emptyPassport = false;
+
     public function __construct(array $data = array())
     {
         if (count($data)) {
@@ -140,6 +142,7 @@ class Order
         }
         $this->isDeleted = false;
         $this->created = new \Datetime();
+        $this->emptyPassport = false;
     }
 
     /**
@@ -352,5 +355,21 @@ class Order
     public function __toString()
     {
         return "{$this->id} - {$this->fullName}";
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmptyPassport(): bool
+    {
+        return $this->emptyPassport;
+    }
+
+    /**
+     * @param bool $emptyPassport
+     */
+    public function setEmptyPassport(bool $emptyPassport): void
+    {
+        $this->emptyPassport = $emptyPassport;
     }
 }

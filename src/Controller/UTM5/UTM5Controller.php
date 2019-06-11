@@ -161,21 +161,6 @@ class UTM5Controller extends AbstractController
     }
 
     /**
-     * Меняет статус Интернета пользователя
-     * и перенаправляет на его профиль
-     * @param string $id  - id клиента
-     * @param string $status - статус Интернет
-     * @param URFAService $URFA_service
-     * @return RedirectResponse
-     * @Route("/urfa/change-intstatus/{id}/{status}", name="utm_change_intstatus", methods={"GET"}, requirements={"id": "\d+", "status": "[0-1]"})
-     */
-    public function changeStatusAction($id, $status, URFAService $URFA_service)
-    {
-        $URFA_service->getUrfa()->rpcf_change_intstat_for_user(['user_id'=>$id, 'need_block'=>$status]);
-        return $this->redirectToRoute('search', ['type' => 'id', 'value' => $id]);
-    }
-
-    /**
      * Удаление комментария
      * @param $id
      * @param UTM5UserCommentService $UTM5_user_comment_service

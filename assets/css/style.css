@@ -198,14 +198,21 @@ div.user-info-block a {
 }
 /* utm/userinfo */
 div.user-info-block-main-inner {
-    font-size: 1rem;
+    font-size: 1.1rem;
     height: 100%;
     background: #e3f3ff;
     box-shadow: 0 0 10px #000;
 }
 /* utm/userinfo */
+div.user-info-block-warn-inner {
+    font-size: 1.1rem;
+    height: 100%;
+    background: #ffdad8;
+    box-shadow: 0 0 10px #000;
+}
+/* utm/userinfo */
 div.user-info-block-inner {
-    font-size: 1rem;
+    font-size: 1.1rem;
     height: 100%;
     background: white;
     box-shadow: 0 0 5px #000;

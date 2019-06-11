@@ -95,6 +95,16 @@ class UTM5User
      */
     protected $chain;
 
+
+    protected $remind_me;
+
+    /**
+     * @var string паспортные данные
+     */
+    protected $passport;
+
+    protected $lifestream_login;
+
     /**
      * Комментарии в утм
      * @var string
@@ -112,12 +122,13 @@ class UTM5User
     }
 
     /**
-     * @param string $chain
+     * @return mixed
      */
-    public function setChain(string $chain): void
+    public function getLifestreamLogin()
     {
-        $this->chain = $chain;
+        return $this->lifestream_login;
     }
+
     /**
      * @return mixed
      */
@@ -187,12 +198,29 @@ class UTM5User
      * @return array
      */
     public function getPayments() { return $this->payments; }
+
+    /**
+     * @return string
+     */
+    public function getPassport(): string
+    {
+        return $this->passport;
+    }
+
     /**
      * @return mixed
      */
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRemindMe()
+    {
+        return $this->remind_me;
     }
 
     /**
@@ -371,6 +399,30 @@ class UTM5User
     }
 
     /**
+     * @param string $chain
+     */
+    public function setChain(string $chain): void
+    {
+        $this->chain = $chain;
+    }
+
+    /**
+     * @param mixed $lifestream_login
+     */
+    public function setLifestreamLogin($lifestream_login): void
+    {
+        $this->lifestream_login = $lifestream_login;
+    }
+
+    /**
+     * @param mixed $remind_me
+     */
+    public function setRemindMe($remind_me): void
+    {
+        $this->remind_me = $remind_me;
+    }
+
+    /**
      * @param $name
      * @return bool
      */
@@ -427,6 +479,14 @@ class UTM5User
         $this->utm_comments = $utm_comments;
     }
 
+    /**
+     * @param string $passport
+     */
+    public function setPassport(string $passport): void
+    {
+        $this->passport = $passport;
+    }
+
     public static function factory(array $data)
     {
         $user = new self;
@@ -440,6 +500,9 @@ class UTM5User
         $user->setIntStatus($data['int_status']);
         $user->setEmail($data['email']);
         $user->setCreateDate($data['create_date']);
+        $user->setPassport($data['passport']);
+        $user->setLifestreamLogin($data['lifestream_login']);
+        $user->setRemindMe($data['remind_me']);
         $user->addPhone($data['home_telephone'], 'home');
         $user->addPhone($data['mobile_telephone'], 'mobile');
         $user->addPhone($data['work_telephone'], 'work');

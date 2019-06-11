@@ -4,7 +4,7 @@ namespace App\Service\UTM5;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Doctrine\DBAL\Connection;
 use App\Collection\UTM5\UTM5UserCollection;
 use App\Entity\UTM5\UTM5User;
@@ -30,6 +30,7 @@ class UTM5DbService
 	   u.mobile_telephone,
 	   u.work_telephone,
 	   u.flat_number,
+	   u.passport,
 	   u.create_date,
 	   u.comments as utm_comments,
 	   TRUNCATE(a.balance,2) as balance,
@@ -95,6 +96,8 @@ class UTM5DbService
                     $data['tariff'] = $this->findTariff($data['basic_account']);
                     $data['block'] = $this->findBlock($data['basic_account']);
                     $data['payments'] = $this->findLastPayments($data['basic_account']);
+                    $data['lifestream_login'] = $this->findLifestreamLogin($data['id']);
+                    $data['remind_me'] = $this->findRemindMe($data['id']);
                     $data['comments'] = $this->em->getRepository('App:UTM5\UTM5UserComment')
                         ->findBy(['utmId' => $data['id']], ['datetime' => 'DESC']);
                     return UTM5User::factory($data);
@@ -308,6 +311,39 @@ class UTM5DbService
         return false;
     }
 
+
+    // ADDITIONAL FIELDS
+
+    /**
+     * @param $user_id
+     * @return bool|mixed
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function findLifestreamLogin($user_id)
+    {
+        $stmt = $this->getLifestreamLoginStmt();
+        $stmt->execute([':user_id' => $user_id]);
+        if($stmt->rowCount() > 0) {
+            return $stmt->fetch(\PDO::FETCH_COLUMN);
+        }
+        return false;
+    }
+
+    /**
+     * @param $user_id
+     * @return bool|mixed
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function findRemindMe($user_id)
+    {
+        $stmt = $this->getRemindMeStmt();
+        $stmt->execute([':user_id' => $user_id]);
+        if($stmt->rowCount() > 0) {
+            return $stmt->fetch(\PDO::FETCH_COLUMN);
+        }
+        return false;
+    }
+
     /**
      * @return \Doctrine\DBAL\Driver\Statement
      * @throws \Doctrine\DBAL\DBALException
@@ -377,7 +413,7 @@ class UTM5DbService
     }
 
     /**
-     * @return \Doctrine\DBAL\Statement
+     * @return \Doctrine\DBAL\Driver\Statement
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getIPDataByAccountStmt()
@@ -434,7 +470,7 @@ class UTM5DbService
     }
 
     /**
-     * @return \Doctrine\DBAL\Statement
+     * @return \Doctrine\DBAL\Driver\Statement
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getServicesDataByAccountStmt()
@@ -448,7 +484,7 @@ class UTM5DbService
     }
 
     /**
-     * @return \Doctrine\DBAL\Statement
+     * @return \Doctrine\DBAL\Driver\Statement
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getTariffDataByAccountStmt()
@@ -468,7 +504,7 @@ class UTM5DbService
     }
 
     /**
-     * @return \Doctrine\DBAL\Statement
+     * @return \Doctrine\DBAL\Driver\Statement
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getBlockByAccountStmt()
@@ -476,6 +512,36 @@ class UTM5DbService
         $sql="SELECT b.block_type
               FROM blocks_info b
               WHERE b.is_deleted=0 AND b.account_id=:basic_account";
+        return $this->connection->prepare($sql);
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Driver\Statement
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function getLifestreamLoginStmt()
+    {
+        $sql = "SELECT uap.value
+                FROM user_additional_params uap
+                JOIN uaddparams_desc up
+                ON up.paramid = uap.paramid
+                WHERE up.name = 'lifestream_email'
+                AND uap.userid=:user_id";
+        return $this->connection->prepare($sql);
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Driver\Statement
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function getRemindMeStmt()
+    {
+        $sql = "SELECT uap.value
+                FROM user_additional_params uap
+                JOIN uaddparams_desc up
+                ON up.paramid = uap.paramid
+                WHERE up.name = 'remind_me'
+                AND uap.userid=:user_id";
         return $this->connection->prepare($sql);
     }
 
@@ -519,6 +585,20 @@ class UTM5DbService
                 WHERE p.account_id=:basic_account)
                 ORDER BY payment_date DESC
                 LIMIT 10";
+        return $this->connection->prepare($sql);
+    }
+
+    public function isUserPassport($id)
+    {
+        $stmt = $this->isUserPassportStmt();
+        $stmt->execute([':id' => $id]);
+        if($stmt->rowCount() > 0)
+            $result = $stmt->fetch(\PDO::FETCH_COLUMN);
+        return empty($result);
+    }
+    public function isUserPassportStmt()
+    {
+        $sql = "SELECT passport FROM users WHERE id=:id";
         return $this->connection->prepare($sql);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Order;
 
+use App\Entity\UTM5\UTM5User;
 use App\Service\Order\OrderService;
 use App\Form\Order\OrderForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -65,10 +66,16 @@ class OrderController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/order/{id}/print/", name="order_print", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function printAction($id, OrderService $orderService)
+    public function printAction($id, OrderService $orderService, UTM5DbService $UTM5DbService)
     {
         try {
             $order = $orderService->getOrder($id);
+            if(!is_null($order->getUtmId())) {
+                if(!is_null($order->getUtmId())) {
+                    $passport = $UTM5DbService->isUserPassport($order->getUtmId());
+                    $order->setEmptyPassport($passport);
+                }
+            }
             return $this->render('Order/pritable.html.twig', ['order' => $order]);
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
@@ -83,18 +90,36 @@ class OrderController extends AbstractController
      * @throws \Exception
      * @Route("/orders/", name="orders_index", methods={"GET"}, options={"expose": true})
      */
-    public function indexAction(OrderService $orderService, Session $session)
+    public function indexAction(OrderService $orderService, Session $session, UTM5DbService $UTM5DbService)
     {
         $hideid1 = $session->get('hide_id1', false);
         $hideid2 = $session->get('hide_id2', false);
 
         $filter = $session->get("filter",'all');
 
+        $today_orders = $orderService->findOrdersByFilter($filter);
+        foreach($today_orders as $order) {
+            if(!is_null($order->getUtmId())) {
+                if(!is_null($order->getUtmId())) {
+                    $passport = $UTM5DbService->isUserPassport($order->getUtmId());
+                    $order->setEmptyPassport($passport);
+                }
+            }
+        }
+
+        $last_orders = $orderService->findOrdersByFilter($filter, false);
+        foreach($last_orders as $order) {
+            if(!is_null($order->getUtmId())) {
+                $passport = $UTM5DbService->isUserPassport($order->getUtmId());
+                $order->setEmptyPassport($passport);
+            }
+        }
+
         return $this->render('Order/index.html.twig',
             [
                 'filter' => $session->get('filter'),
-                'today_orders' => $orderService->findOrdersByFilter($filter),
-                'orders' => $orderService->findOrdersByFilter($filter, false),
+                'today_orders' => $today_orders,
+                'orders' => $last_orders,
                 'hide_id1' => $hideid1,
                 'hide_id2' => $hideid2,
             ]

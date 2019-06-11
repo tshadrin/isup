@@ -1,5 +1,5 @@
-<div class="user-info-main user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
-    <div class="user-info-block-main-inner pt-2 pb-2 pl-3 pr-3">
+<div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
+    <div class="{% if user.passport is empty%}user-info-block-warn-inner{% else %}user-info-block-main-inner{% endif %} pt-2 pb-2 pl-3 pr-3">
         <h4>Основная информация</h4>
         <ol>
             <li><span>ID</span>: {{ user.id }}</li>
@@ -8,11 +8,44 @@
             <li><span>Пароль</span>: <span class="password" onclick="this.innerHTML='{{ user.password }}'">Показать</span></li>
             <li><span>Лицевой счет</span>: {{ user.account }}</li>
             {% if user.addresses.juridical %}<li><span>Юр. адрес</span>: {{ user.addresses.juridical }}</li>{% endif %}
+            <li>{% if user.passport is not empty %}<span>Паспортные данные:</span> {{ user.passport }}{% else %}<h4>Необходимо заполнить паспортные данные</h4>{% endif %}</li>
             <li><span>Факт. адрес</span>: {{ user.addresses.actual }}</li>
             {% if user.phones.home %}<li><span>Домашний телефон</span>:{{ user.phones.home }}</li>{% endif %}
             {% if user.phones.work %}<li><span>Рабочий телефон</span>: {{ user.phones.work }}</li>{% endif %}
-            <li><span>Мобильный телефон</span>: {{ user.phones.mobile }}</li>
+            <li>
+                <div class="row pl-3">
+                <span>Мобильный телефон: &nbsp;</span>
+                <div class="x-editable"
+                     data-mode="inline"
+                     data-inputclass="form-control form-control-sm pr-0"
+                     data-type="text"
+                     data-emptytext="нет данных"
+                     data-value="{{ user.phones.mobile }}"
+                     data-pk="{{ user.id }}"
+                     data-name="mobile_phone"
+                     data-url="{{ path('user_change_editable_field') }}"
+                ></div>
+                </div>
+            </li>
             <li><span>Дата подключения</span>: {{ user.createDate|date("d-m-Y") }}</li>
+        </ol>
+            <h4>Дополнительная информация</h4>
+        <ol>
+        {% if user.lifestreamLogin is not empty %}
+            <li><span>Lifestream login: </span> {{ user.lifestreamLogin }}</li>
+        {% endif %}
+            <li>
+                <span>Напоминать об оплате:</span>
+                <a class="ajax-switch-field"
+                   href="{{ path('utm_change_remindme', {'id': user.id,}) }}"
+                   data-success="{% if user.remindMe is not empty %}Нет{% else %}<span class=&quot;itu-green&quot;>Да</span>{% endif %}">
+                    {% if user.remindMe is not empty %}
+                        <span class="itu-green">Да</span>
+                    {% else %}
+                        Нет
+                    {% endif %}
+                </a>
+            </li>
         </ol>
     </div>
 </div>
@@ -22,7 +55,9 @@
         <ol>
             <li>
                 <span>Статус интернет</span> :
-                <a href="{{ path('utm_change_intstatus', {'id': user.id, 'status': user.intStatus }) }}">
+                <a class="ajax-switch-field"
+                   href="{{ path('utm_change_intstatus', {'id': user.id, 'status': user.intStatus }) }}"
+                   data-success="{% if user.intStatus %}Выключен{% else %}<span class=&quot;itu-green&quot;>Включен</span>{% endif %}">
                     {%  if user.intStatus %}
                         <span class="itu-green">Включен</span>
                     {% else %}

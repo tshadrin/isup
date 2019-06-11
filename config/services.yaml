@@ -109,6 +109,9 @@ services:
             $parameters: '%add_firm%'
         tags:
             - { name: 'console.command', command: 'utm5:add-firm-for-payments' }
+    App\Command\UTM5\ConvertRemindsCommand:
+        tags:
+            - { name: 'console.command', command: 'utm5:convert-reminds' }
     App\Command\UTM5\AddFirmForAcquiroPaymentsCommand:
         bind:
             $parameters: '%add_firm%'

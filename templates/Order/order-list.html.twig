@@ -142,6 +142,9 @@
                     {% endif %}
                 </td>
             </tr>
+            {% if order.emptyPassport %}
+            <tr><td colspan="8" style="background:#ffdad8;">{{ 'Need to update client passport data'|trans }}</td></tr>
+            {% endif %}
         {% endfor %}
         </tbody>
     </table>

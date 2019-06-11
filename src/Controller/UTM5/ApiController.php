@@ -2,8 +2,11 @@
 
 namespace App\Controller\UTM5;
 
+use App\Service\Order\OrderService;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\UTM5\UTM5User;
 use Symfony\Component\Routing\Annotation\Route;
@@ -130,5 +133,99 @@ class ApiController extends AbstractController
             $logger->error("Не корректно были переданы данные сделки", $_POST);
         }
         return $this->json(['result' => 'error']);
+    }
+
+    /**
+     * Меняет статус Интернета пользователя
+     * и перенаправляет на его профиль
+     * @param string $id  - id клиента
+     * @param URFAService $URFA_service
+     * @return JsonResponse
+     * @Route("/urfa/change-remindme/{id}/", name="utm_change_remindme", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function changeRemindMeAction($id, URFAService $URFA_service)
+    {
+        $user = $URFA_service->getUserInfo($id);
+
+        if(array_key_exists('parameters_size', $user)) {
+            $user['parameters_count'] = $user['parameters_size'];
+            foreach($user['parameters_count'] as $k => $parameter) {
+                if(3 == $parameter['parameter_id']) {
+                    $user['parameters_count'][$k]['parameter_value'] = (1 == $parameter['parameter_value'])?'':1;
+                }
+            }
+        }
+        $URFA_service->getUrfa()->rpcf_edit_user_new($user);
+        return $this->json(['result' => 'success']);
+        //return $this->redirectToRoute('search', ['type' => 'id', 'value' => $id]);
+    }
+
+    /**
+     * Меняет статус Интернета пользователя
+     * и перенаправляет на его профиль
+     * @param string $id  - id клиента
+     * @param URFAService $URFA_service
+     * @return JsonResponse
+     * @Route("/urfa/change-intstatus/{id}/", name="utm_change_intstatus", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function changeStatusAction($id, URFAService $URFA_service)
+    {
+        $user = $URFA_service->getUserInfo($id);
+        if(array_key_exists('basic_account', $user)) {
+            $account = $URFA_service->getUrfa()->rpcf_get_accountinfo(['account_id' => $user['basic_account']]);
+            $current_int_status = $account['int_status'];
+            $URFA_service->getUrfa()->rpcf_change_intstat_for_user(['user_id' => $id, 'need_block' => $current_int_status?1:0,]);
+            return $this->json(['result' => 'success']);
+        } else {
+            return $this->json(['result' => 'error']);
+        }
+        //return $this->redirectToRoute('search', ['type' => 'id', 'value' => $id]);
+    }
+
+    /**
+     * Обработка запроса на изменение значения поля заявки
+     * В запросе должны содержаться имя поля, новое значение и id заявки
+     * @param Request $request
+     * @return JsonResponse|RedirectResponse
+     * @Route("/urfa/change-editable-filed/", name="user_change_editable_field", methods={"POST"})
+     */
+    public function changeEditableFieldAction(Request $request, URFAService $URFAService)
+    {
+        try {
+            if ($request->request->has('name') &&
+                $request->request->has('value') &&
+                $request->request->has('pk')) {
+
+                $field = $request->request->filter(
+                    'name', [],
+                    FILTER_VALIDATE_REGEXP,
+                    ['options' => ['regexp' => '/mobile_phone/',],]
+                );
+                switch ($field) {
+                    case 'mobile_phone':
+                        $this->editMobilePhoneField($URFAService, $request->request->get('value'), $request->request->getInt('pk'));
+                        $data = ['message' => 'Мобильный номер клиента изменен.'];
+                        break;
+                }
+                return $this->json($data);
+            } else {
+                $this->addFlash('notice', 'Ошибка при изменении заявки.');
+                return $this->redirectToRoute("orders_index");
+            }
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+            $data['refresh'] = true;
+            return $this->json($data);
+        }
+    }
+
+
+    private function editMobilePhoneField(URFAService $URFAService, $phone, $id)
+    {
+        $user = $URFAService->getUserInfo($id);
+        $user['parameters_count'] = $user['parameters_size'];
+        $user['mob_tel'] = $phone;
+        $URFAService->getUrfa()->rpcf_edit_user_new($user);
+
     }
 }

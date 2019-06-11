@@ -173,6 +173,7 @@ order.placeholder.comment: комментарий...
 order.placeholder.phone: 'введите номер...'
 order.order_created: 'Заявка создана'
 'order.print.title %num%': 'Isup | Печать заявки %num%'
+'Need to update client passport data': "Необходимо обновить паспортные данные клиента"
 order.print.back: Вернуться
 delete_order.not_permited: 'Невозможно удалить завку со статусом %status%'
 delete_order.executed_clear: 'Невозможно удалить заявку которая никому не назначена'
