@@ -9,17 +9,17 @@
                 <li class="pl-2">
                     <a class="diagnostic-command"
                        data-target="#diagnostic-status"
-                       href="{{ path('ssh_diagnostic', {'command':'ping', 'ip': user.ips.0, 'server': user.routers.ip} ) }}">arping</a>
+                       href="{{ path('ssh_diagnostic', {'command':'ping', 'ip': user.ips.0, 'server': user.routers[0].ip} ) }}">arping</a>
                 </li>
                 <li class="pl-2">
                     <a class="diagnostic-command"
                        data-target="#diagnostic-status"
-                       href="{{ path('ssh_diagnostic', {'command':'itu', 'ip': user.ips.0, 'server': user.routers.ip} ) }}">Быстрая проверка</a>
+                       href="{{ path('ssh_diagnostic', {'command':'itu', 'ip': user.ips.0, 'server': user.routers[0].ip} ) }}">Быстрая проверка</a>
                 </li>
                 <li class="pl-2">
                     <a class="diagnostic-command"
                        data-target="#diagnostic-status"
-                       href="{{ path('ssh_diagnostic', {'command':'kk', 'ip': user.ips.0, 'server': user.routers.ip} ) }}">arp таблица</a>
+                       href="{{ path('ssh_diagnostic', {'command':'kk', 'ip': user.ips.0, 'server': user.routers[0].ip} ) }}">arp таблица</a>
                 </li>
                 <li class="pl-2">
                     <a class="diagnostic-command"

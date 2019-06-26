@@ -1,6 +1,13 @@
 <?php
 namespace App\Entity\UTM5;
 
+use App\Collection\UTM5\GroupCollection;
+use App\Collection\UTM5\PaymentCollection;
+use App\Collection\UTM5\RouterCollection;
+use App\Collection\UTM5\ServiceCollection;
+use App\Collection\UTM5\TariffCollection;
+use App\Repository\UTM5\UserMapper;
+
 /**
  * Class UTM5User
  * @package App\Entity\UTM5
@@ -8,109 +15,661 @@ namespace App\Entity\UTM5;
  */
 class UTM5User
 {
+    const ADMIN_BLOCK = 2;
+    const SYSTEM_BLOCK = 1;
+    const NO_BLOCK = 0;
+
     /**
-     * @var int ID
+     * @var int
      */
     protected $id;
     /**
-     * @var string логин
+     * @var string
      */
     protected $login;
     /**
-     * @var string пароль
+     * @var string
+     */
+    protected $email;
+    /**
+     * @var string
      */
     protected $password;
     /**
-     * @var int аккаунт
+     * @var int
      */
     protected $account;
     /**
-     * @var string Ф.И.О.
+     * @var string
      */
-    protected $full_name;
+    protected $fullName;
     /**
-     * @var array актуальный и юр. адрес
+     * @var string
      */
-    protected $addresses = [];
+    protected $passport;
     /**
-     * @var double баланс
+     * @var \DateTimeImmutable
      */
-    protected $balance;
-    /**
-     * @var \Datetime дата подключения
-     */
-    protected $create_date;
-    /**
-     * @var int статус интернет
-     */
-    protected $int_status;
-    /**
-     * @var double сумма кредита
-     */
-    protected $credit;
-    /**
-     * @var array домашний, рабочий и мобильный телефоны
-     */
-    protected $phones = [];
-    /**
-     * @var array роутеры за которыми находится пользователь
-     */
-    protected $routers = [];
-    /**
-     * @var array список ip адресов пользователя
-     */
-    protected $ips = [];
-    /**
-     * @var array список групп в которые входит пользователь
-     */
-    protected $groups = [];
-    /**
-     * @var array услуги пользователя
-     */
-    protected $services = [];
+    protected $created;
     /**
      * @var array
      */
-    protected $tariff = [];
+    protected $ips;
     /**
-     * @var string тип блокировки
+     * @var GroupCollection
+     */
+    protected $groups;
+    /**
+     * @var House
+     */
+    protected $house;
+    /**
+     * @var string
+     */
+    protected $flatNumber;
+    /**
+     * @var string
+     */
+    protected $address;
+    /**
+     * @var string
+     */
+    protected $juridicalAddress;
+    /**
+     * @var float
+     */
+    protected $balance;
+    /**
+     * @var bool
+     */
+    protected $internetStatus;
+    /**
+     * @var array
+     */
+    protected $phones;
+    /**
+     * @var string
+     */
+    protected $UTM5Comments;
+    /**
+     * @var float
+     */
+    protected $credit;
+    /**
+     * @var RouterCollection
+     */
+    protected $routers;
+    /**
+     * @var ServiceCollection
+     */
+    protected $services;
+    /**
+     * @var TariffCollection
+     */
+    protected $tariffs;
+    /**
+     * @var bool
+     */
+    protected $remindMe;
+    /**
+     * @var string
+     */
+    protected $lifestreamLogin;
+    /**
+     * @var int
      */
     protected $block;
+    /**
+     * @var PromisedPayment
+     */
+    protected $promisedPayment;
+
+    /**
+     * @var PaymentCollection
+     */
+    protected $payments;
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogin(): string
+    {
+        return $this->login;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAccount(): int
+    {
+        return $this->account;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName(): string
+    {
+        return $this->fullName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassport(): string
+    {
+        return $this->passport;
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getCreated(): \DateTimeImmutable
+    {
+        return $this->created;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIps(): array
+    {
+        return $this->ips;
+    }
+
+    /**
+     * @return GroupCollection
+     */
+    public function getGroups(): GroupCollection
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @return House
+     */
+    public function getHouse(): ?House
+    {
+        return $this->house;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFlatNumber(): string
+    {
+        return $this->flatNumber;
+    }
+
+    /**
+     * Возвращает адрес по дому или, если нет дома, то из поля address
+     * @return string
+     */
+    public function getActualAddress(): string
+    {
+        if(($house = $this->getHouse()) instanceof House) {
+            if(!empty($flatNumber = $this->getFlatNumber())) {
+                return "{$house->__toString()} - {$flatNumber}";
+            } else {
+                return $house->__toString();
+            }
+        } else {
+            if(!empty($flatNumber = $this->getFlatNumber())) {
+                return "{$this->getAddress()} - {$flatNumber}";
+            } else {
+                return $this->getAddress();
+            }
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJuridicalAddress(): ?string
+    {
+        return $this->juridicalAddress;
+    }
+
+    /**
+     * @return float
+     */
+    public function getBalance(): float
+    {
+        return $this->balance;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPhones(): array
+    {
+        return $this->phones;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMobilePhone(): ?string
+    {
+        if(array_key_exists('mobile', $phones = $this->getPhones())) {
+            return $phones['mobile'];
+        }
+        return null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHomePhone(): ?string
+    {
+        if(array_key_exists('home', $phones = $this->getPhones())) {
+            return $phones['home'];
+        }
+        return null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getWorkPhone(): ?string
+    {
+        if(array_key_exists('work', $phones = $this->getPhones())) {
+            return $phones['work'];
+        }
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUTM5Comments(): ?string
+    {
+        return $this->UTM5Comments;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCredit(): float
+    {
+        return $this->credit;
+    }
+
+    /**
+     * @return RouterCollection
+     */
+    public function getRouters(): RouterCollection
+    {
+        return $this->routers;
+    }
+
+    /**
+     * @return ServiceCollection
+     */
+    public function getServices(): ?ServiceCollection
+    {
+        return $this->services;
+    }
+
+    /**
+     * @return TariffCollection
+     */
+    public function getTariffs(): TariffCollection
+    {
+        return $this->tariffs;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLifestreamLogin(): ?string
+    {
+        return $this->lifestreamLogin;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBlock(): string
+    {
+        if($this->block === self::ADMIN_BLOCK)
+            return "Admin block";
+        if($this->block === self::SYSTEM_BLOCK)
+            return "System block";
+        return "No block";
+    }
+
+    /**
+     * @return PromisedPayment
+     */
+    public function getPromisedPayment(): ?PromisedPayment
+    {
+        return $this->promisedPayment;
+    }
+
+    /**
+     * @return PaymentCollection
+     */
+    public function getPayments(): ?PaymentCollection
+    {
+        return $this->payments;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPromisedPayment(): bool
+    {
+        return is_object($this->promisedPayment);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBlock(): bool
+    {
+        return (bool)$this->block;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInternetStatus(): bool
+    {
+        return $this->internetStatus;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRemindMe(): bool
+    {
+        return $this->remindMe;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param string $login
+     */
+    public function setLogin(string $login): void
+    {
+        $this->login = $login;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @param int $account
+     */
+    public function setAccount(int $account): void
+    {
+        $this->account = $account;
+    }
+
+    /**
+     * @param string $fullName
+     */
+    public function setFullName(string $fullName): void
+    {
+        $this->fullName = $fullName;
+    }
+
+    /**
+     * @param string $passport
+     */
+    public function setPassport(string $passport): void
+    {
+        $this->passport = $passport;
+    }
+
+    /**
+     * @param \DateTimeImmutable $created
+     */
+    public function setCreated(\DateTimeImmutable $created): void
+    {
+        $this->created = $created;
+    }
+
+    /**
+     * @param array $ips
+     */
+    public function setIps(array $ips): void
+    {
+        $this->ips = $ips;
+    }
+
+    /**
+     * @param GroupCollection $groups
+     */
+    public function setGroups(GroupCollection $groups): void
+    {
+        $this->groups = $groups;
+    }
+
+    /**
+     * @param House $house
+     */
+    public function setHouse(House $house): void
+    {
+        $this->house = $house;
+    }
+
+    /**
+     * @param string $flatNumber
+     */
+    public function setFlatNumber(string $flatNumber): void
+    {
+        $this->flatNumber = $flatNumber;
+    }
+
+    /**
+     * @param string $address
+     */
+    public function setAddress(string $address): void
+    {
+        $this->address = $address;
+    }
+
+    /**
+     * @param string $juridicalAddress
+     */
+    public function setJuridicalAddress(string $juridicalAddress): void
+    {
+        $this->juridicalAddress = $juridicalAddress;
+    }
+
+    /**
+     * @param float $balance
+     */
+    public function setBalance(float $balance): void
+    {
+        $this->balance = $balance;
+    }
+
+    /**
+     * @param bool $internetStatus
+     */
+    public function setInternetStatus(bool $internetStatus): void
+    {
+        $this->internetStatus = $internetStatus;
+    }
+
+    /**
+     * @param array $phones
+     */
+    public function setPhones(array $phones): void
+    {
+        $this->phones = $phones;
+    }
+
+    /**
+     * @param string $phone
+     */
+    public function setMobilePhone(string $phone): void
+    {
+        $this->phones['mobile'] = $phone;
+    }
+
+    /**
+     * @param string $phone
+     */
+    public function setHomePhone(string  $phone): void
+    {
+        $this->phones['home'] = $phone;
+    }
+
+    /**
+     * @param string $phone
+     */
+    public function setWorkPhone(string $phone): void
+    {
+        $this->phones['work'] = $phone;
+    }
+
+    /**
+     * @param string $UTM5Comments
+     */
+    public function setUTM5Comments(string $UTM5Comments): void
+    {
+        $this->UTM5Comments = $UTM5Comments;
+    }
+
+    /**
+     * @param float $credit
+     */
+    public function setCredit(float $credit): void
+    {
+        $this->credit = $credit;
+    }
+
+    /**
+     * @param RouterCollection $routers
+     */
+    public function setRouters(RouterCollection $routers): void
+    {
+        $this->routers = $routers;
+    }
+
+    /**
+     * @param ServiceCollection $services
+     */
+    public function setServices(ServiceCollection $services): void
+    {
+        $this->services = $services;
+    }
+
+    /**
+     * @param TariffCollection $tariffs
+     */
+    public function setTariffs(TariffCollection $tariffs): void
+    {
+        $this->tariffs = $tariffs;
+    }
+
+    /**
+     * @param $remindMe
+     */
+    public function setRemindMe($remindMe): void
+    {
+        $this->remindMe = $remindMe;
+    }
+
+    /**
+     * @param string $lifestreamLogin
+     */
+    public function setLifestreamLogin(string $lifestreamLogin): void
+    {
+        $this->lifestreamLogin = $lifestreamLogin;
+    }
+
+    /**
+     * @param int $block
+     */
+    public function setBlock(int $block): void
+    {
+        $this->block = $block;
+    }
+
+    /**
+     * @param PromisedPayment $promised_payment
+     */
+    public function setPromisedPayment(PromisedPayment $promisedPayment): void
+    {
+        $this->promisedPayment = $promisedPayment;
+    }
+
+    /**
+     * @param PaymentCollection $payments
+     */
+    public function setPayments(PaymentCollection $payments): void
+    {
+        $this->payments = $payments;
+    }
 
     /**
      * @var UTM5UserComment комментарии
      */
     protected $comments;
-
-    /**
-     * @var array платежи
-     */
-    protected $payments;
-
-
-    protected $email;
-
     /**
      * @var string цепочка свичей
      */
     protected $chain;
-
-
-    protected $remind_me;
-
     /**
-     * @var string паспортные данные
+     * @var
      */
-    protected $passport;
-
-    protected $lifestream_login;
-
-    /**
-     * Комментарии в утм
-     * @var string
-     */
-    private $utm_comments;
-
     protected $requirement_payment;
 
     /**
@@ -124,92 +683,6 @@ class UTM5User
     /**
      * @return mixed
      */
-    public function getLifestreamLogin()
-    {
-        return $this->lifestream_login;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId() { return $this->id; }
-    /**
-     * @return mixed
-     */
-    public function getFullName() { return $this->full_name; }
-    /**
-     * @return mixed
-     */
-    public function getLogin() { return $this->login; }
-    /**
-     * @return mixed
-     */
-    public function getAccount() { return $this->account; }
-    /**
-     * @return array
-     */
-    public function getAddresses() { return $this->addresses; }
-    /**
-     * @return array
-     */
-    public function getPhones() { return $this->phones; }
-    /**
-     * @return array
-     */
-    public function getServices() { return $this->services; }
-    /**
-     * @return array
-     */
-    public function getIps() { return $this->ips; }
-    /**
-     * @return array
-     */
-    public function getTariff() { return $this->tariff; }
-    /**
-     * @return array
-     * Группы пользователя
-     */
-    public function getGroups() { return $this->groups; }
-    /**
-     * @return array
-     */
-    public function getRouters() { return $this->routers; }
-    /**
-     * @return float
-     */
-    public function getBalance() { return $this->balance; }
-    /**
-     * @return float
-     */
-    public function getCredit() { return $this->credit; }
-    /**
-     * @return int
-     */
-    public function getIntStatus() { return $this->int_status; }
-    /**
-     * @return string
-     */
-    public function getPassword() { return $this->password; }
-    /**
-     * @return string
-     */
-    public function getBlock() { return $this->block; }
-    /**
-     * @return array
-     */
-    public function getPayments() { return $this->payments; }
-
-    /**
-     * @return string
-     */
-    public function getPassport(): string
-    {
-        return $this->passport;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getComments()
     {
         return $this->comments;
@@ -218,184 +691,9 @@ class UTM5User
     /**
      * @return mixed
      */
-    public function getRemindMe()
+    public function getRequirementPayment()
     {
-        return $this->remind_me;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param mixed $email
-     */
-    public function setEmail($email): void
-    {
-        $this->email = $email;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @param int $account
-     */
-    public function setAccount($account)
-    {
-        $this->account = $account;
-    }
-
-    /**
-     * @param string $full_name
-     */
-    public function setFullName($full_name)
-    {
-        $this->full_name = $full_name;
-    }
-
-    /**
-     * @return \Datetime
-     */
-    public function getCreateDate(): \Datetime
-    {
-        return $this->create_date;
-    }
-
-    /**
-     * @param \Datetime $create_date
-     */
-    public function setCreateDate(string $create_date): void
-    {
-        $this->create_date = \DateTime::createFromFormat("U", $create_date);
-    }
-
-    /**
-     * @param array $addresses
-     */
-    public function setAddresses($addresses)
-    {
-        $this->addresses = $addresses;
-    }
-
-    /**
-     * @param array $groups
-     */
-    public function setGroups($groups)
-    {
-        $this->groups = $groups;
-    }
-
-    /**
-     * @param array $ips
-     */
-    public function setIps($ips)
-    {
-        $this->ips = $ips;
-    }
-
-    /**
-     * @param string $login
-     */
-    public function setLogin($login)
-    {
-        $this->login = $login;
-    }
-
-    /**
-     * @param array $phones
-     */
-    public function setPhones($phones)
-    {
-        $this->phones = $phones;
-    }
-
-    /**
-     * @param array $routers
-     */
-    public function setRouters($routers)
-    {
-        $this->routers = $routers;
-    }
-
-    /**
-     * @param array $services
-     */
-    public function setServices($services)
-    {
-        $this->services = $services;
-    }
-
-    /**
-     * @param array $tariff
-     */
-    public function setTariff($tariff)
-    {
-        $this->tariff = $tariff;
-        $this->tariff['discount_period_start'] = \Datetime::createFromFormat("U", $this->tariff['discount_period_start']);
-        $this->tariff['discount_period_end'] = \Datetime::createFromFormat("U", $this->tariff['discount_period_end']);
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
-
-    /**
-     * @param float $balance
-     */
-    public function setBalance($balance)
-    {
-        $this->balance = $balance;
-    }
-
-    /**
-     * @param float $credit
-     */
-    public function setCredit($credit)
-    {
-        $this->credit = $credit;
-    }
-
-    /**
-     * @param int $int_status
-     */
-    public function setIntStatus($int_status)
-    {
-        $this->int_status = $int_status;
-    }
-
-    /**
-     * @param string $block
-     */
-    public function setBlock($block)
-    {
-        $this->block = $block;
-    }
-
-    public function setComments($comments)
-    {
-        $this->comments = $comments;
-    }
-
-    /**
-     * @param array $payments
-     */
-    public function setPayments($payments)
-    {
-        $this->payments = $payments;
+        return $this->requirement_payment;
     }
 
     /**
@@ -407,145 +705,11 @@ class UTM5User
     }
 
     /**
-     * @param mixed $lifestream_login
+     * @param $comments
      */
-    public function setLifestreamLogin($lifestream_login): void
+    public function setComments($comments)
     {
-        $this->lifestream_login = $lifestream_login;
-    }
-
-    /**
-     * @param mixed $remind_me
-     */
-    public function setRemindMe($remind_me): void
-    {
-        $this->remind_me = $remind_me;
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function __get($name)
-    {
-        if(isset($this->$name))
-            return $this->$name;
-        return false;
-    }
-
-    public function addPhone($phone, $phone_type)
-    {
-        $this->phones[$phone_type] = $phone;
-    }
-    public function addAddress($address, $address_type)
-    {
-        $this->addresses[$address_type] = $address;
-    }
-    /**
-     * @param $name
-     * @param $value
-     * @return bool
-     */
-    public function __set($name, $value)
-    {
-        if(isset($this->$name))
-            $this->$name = $value;
-        return false;
-    }
-    public function getAddress($type)
-    {
-        if(array_key_exists($type, $this->addresses))
-            return $this->addresses[$type];
-    }
-    public function getPhone($type)
-    {
-        if(array_key_exists($type, $this->phones))
-            return $this->phones[$type];
-    }
-
-    /**
-     * @return string
-     */
-    public function getUtmComments(): string
-    {
-        return $this->utm_comments;
-    }
-
-    /**
-     * @param string $utm_comments
-     */
-    public function setUtmComments(string $utm_comments): void
-    {
-        $this->utm_comments = $utm_comments;
-    }
-
-    /**
-     * @param string $passport
-     */
-    public function setPassport(string $passport): void
-    {
-        $this->passport = $passport;
-    }
-
-    public static function factory(array $data)
-    {
-        $user = new self;
-        $user->setId($data['id']);
-        $user->setLogin($data['login']);
-        $user->setPassword($data['password']);
-        $user->setAccount($data['basic_account']);
-        $user->setFullName($data['full_name']);
-        $user->setBalance($data['balance']);
-        $user->setCredit($data['credit']);
-        $user->setIntStatus($data['int_status']);
-        $user->setEmail($data['email']);
-        $user->setCreateDate($data['create_date']);
-        $user->setPassport($data['passport']);
-        $user->setLifestreamLogin($data['lifestream_login']);
-        $user->setRemindMe($data['remind_me']);
-        $user->addPhone($data['home_telephone'], 'home');
-        $user->addPhone($data['mobile_telephone'], 'mobile');
-        $user->addPhone($data['work_telephone'], 'work');
-        $user->addAddress($data['juridical_address'], 'juridical');
-        if (strlen($data['flat_number'])) {
-            $data['actual_address'] .= ' - '.$data['flat_number'];
-        }
-        $user->addAddress($data['actual_address'], 'actual');
-        $user->setIps($data['ips']);
-        $user->setGroups($data['groups']);
-        $user->setRouters($data['routers']);
-        $user->setServices($data['services']);
-        if(!is_null($data['tariff']))
-            $user->setTariff($data['tariff']);
-        $user->setBlock($data['block']);
-        $user->setComments($data['comments']);
-        $user->setPayments($data['payments']);
-        $user->setUtmComments($data['utm_comments']);
-        return $user;
-    }
-
-    public static function factoryPartial(array $data)
-    {
-        $user = new self;
-        $user->setId($data['id']);
-        $user->setLogin($data['login']);
-        $user->setPassword($data['password']);
-        $user->setAccount($data['basic_account']);
-        $user->setFullName($data['full_name']);
-        $user->setBalance($data['balance']);
-        $user->setCredit($data['credit']);
-        $user->setEmail($data['email']);
-        $user->setIntStatus($data['int_status']);
-        $user->addPhone($data['home_telephone'], 'home');
-        $user->addPhone($data['mobile_telephone'], 'mobile');
-        $user->addPhone($data['work_telephone'], 'work');
-        $user->addAddress($data['juridical_address'], 'juridical');
-        $user->setUtmComments($data['utm_comments']);
-        if (strlen($data['flat_number'])) {
-            $data['actual_address'] .= ' - '.$data['flat_number'];
-        }
-        $user->addAddress($data['actual_address'], 'actual');
-        return $user;
+        $this->comments = $comments;
     }
 
     /**
@@ -554,13 +718,5 @@ class UTM5User
     public function setRequirementPayment($requirement_payment)
     {
         $this->requirement_payment = $requirement_payment;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRequirementPayment()
-    {
-        return $this->requirement_payment;
     }
 }

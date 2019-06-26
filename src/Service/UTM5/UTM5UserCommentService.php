@@ -5,7 +5,7 @@ namespace App\Service\UTM5;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Entity\User\User;
 use App\Entity\UTM5\UTM5UserComment;
 

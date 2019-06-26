@@ -25,6 +25,7 @@
 {% endblock %}
 
 {% block body %}
+    {#{%  include 'Order/order-filter-form.html.twig'  %}#}
     <div class="row justify-content-center ml-0 mr-0 mt-1">
         <div class="col-xl-10 col-lg-12 p-2">
         {% if today_orders is defined and today_orders is not empty %}

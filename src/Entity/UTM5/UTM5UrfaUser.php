@@ -1,6 +1,10 @@
 <?php
 namespace App\Entity\UTM5;
 
+use App\Collection\UTM5\GroupCollection;
+use App\Collection\UTM5\RouterCollection;
+use App\Collection\UTM5\ServiceCollection;
+
 class UTM5UrfaUser extends UTM5User
 {
     /**
@@ -21,7 +25,7 @@ class UTM5UrfaUser extends UTM5User
      * @return array
      * Подгружаем сервисы при необходимости
      */
-    public function getServices()
+    public function getServices(): ServiceCollection
     {
         if (empty($this->services)) {
             /** @noinspection PhpUndefinedMethodInspection */
@@ -39,17 +43,12 @@ class UTM5UrfaUser extends UTM5User
      * @return array
      * Подгружаем ip адреса клиента при необходимости
      */
-    public function getIps()
+    public function getIps(): array
     {
         if (empty($this->ips)) {
             if (empty($this->slink_id)){
                 $this->getServices();
-
-
-
-
             }
-            /** @noinspection PhpUndefinedMethodInspection */
             $user_service_link = $this->urfa->rpcf_get_iptraffic_service_link(['slink_id' => $this->slink_id,]);
             foreach ($user_service_link['ip_groups_count'] as $ipgroup) {
                 $this->ips[] = long2ip($ipgroup['ip_address']);
@@ -76,7 +75,7 @@ class UTM5UrfaUser extends UTM5User
         return parent::getTariff();
     }
 
-    public function getGroups()
+    public function getGroups(): GroupCollection
     {
         if (empty($this->groups)) {
             /** @noinspection PhpUndefinedMethodInspection */
@@ -95,7 +94,7 @@ class UTM5UrfaUser extends UTM5User
      * @return mixed - данные о сервере
      * Ищем данные о сервере пользователя
      */
-    public function getRouters()
+    public function getRouters(): RouterCollection
     {
         if (empty($this->groups)) {
             $this->getGroups();

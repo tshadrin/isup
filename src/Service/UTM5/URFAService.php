@@ -119,4 +119,66 @@ class URFAService
         $data = $this->urfa->rpcf_remove_user(['user_id' => (int)$id,]);
         return $data;
     }
+
+    /**
+     * Редактирование поля с мобильным телефоном
+     * @param $phone
+     * @param $id
+     */
+    public function editMobilePhoneField($phone, $id)
+    {
+        $user = $this->getUserInfo($id);
+        $user['parameters_count'] = $user['parameters_size'];
+        $user['mob_tel'] = $phone;
+        $this->urfa->rpcf_edit_user_new($user);
+    }
+
+    /**
+     * Получить текущий статус
+     * Возвращает 0 1 при нормальной работе или false при ошибке
+     * @param $id
+     * @return bool
+     */
+    public function getInternetStatus(int $id)
+    {
+        $user = $this->getUserInfo($id);
+        if (array_key_exists('basic_account', $user)) {
+            $account = $this->getUrfa()->rpcf_get_accountinfo(['account_id' => $user['basic_account']]);
+            return $account['int_status'];
+        }
+        return false;
+    }
+
+    /**
+     * Смена статуса интернет
+     * Возвращает true если статус поменялся
+     * или false  если статус не поменялся
+     * @param $id
+     * @return bool
+     */
+    public function changeInternetStatus(int $id)
+    {
+        $current_status = $this->getInternetStatus($id);
+        $this->getUrfa()->rpcf_change_intstat_for_user(['user_id' => $id, 'need_block' => $current_status ? 1 : 0,]);
+        $new_status = $this->getInternetStatus($id);
+        return $current_status !== $new_status;
+    }
+
+    /**
+     * Изменение значение поля напоминания об оплате
+     * @param int $id
+     */
+    public function changeRemindMe(int $id)
+    {
+        $user = $this->getUserInfo($id);
+        if(array_key_exists('parameters_size', $user)) {
+            $user['parameters_count'] = $user['parameters_size'];
+            foreach($user['parameters_count'] as $k => $parameter) {
+                if(3 == $parameter['parameter_id']) {
+                    $user['parameters_count'][$k]['parameter_value'] = (1 == $parameter['parameter_value'])?'':1;
+                }
+            }
+        }
+        $this->getUrfa()->rpcf_edit_user_new($user);
+    }
 }

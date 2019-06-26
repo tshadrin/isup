@@ -27,11 +27,11 @@
         {% for payment in payments %}
         <tr>
             <td>{{ payment.amount }}</td>
-            <td>{{ payment.payment_date|date('d-m-Y H:i') }}</td>
-            <td>{{ payment.transaction_number }}</td>
+            <td>{{ payment.date|date('d-m-Y H:i') }}</td>
+            <td>{{ payment.transactionNumber }}</td>
             <td>{{ payment.method }}</td>
-            <td>{{ payment.receive }}</td>
-            <td>{% if payment.user_comment|length %}Для пользователя: {{ payment.user_comment }}{% endif %}<br></td>
+            <td>{{ payment.receiver }}</td>
+            <td>{% if payment.userComment|length %}Для пользователя: {{ payment.userComment }}{% endif %}<br></td>
         </tr>
         {% endfor %}
         </tbody>

@@ -92,4 +92,15 @@ jQuery(document).ready(function() {
         });
         return false;
     };
+
+    jQuery('a.hide-filter-field').click(function () {
+        elem = jQuery(this).parent('div.filter-form-field').attr('style', 'display:none;');
+        showItems = jQuery(this).parents('form').children('div.filter-form-field').filter(function () {
+            return 'flex' === jQuery(this).css('display');
+        }).length;
+        if(0 === showItems) {
+            console.log(jQuery(this).parents('div.form-wrapper').css('display'));
+            jQuery(this).parents('div.form-wrapper').css('display', 'none');
+        }
+    });
 });

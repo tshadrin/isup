@@ -48,8 +48,10 @@ jQuery(document).ready(function() {
         var new_success = elem.html();
         var success = elem.data('success');
         jQuery.get(elem.attr('href'),null, function (data) {
-            elem.html(success);
-            elem.data('success',new_success);
+            if('success' === data.result) {
+                elem.html(success);
+                elem.data('success', new_success);
+            }
         });
         e.preventDefault();
     });
@@ -76,7 +78,11 @@ jQuery(document).ready(function() {
 
     // Обработчик редактируемых полей форм
     var editable_field =  jQuery('.x-editable');
-    editable_field.editable();
+    editable_field.editable({
+        success: function (response, newValue) {
+            if(response.result === 'error') return response.message;
+        }
+    });
 
     editable_field.on('save', function(e, params) {
         var elem = jQuery(this);

@@ -7,11 +7,11 @@
             <li><span>Логин</span>: {{ user.login }}</li>
             <li><span>Пароль</span>: <span class="password" onclick="this.innerHTML='{{ user.password }}'">Показать</span></li>
             <li><span>Лицевой счет</span>: {{ user.account }}</li>
-            {% if user.addresses.juridical %}<li><span>Юр. адрес</span>: {{ user.addresses.juridical }}</li>{% endif %}
+            {% if user.juridicalAddress %}<li><span>Юр. адрес</span>: {{ user.juridicalAddress }}</li>{% endif %}
             <li>{% if user.passport is not empty %}<span>Паспортные данные:</span> {{ user.passport }}{% else %}<h4>Необходимо заполнить паспортные данные</h4>{% endif %}</li>
-            <li><span>Факт. адрес</span>: {{ user.addresses.actual }}</li>
-            {% if user.phones.home %}<li><span>Домашний телефон</span>:{{ user.phones.home }}</li>{% endif %}
-            {% if user.phones.work %}<li><span>Рабочий телефон</span>: {{ user.phones.work }}</li>{% endif %}
+            <li><span>Факт. адрес</span>: {{ user.actualAddress }}</li>
+            {% if user.phones.home is defined %}<li><span>Домашний телефон</span>:{{ user.phones.home }}</li>{% endif %}
+            {% if user.phones.work is defined %}<li><span>Рабочий телефон</span>: {{ user.phones.work }}</li>{% endif %}
             <li>
                 <div class="row pl-3">
                 <span>Мобильный телефон: &nbsp;</span>
@@ -27,7 +27,7 @@
                 ></div>
                 </div>
             </li>
-            <li><span>Дата подключения</span>: {{ user.createDate|date("d-m-Y") }}</li>
+            <li><span>Дата подключения</span>: {{ user.created|date("d-m-Y") }}</li>
         </ol>
             <h4>Дополнительная информация</h4>
         <ol>
@@ -56,9 +56,9 @@
             <li>
                 <span>Статус интернет</span> :
                 <a class="ajax-switch-field"
-                   href="{{ path('utm_change_intstatus', {'id': user.id, 'status': user.intStatus }) }}"
-                   data-success="{% if user.intStatus %}Выключен{% else %}<span class=&quot;itu-green&quot;>Включен</span>{% endif %}">
-                    {%  if user.intStatus %}
+                   href="{{ path('utm_change_intstatus', {'id': user.id, 'status': user.internetStatus }) }}"
+                   data-success="{% if user.internetStatus %}Выключен{% else %}<span class=&quot;itu-green&quot;>Включен</span>{% endif %}">
+                    {%  if user.internetStatus %}
                         <span class="itu-green">Включен</span>
                     {% else %}
                         Выключен
@@ -68,14 +68,31 @@
             <li>
                 <span>Баланс</span> : {{ user.balance }}
             </li>
+            {% if user.promisedPayment %}
+                <li>
+                    <span>Обещанный платеж взят</span> : {{ user.promisedPayment.StartDate|date('d-m-Y H:i:s') }}
+                </li>
+                <li>
+                    <span>Обещанный платеж истекает</span> : {{ user.promisedPayment.ExpireDate|date('d-m-Y H:i:s') }}
+                </li>
+                <li>
+                    <span>Сумма обещанного платежа</span> : {{ user.promisedPayment.amount }}
+                </li>
+                {% if user.credit != user.promisedPayment.amount %}
+                    <li>
+                        <span>Кредит</span> : {{ user.credit }}
+                    </li>
+                {% endif %}
+            {% else %}
             <li>
                 <span>Кредит</span> : {{ user.credit }}
             </li>
+            {% endif %}
             <li>
                 <span>Рекомендуемый платеж</span> : {{ user.requirementPayment }}
             </li>
             <li>
-                <span>Тип блокировки</span> : {{ user.block }}
+                <span>Тип блокировки</span> : {{ user.block|trans }}
             </li>
         </ol>
         <h4>IP адреса</h4>
@@ -115,16 +132,45 @@
 <div class="w-100"></div>
 <div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
     <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
-    <h4>Тарифный план</h4>
+    <h4>Тарифные планы</h4>
     <ol>
-        <li>
-            <span>Актуальный: </span>{{ user.tariff.actual_tariff }}
-        </li>
-        <li>
-            <span>Следующий: </span>{{ user.tariff.next_tariff }}
-        </li>
+        {% set sum = 0 %}
+        {% for tariff in user.tariffs %}
+            {% set sum = sum + tariff.services.costSummary %}
+            <li>
+                <span>Актуальный: </span>{{ tariff.name }}
+            </li>
+            <li>
+                <span>Следующий: </span>{{ tariff.nextName }}
+            </li>
+            <li>
+                <h5>Услуги</h5>
+                <ol>
+                    {% for service in tariff.services %}
+                        <li>
+                            <span class="font-weight-bold">{{ service.name }}:</span>
+                            {{ service.cost }} р./мес.
+                        </li>
+                    {% endfor %}
+                </ol>
+            </li>
+            <li>
+                <h5>Рассчетный период</h5>
+                <ol>
+                    <li>
+                        <span>Номер: </span>{{ tariff.discountPeriod.id }}
+                    </li>
+                    <li>
+                        <span>Интервал: </span>{{ tariff.discountPeriod.start|date("d-m-Y") }} - {{ tariff.discountPeriod.end|date("d-m-Y") }}
+                    </li>
+                </ol>
+            </li>
+            <hr class="col-xs-12">
+        {% endfor %}
+        <li><span>Общий ежемесячный платеж:</span> {{ sum }} р./мес.</li>
     </ol>
-    <h4>Услуги</h4>
+        {% if user.services is not null %}
+    <h4>Дополнительные услуги</h4>
     <ol>
         {% set sum = 0 %}
         {% for service in user.services %}
@@ -134,17 +180,9 @@
                 {{ service.cost }} р/мес.
             </li>
         {% endfor %}
-        <li><span class="font-weight-bold">Всего:</span> {{ sum }} р/мес.</li>
+        <li><span class="font-weight-bold">Всего:</span> {{ user.services.costSummary }} р/мес.</li>
     </ol>
-    <h4>Рассчетный период</h4>
-    <ol>
-        <li>
-            <span>Номер: </span>{{ user.tariff.discount_period }}
-        </li>
-        <li>
-            <span>Интервал: </span>{{ user.tariff.discount_period_start|date("d-m-Y") }} - {{ user.tariff.discount_period_end|date("d-m-Y") }}
-        </li>
-    </ol>
+        {% endif %}
     </div>
 </div>
 <div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
@@ -152,17 +190,19 @@
     <h4>Группы пользователя</h4>
     <ol>
         {% for group in user.groups %}
-            <li>{{ group.group_name }}</li>
+            <li>{{ group.id }} - {{ group.name }}</li>
         {% endfor %}
     </ol>
     <h4>Информация о сервере</h4>
     <ol>
-        <li>{{ user.routers.name }} : {{ user.routers.ip }}</li>
+        {% for router in user.routers %}
+        <li>{{ router.name }} : {{ router.ip }}</li>
+        {% endfor %}
     </ol>
     </div>
 </div>
 
-{% if user.utmComments is not empty %}
+{% if user.utmComments is defined %}
     <div class="user-info-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 p-2">
         <div class="user-info-block-inner user-info-block-utm5-comments pt-2 pb-2 pl-3 pr-3">
             <h4>Комментарии в UTM5</h4>
@@ -220,7 +260,7 @@
             <input class="form-control form-control-sm" type="text" name="comment" value="" placeholder="оставьте комментарий...">
             </div>
             <div class="col-sm-5">
-            <button class="btn btn-primary btn-sm btn-primary-sham" name="createorder" type="submit" value="Добавить заявку">Добавить заявку</button>
+            <button class="btn btn-primary btn-sm btn-primary-sham" name="createorder" type="submit">{{ 'Add order'|trans }}</button>
             </div>
         </div>
     </form>

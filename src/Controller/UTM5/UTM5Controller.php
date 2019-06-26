@@ -47,6 +47,8 @@ class UTM5Controller extends AbstractController
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => 'http://bot.istra.news/idsw',
             CURLOPT_POSTFIELDS => $queryData,
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT => 1,
         ]);
         if($result = curl_exec($curl)) {
             $crawler = new Crawler($result);

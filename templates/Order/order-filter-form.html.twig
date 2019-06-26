@@ -1,0 +1,69 @@
+<div class="order-filter-form-container row justify-content-center">
+<div class="form-wrapper m-3 col-xl-10 p-0">
+    {{ form_start(order_filter_form) }}
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.utmId) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.utmId) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.fullname) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.fullname) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.address) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.address) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.servername) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.servername) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.ipaddress) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.ipaddress) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.mobileTelephone) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.mobileTelephone) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.executed) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.executed) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.comment) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.comment) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    <div class="form-group row p-2 filter-form-field">
+        {{ form_label(order_filter_form.status) }}
+        <div class="col-xs-10 col-lg-3">
+            {{ form_widget(order_filter_form.status) }}
+        </div>
+        <a class="hide-filter-field" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+    </div>
+    {{ form_end(order_filter_form) }}
+</div>
+</div>

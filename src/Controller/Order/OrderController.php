@@ -3,6 +3,7 @@
 namespace App\Controller\Order;
 
 use App\Entity\UTM5\UTM5User;
+use App\Form\Order\OrderFilterType;
 use App\Service\Order\OrderService;
 use App\Form\Order\OrderForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\UTM5\UTM5DbService;
 
@@ -88,14 +89,23 @@ class OrderController extends AbstractController
      * @param Session $session
      * @return Response
      * @throws \Exception
-     * @Route("/orders/", name="orders_index", methods={"GET"}, options={"expose": true})
+     * @Route("/orders/", name="orders_index", methods={"GET", "POST"}, options={"expose": true})
      */
-    public function indexAction(OrderService $orderService, Session $session, UTM5DbService $UTM5DbService)
+    public function indexAction(Request $request, OrderService $orderService, Session $session, UTM5DbService $UTM5DbService)
     {
         $hideid1 = $session->get('hide_id1', false);
         $hideid2 = $session->get('hide_id2', false);
 
         $filter = $session->get("filter",'all');
+
+        /*
+        $order_filter_form = $this->createForm(OrderFilterType::class);
+        $order_filter_form->handleRequest($request);
+        if($order_filter_form->isSubmitted())
+        {
+            dump($order_filter_form->getData());
+            exit;
+        }*/
 
         $today_orders = $orderService->findOrdersByFilter($filter);
         foreach($today_orders as $order) {
@@ -122,6 +132,7 @@ class OrderController extends AbstractController
                 'orders' => $last_orders,
                 'hide_id1' => $hideid1,
                 'hide_id2' => $hideid2,
+                //'order_filter_form' => $order_filter_form->createView(),
             ]
         );
     }
