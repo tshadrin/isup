@@ -33,17 +33,27 @@ class SSHService
     }
 
     /**
-     * @param $ip
-     * @param $host
-     * @return bool
-     * Проверяем, можно ли включить опцию турбо у юзера
-     * Возвращаем количество оставшихся секунд опции турбо или false, если опция не активирована
+     * Возвращает количество секунд турбо-режима, если он включен
+     * @param string $ip
+     * @param string $serverIp
+     * @return int|null
      */
-    public function checkTurboForUser($ip, $host)
+    public function checkTurboForUser(string $ip, string $serverIp): ?int
     {
-        $connection = $this->getConnection($host);
-        $result =  $connection->checkInTurboTable($ip);
-        return $result;
+        $connection = $this->getConnection($serverIp);
+        return $connection->checkInTurboTable($ip);
+    }
+
+    /**
+     * Проверяет включена ли опция турбо
+     * @param string $ip
+     * @param string $serverIp
+     * @return bool
+     */
+    public function isTurbo(string $ip, string $serverIp): bool
+    {
+        $connection = $this->getConnection($serverIp);
+        return $connection->isTurbo($ip);
     }
 
     /**
@@ -51,21 +61,16 @@ class SSHService
      * Если доступ уже открыт или получилось открыть доступ
      * - возвращает true
      * Если открыть доступ не удалось - возвращает false
-     * @param $ip string
-     * @param $router string
+     * @param string $ip
+     * @param string $serverIp
      * @return bool
      */
-    public function openTurbo($ip, $router)
+    public function openTurbo(string $ip, string $serverIp): bool
     {
-        $connection = $this->getConnection($router);
-        if($connection->hasTurbo($ip))
-            return true;
-        else
-            $connection->enableTurbo($ip);
-        if($connection->hasTurbo($ip))
-            return true;
-        else
-            return false;
+        $connection = $this->getConnection($serverIp);
+        $connection->enableTurbo($ip);
+
+        return $connection->isTurbo($ip)?true:false;
     }
     /**
      * Временно открывает доступ в интернет на сервере

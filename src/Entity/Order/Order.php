@@ -344,12 +344,12 @@ class Order
         $order = new self;
         $order->setUtmId($user->getId());
         $order->setFullName($user->getFullName());
-        $order->setAddress($user->getAddress('actual'));
+        $order->setAddress($user->getActualAddress());
         $ips = $user->getIps();
         $order->setIpAddress($ips[0]);
-        $order->setMobileTelephone($user->getPhone('mobile'));
+        $order->setMobileTelephone($user->getMobilePhone());
         $routers = $user->getRouters();
-        $order->setServerName($routers['name']);
+        $order->setServerName($routers[0]->getName());
         return $order;
     }
     public function __toString()

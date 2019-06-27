@@ -4,7 +4,6 @@ namespace App\Entity\UTM5;
 
 class Service
 {
-
     /**
      * @var string
      */
@@ -14,6 +13,9 @@ class Service
      */
     private $cost;
 
+    private $type;
+
+    private $link;
     /**
      * @return string
      */
@@ -31,6 +33,22 @@ class Service
     }
 
     /**
+     * @return mixed
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
      * @param string $name
      */
     public function setName(string $name): void
@@ -44,6 +62,22 @@ class Service
     public function setCost(float $cost): void
     {
         $this->cost = $cost;
+    }
+
+    /**
+     * @param mixed $link
+     */
+    public function setLink($link): void
+    {
+        $this->link = $link;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type): void
+    {
+        $this->type = $type;
     }
 
     public function __construct(string $name, float $cost)

@@ -4,16 +4,16 @@ namespace App\Entity\UTM5;
 use App\Collection\UTM5\GroupCollection;
 use App\Collection\UTM5\RouterCollection;
 use App\Collection\UTM5\ServiceCollection;
+use App\Collection\UTM5\TariffCollection;
 
 class UTM5UrfaUser extends UTM5User
 {
+    const MIN_ROUTER_GROUP = 300;
+    const MAX_ROUTER_GROUP = 350;
     /**
      * @var \URFAClient_API
      */
     private $urfa;
-
-    private $slink_id;
-    private $router_group_ids = [];
 
     /**
      * @param \URFAClient_API $urfa
@@ -22,100 +22,143 @@ class UTM5UrfaUser extends UTM5User
     public function __construct(\URFAClient_API $urfa) { $this->urfa = $urfa; }
 
     /**
+     * Поиск ip адресов по сервисам тарифа с типом 3
+     * rpcf_get_iptraffic_service_link_ipv6 - поиск данных по сервисной связке
      * @return array
-     * Подгружаем сервисы при необходимости
-     */
-    public function getServices(): ServiceCollection
-    {
-        if (empty($this->services)) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $services = $this->urfa->rpcf_get_all_services_for_user(['account_id' => $this->account]);
-            foreach ($services['slink_id_count'] as $service) {
-                $this->services[] = $service['service_name_array'];
-                if ($service['service_type_array'] == 3)
-                    $this->slink_id = $service['slink_id_array'];
-            }
-        }
-        return parent::getServices();
-    }
-
-    /**
-     * @return array
-     * Подгружаем ip адреса клиента при необходимости
      */
     public function getIps(): array
     {
-        if (empty($this->ips)) {
-            if (empty($this->slink_id)){
-                $this->getServices();
-            }
-            $user_service_link = $this->urfa->rpcf_get_iptraffic_service_link(['slink_id' => $this->slink_id,]);
-            foreach ($user_service_link['ip_groups_count'] as $ipgroup) {
-                $this->ips[] = long2ip($ipgroup['ip_address']);
+        if(is_null($this->ips)) {
+            foreach ($this->getTariffs() as $tariff) {
+                if(($services = $tariff->getServices()) instanceof ServiceCollection) {
+                    foreach ($services as $service) {
+                        if (3 === $service->getType()) {
+                            $linkV6Info = $this->urfa->rpcf_get_iptraffic_service_link_ipv6(['slink_id' => $service->getLink(),]);
+                            foreach ($linkV6Info['ip_groups_count'] as $ipgroup) {
+                                if(32 == $ipgroup['mask']){
+                                    $this->addIP($ipgroup['ip_address']);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         return parent::getIps();
     }
 
-    /**
-     *  Подгружаем информацию о тарифе
-     */
-    public function getTariff()
+    public function addIP(string $ip): void
     {
-        if (empty($this->tariff)) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $tariff = $this->urfa->rpcf_get_user_tariffs(['user_id' => $this->id,]);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $current_tariff = $this->urfa->rpcf_get_tariff(['tariff_id' => $tariff['user_tariffs_size'][0]['tariff_current_array'],]);
-            $this->tariff['current'] = $current_tariff['tariff_name'];
-            /** @noinspection PhpUndefinedMethodInspection */
-            $next_tariff = $this->urfa->rpcf_get_tariff(['tariff_id' => $tariff['user_tariffs_size'][0]['tariff_next_array'],]);
-            $this->tariff['next'] = $next_tariff['tariff_name'];
-        }
-        return parent::getTariff();
+        $this->ips[] = $ip;
     }
 
+    /**
+     * Получение тарифов пользователя
+     * rpcf_get_user_tariffs - поиск тарифов пользователя
+     * rpcf_get_tariff - получение данных тарифа
+     * rpcf_get_discount_period - получение рассчетного периода
+     * @return TariffCollection
+     */
+    public function getTariffs(): TariffCollection
+    {
+        if (is_null($this->tariffs)) {
+            $tariffsData = $this->urfa->rpcf_get_user_tariffs(['user_id' => $this->id,]);
+            $tariffs = new TariffCollection();
+            foreach($tariffsData['user_tariffs_size'] as $tariffData) {
+                $services = $this->findTariffServicesByAccount($this->getAccount(), $tariffData['tariff_link_id_array']);
+                $tariffInfoData = $this->urfa->rpcf_get_tariff(['tariff_id' => $tariffData['tariff_current_array']]);
+                $tariffInfoNextData = $this->urfa->rpcf_get_tariff(['tariff_id' => $tariffData['tariff_next_array']]);
+                $dpData = $this->urfa->rpcf_get_discount_period(['discount_period_id' => $tariffData['discount_period_id_array'],]);
+                $tariff = new Tariff($tariffInfoData['tariff_name'], $tariffInfoNextData['tariff_name'], new DiscountPeriod(
+                    $tariffData['discount_period_id_array'],
+                    \DateTimeImmutable::createFromFormat("U", $dpData['start_date']),
+                    \DateTimeImmutable::createFromFormat("U", $dpData['end_date']))
+                );
+                $tariff->setServices($services);
+                $tariffs->add($tariff);
+            }
+            count($tariffs) > 0?$this->setTariffs($tariffs):null;
+        }
+        return parent::getTariffs();
+    }
+
+    /**
+     * Получение сервисов для тарифных планов пользователя
+     * rpcf_get_all_services_for_user - все сервисы пользователя
+     * rpcf_get_periodic_service_link - получение сервисныз связок для серисов
+     * @param int $account - лицевой счет
+     * @param int $tariff_link - тарифная связка
+     * @return ServiceCollection|null
+     */
+    private function findTariffServicesByAccount(int $account, int $tariff_link): ?ServiceCollection
+    {
+        $tariffServices = new ServiceCollection();
+
+        $servicesData = $this->urfa->rpcf_get_all_services_for_user([
+            'account_id' => $account,
+        ]);
+        foreach($servicesData['slink_id_count'] as $serviceData) {
+            $slinkData = $this->urfa->rpcf_get_periodic_service_link([
+                'slink_id' => $serviceData['slink_id_array'],
+            ]);
+            if($tariff_link === $slinkData['tariff_link_id']) {
+                $service =  new Service($serviceData['service_name_array'], $serviceData['service_cost_array']);
+                $service->setLink($serviceData['slink_id_array']);
+                $service->setType($serviceData['service_type_array']);
+                $tariffServices->add($service);
+            }
+        }
+        return count($tariffServices) > 0?$tariffServices:null;
+    }
+
+    /**
+     * Получение групп пользователя
+     * rpcf_get_groups_for_user
+     * @return GroupCollection
+     */
     public function getGroups(): GroupCollection
     {
-        if (empty($this->groups)) {
+        if (is_null($this->groups)) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $groups = $this->urfa->rpcf_get_groups_for_user(['user_id' => $this->id,]);
-            foreach ($groups['groups_size'] as $group){
-                if ($group['group_id'] > 299 && $group['group_id'] < 400) {
-                    $this->router_group_ids[] = $group['group_id'];
-                }
-                $this->groups[] = $group['group_name'];
+            $result  = $this->urfa->rpcf_get_groups_for_user(['user_id' => $this->id,]);
+            $groups = new GroupCollection();
+            foreach ($result['groups_size'] as $row){
+                $groups->add(new Group($row['group_id'], $row['group_name']));
             }
+            $this->setGroups($groups);
         }
         return parent::getGroups();
     }
 
     /**
-     * @return mixed - данные о сервере
-     * Ищем данные о сервере пользователя
+     * Получение роутеров пользователя
+     * rpcf_get_fwrules_list_new - список правил файерволлов
+     * rpcf_get_routers_list - список роутеров
+     * @return RouterCollection|null
      */
-    public function getRouters(): RouterCollection
+    public function getRouters(): ?RouterCollection
     {
-        if (empty($this->groups)) {
-            $this->getGroups();
-        }
-        /** @noinspection PhpUndefinedMethodInspection */
-        $firewall_rules = $this->urfa->rpcf_get_fwrules_list_new();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $routers = $this->urfa->rpcf_get_routers_list();
-        foreach ($firewall_rules['rules_count'] as $rule){
-            if (in_array($rule['group_id'], $this->router_group_ids)) {
-                while (($i = array_search($rule['group_id'], $this->router_group_ids)) !== false) {
-                    unset($this->router_group_ids[$i]);
-                }
-                foreach ($routers['routers_size'] as $router) {
-                    if ($rule['router_id'] == $router['router_id']) {
-                        $r['ip'] = $router['router_ip'];
-                        $r['name'] = $router['router_comments'];
-                        $this->routers[] = $r;
+        if(is_null($this->routers)) {
+            $groups = $this->getGroups();
+            $routers = new RouterCollection();
+            $firewallRules = $this->urfa->rpcf_get_fwrules_list_new();
+            $routersData = $this->urfa->rpcf_get_routers_list();
+            foreach ($groups as $group) {
+                if (self::MIN_ROUTER_GROUP <= $group->getId() && self::MAX_ROUTER_GROUP >= $group->getId()) {
+                    foreach ($firewallRules['rules_count'] as $rule) {
+                        if ($rule['group_id'] === $group->getId()) {
+                            foreach ($routersData['routers_size'] as $row) {
+                                if ($rule['router_id'] === $row['router_id']) {
+                                    $routers->add(new Router($row['router_comments'], $row['router_ip']));
+                                    break;
+                                }
+                            }
+                            break;
+                        }
                     }
                 }
             }
+            count($routers) > 0?$this->setRouters($routers):null;
         }
         return parent::getRouters();
     }

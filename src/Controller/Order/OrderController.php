@@ -4,6 +4,7 @@ namespace App\Controller\Order;
 
 use App\Entity\UTM5\UTM5User;
 use App\Form\Order\OrderFilterType;
+use App\Repository\UTM5\UTM5UserRepository;
 use App\Service\Order\OrderService;
 use App\Form\Order\OrderForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -67,13 +68,13 @@ class OrderController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/order/{id}/print/", name="order_print", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function printAction($id, OrderService $orderService, UTM5DbService $UTM5DbService)
+    public function printAction($id, OrderService $orderService, UTM5UserRepository $UTM5UserRepository)
     {
         try {
             $order = $orderService->getOrder($id);
             if(!is_null($order->getUtmId())) {
                 if(!is_null($order->getUtmId())) {
-                    $passport = $UTM5DbService->isUserPassport($order->getUtmId());
+                    $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
                     $order->setEmptyPassport($passport);
                 }
             }
@@ -91,7 +92,7 @@ class OrderController extends AbstractController
      * @throws \Exception
      * @Route("/orders/", name="orders_index", methods={"GET", "POST"}, options={"expose": true})
      */
-    public function indexAction(Request $request, OrderService $orderService, Session $session, UTM5DbService $UTM5DbService)
+    public function indexAction(Request $request, OrderService $orderService, Session $session, UTM5UserRepository $UTM5UserRepository)
     {
         $hideid1 = $session->get('hide_id1', false);
         $hideid2 = $session->get('hide_id2', false);
@@ -111,7 +112,7 @@ class OrderController extends AbstractController
         foreach($today_orders as $order) {
             if(!is_null($order->getUtmId())) {
                 if(!is_null($order->getUtmId())) {
-                    $passport = $UTM5DbService->isUserPassport($order->getUtmId());
+                    $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
                     $order->setEmptyPassport($passport);
                 }
             }
@@ -120,7 +121,7 @@ class OrderController extends AbstractController
         $last_orders = $orderService->findOrdersByFilter($filter, false);
         foreach($last_orders as $order) {
             if(!is_null($order->getUtmId())) {
-                $passport = $UTM5DbService->isUserPassport($order->getUtmId());
+                $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
                 $order->setEmptyPassport($passport);
             }
         }

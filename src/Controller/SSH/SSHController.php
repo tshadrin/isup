@@ -70,71 +70,66 @@ class SSHController extends AbstractController
 
     /**
      * Проверка турбо-режима по account_id
-     * @param $account
+     * @param int $account
      * @param SSHService $SSHService
      * @param URFAService $URFAService
      * @return JsonResponse
      * @Route("/ssh/checkturbo/{account}", name="ssh_checkturbo", methods={"GET"}, requirements={"account": "\d+"})
      */
-    public function checkTurboAction($account, SSHService $SSHService, URFAService $URFAService)
+    public function checkTurboAction(int $account, SSHService $SSHService, URFAService $URFAService): JsonResponse
     {
         $user = $URFAService->getUserByAccount($account);
-        $result = [];
-
-        foreach ($user->getRouters() as $router)
+        foreach ($user->getRouters() as $router) {
             foreach ($user->getIps() as $ip) {
-                array_push($result, $SSHService->checkTurboForUser($ip, $router['ip']));
-                break;
+                if (!is_null($result = $SSHService->checkTurboForUser($ip, $router->getIp()))) {
+                    return $this->json(['status' => "TURBO_ENABLED", 'time_left' => $result]);
+                }
             }
-        foreach ($result as $v) {
-            if (!$v)
-                return $this->json(['status' => "TURBO_NOT_ENABLED"]);
         }
-        return $this->json(['status' => "TURBO_ENABLED", 'time_left' => $result[0]]);
+        return $this->json(['status' => "TURBO_NOT_ENABLED"]);
     }
 
     /**
      * Включает турбо режим
-     * @param $id - лицевой счет клиента
-     * @param $sid - идентификатор услуги
+     * @param int $id - лицевой счет клиента
+     * @param int $sid - идентификатор услуги
      * @param SSHService $SSHService
      * @param URFAService $URFAService
      * @return JsonResponse
      * @Route("/ssh/turboopen/{id}/{sid}", name="ssh_turboopen", methods={"GET"}, requirements={"id": "\d+", "sid": "\d+"})
      */
-    public function turboOpenAction($id, $sid, SSHService $SSHService, URFAService $URFAService)
+    public function turboOpenAction(int $id, int $sid, SSHService $SSHService, URFAService $URFAService): JsonResponse
     {
         $user = $URFAService->getUserByAccount($id);
-        $result = [];
-
+        $checkResult = false;
         // Проверяем на сервере, включена ли опция у пользователя
-        foreach ($user->getRouters() as $router)
+        foreach ($user->getRouters() as $router) {
             //Проверяем только одну комбинацию
             foreach ($user->getIps() as $ip) {
-                array_push($result, $SSHService->checkTurboForUser($ip, $router['ip']));
-                break;
-            }
-
-        $result2 = [];
-        foreach ($result as $v) {
-            if (!$v) { // Если нет значений в массиве, значит турбо-режим не включен
-                // Включаем турбо-режим
-                foreach ($user->getRouters() as $router)
-                    foreach ($user->getIps() as $ip)
-                        array_push($result2, $SSHService->openTurbo($ip, $router['ip']));
-
-                // Проверяем включился ли турбо-режим
-                foreach ($result2 as $val)
-                    if (!$val)
-                        return $this->json(['status' => "ERROR"]);
-                // Проставляем услугу в биллинг
-                $urfa = $URFAService->getUrfa();
-                $urfa->rpcf_add_once_slink_ex(["user_id" => $user->getId(),
-                                               "account_id" => $id,
-                                               "service_id" => $sid]);
-                return $this->json(['status' => "OK"]);
+                if (($checkResult = $SSHService->isTurbo($ip, $router->getIp()))) {
+                    break;
+                }
             }
         }
-        return $this->json(['status' => "TURBO_ENABLED", 'time_left' => $result[0]]);
+        $openResult = [];
+        if (!$checkResult) { //Если проверка вернула false
+            // Включаем турбо-режим
+            foreach ($user->getRouters() as $router) {
+                foreach ($user->getIps() as $ip) {
+                    array_push($openResult, $SSHService->openTurbo($ip, $router->getIp()));
+                }
+            }
+            // Проверяем включился ли турбо-режим
+            if (in_array(false, $openResult)) {
+                return $this->json(['status' => "ERROR"]);
+            }
+            // Проставляем услугу в биллинг
+            $urfa = $URFAService->getUrfa();
+            $urfa->rpcf_add_once_slink_ex(["user_id" => $user->getId(),
+                "account_id" => $id,
+                "service_id" => $sid]);
+            return $this->json(['status' => "OK"]);
+        }
+        return $this->json(['status' => "TURBO_ENABLED"]);
     }
 }

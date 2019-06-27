@@ -6,7 +6,6 @@ use App\Collection\UTM5\PaymentCollection;
 use App\Collection\UTM5\RouterCollection;
 use App\Collection\UTM5\ServiceCollection;
 use App\Collection\UTM5\TariffCollection;
-use App\Repository\UTM5\UserMapper;
 
 /**
  * Class UTM5User
@@ -86,7 +85,7 @@ class UTM5User
     /**
      * @var array
      */
-    protected $phones;
+    protected $phones = [];
     /**
      * @var string
      */
@@ -273,7 +272,7 @@ class UTM5User
     /**
      * @return array
      */
-    public function getPhones(): array
+    public function getPhones(): ?array
     {
         return $this->phones;
     }
@@ -330,7 +329,7 @@ class UTM5User
     /**
      * @return RouterCollection
      */
-    public function getRouters(): RouterCollection
+    public function getRouters(): ?RouterCollection
     {
         return $this->routers;
     }

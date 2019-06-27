@@ -111,72 +111,70 @@ class SSH
     }
 
     /**
-     * @param $host
-     * @return bool или string
-     * Проверка наличия включенной опции турбо у клиента на сервере
-     * Возвращает false если пользователя нет в таблице или
-     * количество оставшихся секунд, если пользователь есть в таблице
-     */
-    public function checkInTurboTable($host)
-    {
-        $data = $this->ssh_exec("ipset -L TURBO | grep {$host}");
-        if (empty($data)) {
-            return false;
-        } else {
-            $data = explode(' ', $data);
-            return $data[2];
-        }
-    }
-
-
-    /**
      * Метод проверяет наличие ip в таблице USER_TMP
      * на сервере, с которым установлено соединение
-     * @param $ip string
+     * @param string $ip
      * @return bool
      */
-    public function hasOpenTemporary($ip)
+    public function hasOpenTemporary(string $ip): bool
     {
         $data = $this->ssh_exec("ipset -L USER_TMP | grep {$ip}");
 
-        if (strlen($data))
-            return true;
-        else
+        if (empty($data))
             return false;
+        else
+            return true;
     }
+
+    /**
+     * Метод добавляет ip в таблицу USER_TMP на сервере,
+     * с которым установлено соединение
+     * @param string $ip
+     */
+    public function openTemporary(string $ip): void
+    {
+        $this->ssh_exec("ipset add USER_TMP {$ip}");
+    }
+
+    /**
+     * Проверяет есть ли данные в сете турбо по ip
+     * @param string $ip
+     * @return int|null
+     */
+    public function checkInTurboTable(string $ip): ?int
+    {
+        $data = $this->ssh_exec("ipset -L TURBO | grep {$ip}");
+        if (empty($data)) {
+            return null;
+        } else {
+            $data = explode(' ', $data);
+            return trim($data[2]);
+        }
+    }
+
     /**
      * Метод проверяет наличие ip в таблице USER_TMP
      * на сервере, с которым установлено соединение
-     * @param $ip string
+     * @param string $ip
      * @return bool
      */
-    public function hasTurbo($ip)
+    public function isTurbo(string $ip): bool
     {
         $data = $this->ssh_exec("ipset -L TURBO | grep {$ip}");
 
-        if (strlen($data))
-            return true;
-        else
+        if (empty($data))
             return false;
+        else
+            return true;
     }
 
     /**
      * Метод добавляет ip в таблицу USER_TMP на сервере,
      * с которым установлено соединение
-     * @param $ip string
+     * @param string $ip
      */
-    public function enableTurbo($ip)
+    public function enableTurbo(string $ip): void
     {
         $this->ssh_exec("ipset add TURBO {$ip}");
-    }
-
-    /**
-     * Метод добавляет ip в таблицу USER_TMP на сервере,
-     * с которым установлено соединение
-     * @param $ip string
-     */
-    public function openTemporary($ip)
-    {
-        $this->ssh_exec("ipset add USER_TMP {$ip}");
     }
 }

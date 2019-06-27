@@ -10,8 +10,8 @@
             {% if user.juridicalAddress %}<li><span>Юр. адрес</span>: {{ user.juridicalAddress }}</li>{% endif %}
             <li>{% if user.passport is not empty %}<span>Паспортные данные:</span> {{ user.passport }}{% else %}<h4>Необходимо заполнить паспортные данные</h4>{% endif %}</li>
             <li><span>Факт. адрес</span>: {{ user.actualAddress }}</li>
-            {% if user.phones.home is defined %}<li><span>Домашний телефон</span>:{{ user.phones.home }}</li>{% endif %}
-            {% if user.phones.work is defined %}<li><span>Рабочий телефон</span>: {{ user.phones.work }}</li>{% endif %}
+            {% if user.homePhone is not null %}<li><span>Домашний телефон</span>:{{ user.homePhone }}</li>{% endif %}
+            {% if user.workPhone is not null %}<li><span>Рабочий телефон</span>: {{ user.workPhone }}</li>{% endif %}
             <li>
                 <div class="row pl-3">
                 <span>Мобильный телефон: &nbsp;</span>
@@ -20,7 +20,7 @@
                      data-inputclass="form-control form-control-sm pr-0"
                      data-type="text"
                      data-emptytext="нет данных"
-                     data-value="{{ user.phones.mobile }}"
+                     data-value="{{ user.mobilePhone }}"
                      data-pk="{{ user.id }}"
                      data-name="mobile_phone"
                      data-url="{{ path('user_change_editable_field') }}"
