@@ -194,3 +194,9 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: commutators, label: commutators }
         public: true
+    admin.smstemplate:
+        class: 'App\Admin\SMS\SmsTemplateAdmin'
+        arguments: [~, App\Entity\SMS\SmsTemplate, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: sms, label: 'Sms Templates' }
+        public: true

@@ -2,6 +2,9 @@
 
 namespace App\Controller\UTM5;
 
+use App\Entity\SMS\SmsTemplate;
+use App\Form\SMS\SmsTemplateData;
+use App\Form\SMS\SmsTemplateForm;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Service\BitrixCal\BitirixCalService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -109,6 +112,14 @@ class UTM5Controller extends AbstractController
                 $comment->setUtmId($search_result->getId());
                 $form = $this->createForm(UTM5UserCommentForm::class, $comment);
                 $form->handleRequest($request);
+                $smsTemplateData = new SmsTemplateData();
+                if(!is_null($phone = $search_result->getMobilePhone())) {
+                    $smsTemplateData->setPhone($search_result->getMobilePhone());
+                }
+                $smsTemplateData->setUtmId($search_result->getId());
+                $smsTemplateForm = $this->createForm(SmsTemplateForm::class, $smsTemplateData);
+                $smsTemplateForm->handleRequest($request);
+                $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();
                 return $this->render('Utm/find.html.twig', $template_data);
             }

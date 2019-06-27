@@ -347,7 +347,9 @@ class Order
         $order->setAddress($user->getActualAddress());
         $ips = $user->getIps();
         $order->setIpAddress($ips[0]);
-        $order->setMobileTelephone($user->getMobilePhone());
+        if(!is_null($phone = $user->getMobilePhone())) {
+            $order->setMobileTelephone($phone);
+        }
         $routers = $user->getRouters();
         $order->setServerName($routers[0]->getName());
         return $order;

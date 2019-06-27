@@ -251,7 +251,8 @@
 </div>
 <div class="user-info-block add-order-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
     <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
-    <h4>Добавление заявки</h4>
+    <h4>Действия</h4>
+        <h5>Создание заявки</h5>
     <form  method="POST" action="{{  path('order_add') }}">
         <input type="hidden" name="create" value="full">
         <input type="hidden" name="id" value="{{ user.id }}">
@@ -264,6 +265,20 @@
             </div>
         </div>
     </form>
+        <h5>Отправка СМС</h5>
+        {{ form_start(smsForm, {'attr': {'class': '', 'action': path('sms_sendtemplate')} }) }}
+        <div class="form-row mt-2">
+            <div class="col-sm-4">
+                {{ form_widget(smsForm.phone) }}
+            </div>
+            <div class="col-sm-4">
+                {{ form_widget(smsForm.smsTemplate) }}
+            </div>
+            <div class="col-sm-4">
+                {{ form_widget(smsForm.send) }}
+            </div>
+        </div>
+        {{ form_end(smsForm) }}
     </div>
 </div>
 {% if diagnostic is defined %}

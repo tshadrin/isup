@@ -302,3 +302,21 @@ profit_for_townships: 'Платежи в поселках'
 "No block": "Нет блокировки"
 "Admin block": "Админская блокировка"
 "System block": "Системная блокировка"
+
+
+#sonata admin
+Message: 'Сообщение'
+'Sms Template List': 'Список шаблонов SMS'
+port_types: 'Типы портов'
+commutators: 'Коммутаторы'
+'Sms Templates': 'Шаблоны сообщений'
+'Ip': 'IP'
+'Mac': 'MAC'
+'Ports': 'Порты'
+'Commutator List': 'Список коммутаторов'
+'Port Type List': 'Список типов портов'
+
+#sms send form
+'Send SMS': 'Отправить СМС'
+"Message sended": 'Сообщение отправлено'
+'Number 9251234567..': 'Номер 9251234567..'

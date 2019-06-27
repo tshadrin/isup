@@ -5,33 +5,32 @@ namespace App\Entity\SMS;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Status
- * @package App\Entity\Intercom
+ * Class SmsTemplate
+ * @package App\Entity\SMS
  * @ORM\Entity()
- * @ORM\Table(name="statuses")
+ * @ORM\Table(name="sms_templates")
  */
-class SMS
+class SmsTemplate
 {
     /**
-     * Идентификатор статуса
-     * @var int
+     * @var
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
-    protected $id;
+    private $id;
+
     /**
-     * Машинное имя статуса
-     * @var string
-     * @ORM\Column(type="string", length=30)
+     * @var
+     * @ORM\Column(type="string", length=50)
      */
-    protected $name;
+    private $name;
+
     /**
-     * Описание статуса
-     * @var string
-     * @ORM\Column(type="string", length=100)
+     * @var
+     * @ORM\Column(type="string", length=1000)
      */
-    protected $description;
+    private $message;
 
     /**
      * @return int
@@ -52,9 +51,9 @@ class SMS
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getMessage(): string
     {
-        return $this->description;
+        return $this->message;
     }
 
     /**
@@ -74,17 +73,24 @@ class SMS
     }
 
     /**
-     * @param string $description
+     * @param string $message
      */
-    public function setDescription(string $description): void
+    public function setMessage(string $message): void
     {
-        $this->description = $description;
+        $this->message = $message;
     }
+
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->description;
+        return $this->getName();
+    }
+
+    public function __construct()
+    {
+        $this->name = '';
+        $this->message = '';
     }
 }

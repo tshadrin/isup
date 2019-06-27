@@ -2,11 +2,14 @@
 
 namespace App\Controller\SMS;
 
+use App\Form\SMS\SmsTemplateData;
+use App\Form\SMS\SmsTemplateForm;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SMSController extends AbstractController
 {
@@ -54,6 +57,31 @@ class SMSController extends AbstractController
         }
     }
 
+    /**
+     * @param Request $request
+     * @Route("/sms/sendtemplate/", name="sms_sendtemplate", methods={"POST"})
+     */
+    public function sendSmsTemplate(Request $request, TranslatorInterface $translator) {
+        $form = $this->createForm(SmsTemplateForm::class);
+        $form->handleRequest($request);
+        $data = $form->getData();
+        if($form->isSubmitted() && $form->isValid()) {
+            $this->sendSMSViaSmsc($data->getPhone(),$data->getSmsTemplate()->getMessage());
+            $this->addFlash("notice", "Message sended");
+        } else {
+            $errors = $form->getErrors(true);
+            foreach ($errors as $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
+
+        }
+        return $this->redirectToRoute("search", ['type' => 'id', 'value' => $data->getUtmId()]);
+
+    }
+    /**
+     * @param $phone
+     * @param $message
+     */
     private function sendSMSViaSmsc($phone, $message)
     {
         $message = urlencode($message);
@@ -67,6 +95,11 @@ class SMSController extends AbstractController
             throw new \DomainException("Ошибка при отправке сообщения через smsc на номер {$phone}", 5);
         }
     }
+
+    /**
+     * @param $phone
+     * @param $message
+     */
     private function sendSMSViaModem($phone, $message)
     {
         exec("/usr/bin/smssend +7{$phone} '{$message}'", $data, $code);
