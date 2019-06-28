@@ -217,6 +217,25 @@ class UserMapper
         return null;
     }
 
+    /**
+     * Получение списка IP адресов пользователя.
+     * IP адреса для пользователя могут быть не назначены
+     * @param int $user_id
+     * @return array|null
+     */
+    public function getIP6Settings(int $user_id): ?array
+    {
+        try {
+            $stmt = $this->userPreparer->getUserIps6Stmt();
+            $stmt->execute([':id' => $user_id]);
+            if($stmt->rowCount() > 0)
+                return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        } catch (\Exception $e) {
+            throw new \DomainException($this->translator->trans("User IPs search error: %message%", ['%message%' => $e->getMessage()]));
+        }
+        return null;
+    }
+
     // ADDITIONAL FIELDS
     /**
      * @param int $user_id
@@ -360,7 +379,12 @@ class UserMapper
         }
         $user->setCredit($data['credit']);
         $user->setCreated(\DateTimeImmutable::createFromFormat('U', $data['created']));
-        $user->setIps($this->getIPSettings($user->getId()));
+        if(!is_null($ips =$this->getIPSettings($user->getId()))) {
+            $user->setIps($ips);
+        }
+        if(!is_null($ips6 =$this->getIP6Settings($user->getId()))) {
+            $user->setIps6($ips6);
+        }
         $user->setRemindMe($this->getRemindMe($user->getId()));
         if(!is_null($lifestreamLogin = $this->getLifestreamLogin($user->getId()))) {
             $user->setLifestreamLogin($lifestreamLogin);
@@ -370,7 +394,9 @@ class UserMapper
         if(0 !== (int)$data['house_id']) {
             $user->setHouse($this->houseRepository->findOneById($data['house_id']));
         }
-        $user->setRouters($this->routerRepository->findByUserId($user->getId()));
+        if(!is_null($routers = $this->routerRepository->findByUserId($user->getId()))) {
+            $user->setRouters($routers);
+        }
         if(($services = $this->serviceRepository->findByAccount($user->getAccount())) instanceof ServiceCollection) {
             $user->setServices($services);
         }

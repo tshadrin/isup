@@ -54,6 +54,12 @@ class UTM5User
      * @var array
      */
     protected $ips;
+
+    /**
+     * @var array
+     */
+    protected $ips6;
+
     /**
      * @var GroupCollection
      */
@@ -195,9 +201,17 @@ class UTM5User
     /**
      * @return array
      */
-    public function getIps(): array
+    public function getIps(): ?array
     {
         return $this->ips;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIps6(): ?array
+    {
+        return $this->ips6;
     }
 
     /**
@@ -228,19 +242,13 @@ class UTM5User
      * Возвращает адрес по дому или, если нет дома, то из поля address
      * @return string
      */
-    public function getActualAddress(): string
+    public function getActualAddress(): ?string
     {
         if(($house = $this->getHouse()) instanceof House) {
             if(!empty($flatNumber = $this->getFlatNumber())) {
                 return "{$house->__toString()} - {$flatNumber}";
             } else {
                 return $house->__toString();
-            }
-        } else {
-            if(!empty($flatNumber = $this->getFlatNumber())) {
-                return "{$this->getAddress()} - {$flatNumber}";
-            } else {
-                return $this->getAddress();
             }
         }
     }
@@ -250,7 +258,11 @@ class UTM5User
      */
     public function getAddress(): ?string
     {
-        return $this->address;
+        if(!empty($flatNumber = $this->getFlatNumber())) {
+            return "{$this->address} - {$this->getFlatNumber()}";
+        } else {
+            return $this->address;
+        }
     }
 
     /**
@@ -345,7 +357,7 @@ class UTM5User
     /**
      * @return TariffCollection
      */
-    public function getTariffs(): TariffCollection
+    public function getTariffs(): ?TariffCollection
     {
         return $this->tariffs;
     }
@@ -488,6 +500,20 @@ class UTM5User
     public function setIps(array $ips): void
     {
         $this->ips = $ips;
+    }
+
+    /**
+     * @param array $ips6
+     */
+    public function setIps6(array $ips6): void
+    {
+        foreach($ips6 as $ip6) {
+            list($o1,$o2,$o3,$o4) = explode(':', $ip6);
+            $o3 = ltrim($o3, '0');
+            $o4 = ltrim($o4, '0');
+            $this->ips6['wan'] = "{$o1}:{$o2}:{$o3}::{$o4}";
+            $this->ips6['local_net'] = "{$o1}:{$o2}:{$o3}:{$o4}::/64";
+        }
     }
 
     /**
@@ -717,5 +743,10 @@ class UTM5User
     public function setRequirementPayment($requirement_payment)
     {
         $this->requirement_payment = $requirement_payment;
+    }
+
+    public function getUnserializedPassport()
+    {
+        //dump($this->passport);exit;
     }
 }

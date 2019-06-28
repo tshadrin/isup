@@ -9,7 +9,8 @@
             <li><span>Лицевой счет</span>: {{ user.account }}</li>
             {% if user.juridicalAddress %}<li><span>Юр. адрес</span>: {{ user.juridicalAddress }}</li>{% endif %}
             <li>{% if user.passport is not empty %}<span>Паспортные данные:</span> {{ user.passport }}{% else %}<h4>Необходимо заполнить паспортные данные</h4>{% endif %}</li>
-            <li><span>Факт. адрес</span>: {{ user.actualAddress }}</li>
+            <li><span>Адрес дома</span>: {{ user.actualAddress }}</li>
+            <li><span>Фактический адрес</span>: {{ user.address }}</li>
             {% if user.homePhone is not null %}<li><span>Домашний телефон</span>:{{ user.homePhone }}</li>{% endif %}
             {% if user.workPhone is not null %}<li><span>Рабочий телефон</span>: {{ user.workPhone }}</li>{% endif %}
             <li>
@@ -100,6 +101,8 @@
             {% for ip in user.ips %}
                 <li>{{ ip }}</li>
             {% endfor %}
+                <li><span>WAN</span>: {{ user.ips6['wan'] }}</li>
+                <li><span>Local Net</span>: {{ user.ips6['local_net'] }}</li>
         </ol>
         <h4>Цепочка свичей</h4>
         <ol>

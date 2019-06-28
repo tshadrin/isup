@@ -2,7 +2,6 @@
 
 namespace App\Controller\UTM5;
 
-use App\Entity\SMS\SmsTemplate;
 use App\Form\SMS\SmsTemplateData;
 use App\Form\SMS\SmsTemplateForm;
 use Knp\Component\Pager\PaginatorInterface;
@@ -121,6 +120,7 @@ class UTM5Controller extends AbstractController
                 $smsTemplateForm->handleRequest($request);
                 $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();
+                $search_result->getUnserializedPassport();
                 return $this->render('Utm/find.html.twig', $template_data);
             }
             // @todo поправить количество строк на странице

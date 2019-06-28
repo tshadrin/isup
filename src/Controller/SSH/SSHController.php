@@ -24,7 +24,7 @@ class SSHController extends AbstractController
         $result = [];
         foreach ($user->getRouters() as $router) {
             foreach ($user->getIps() as $ip) {
-                $result[] = $SSHService->openInternetTemporary($ip, $router['ip']);
+                $result[] = $SSHService->openInternetTemporary($ip, $router->getIp());
             }
         }
         foreach ($result as $v) {

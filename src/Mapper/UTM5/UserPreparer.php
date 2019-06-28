@@ -156,9 +156,9 @@ class UserPreparer
      * @return Statement
      * @throws DBALException
      */
-    public function getIP6DataByAccountStmt(): Statement
+    public function getUserIps6Stmt(): Statement
     {
-        $sql = "SELECT ig.ip_ext & 0xffffffff AS ip6
+        $sql = "SELECT net_ntoa_ipv6(ig.ip, ig.ip_ext) AS ip6
                 FROM users u
                     INNER JOIN service_links s
                         ON s.account_id=u.basic_account
@@ -170,7 +170,7 @@ class UserPreparer
                   AND s.is_deleted=0
                   AND u.is_deleted=0
                   AND ig.ip_ext <> 0
-                  AND u.basic_account = :basic_account";
+                  AND u.id = :id";
         return $this->connection->prepare($sql);
     }
 
