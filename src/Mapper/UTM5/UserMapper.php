@@ -8,6 +8,7 @@ use App\Collection\UTM5\TariffCollection;
 use App\Collection\UTM5\UTM5UserCollection;
 use App\Entity\UTM5 as Entity;
 use App\Entity\UTM5\PromisedPayment;
+use App\Repository\UTM5\PassportRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Repository\UTM5\HouseRepository;
 use App\Repository\UTM5\GroupRepository;
@@ -55,6 +56,10 @@ class UserMapper
      * @var PaymentRepository
      */
     private $paymentRepository;
+    /**
+     * @var PassportRepository
+     */
+    private $passportRepository;
 
     /**
      * UserMapper constructor.
@@ -72,7 +77,7 @@ class UserMapper
                                 HouseRepository $houseRepository, GroupRepository $groupRepository,
                                 RouterRepository $routerRepository, ServiceRepository $serviceRepository,
                                 TariffRepository $tariffRepository, PromisedPaymentRepository $promisedPaymentRepository,
-                                PaymentRepository $paymentRepository)
+                                PaymentRepository $paymentRepository, PassportRepository $passportRepository)
     {
         $this->userPreparer = $userPreparer;
         $this->translator = $translator;
@@ -83,6 +88,7 @@ class UserMapper
         $this->tariffRepository = $tariffRepository;
         $this->promisedPaymentRepository = $promisedPaymentRepository;
         $this->paymentRepository = $paymentRepository;
+        $this->passportRepository = $passportRepository;
     }
 
     /**
@@ -409,7 +415,9 @@ class UserMapper
         if(($payments  = $this->paymentRepository->findByAccount($user->getAccount())) instanceof PaymentCollection) {
             $user->setPayments($payments);
         }
-        //dump($user);exit;
+        if(!is_null($passport = $this->passportRepository->findById($user->getId()))) {
+            $user->setPassportO($passport);
+        }
         return $user;
     }
 }

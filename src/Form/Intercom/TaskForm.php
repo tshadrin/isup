@@ -111,7 +111,6 @@ class TaskForm  extends AbstractType
                         'class' => 'btn btn-primary btn-lg btn-primary-sham m-1',
                     ],
                 ])
-
             ;
     }
 

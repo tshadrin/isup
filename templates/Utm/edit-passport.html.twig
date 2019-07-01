@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ parent() }} |
+    {% if user is defined %}
+        Информация о пользователе {{ user.id }}
+    {% elseif users is defined %}
+        Результаты поиска
+    {% else %}
+        База пользователей Истранет
+    {% endif %}
+{% endblock %}
+
+{% block context %}
+    База пользователей Истранет
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+        <form method="POST" action="{{ path('search_default') }}" class="form-inline">
+            <label for="type" class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1">Поиск по</label>
+            <select name="type" class="form-control form-control-sm m-1">
+                <option value="id"  selected>ID</option>
+                <option value="fullname" >Фамилии</option>
+                <option value="login" >Логину</option>
+                <option value="ip" >IP</option>
+                <option value="address" >Адресу</option>
+            </select>
+            <input type="text" name="value" required="required" class="form-control form-control-sm m-1" placeholder="введите для поиска...">
+            <button type="submit" value="Найти" id="search-button" class="btn btn-primary btn-sm btn-primary-sham m-1">Найти <i class="fa fa-search" aria-hidden="true"></i></button>
+        </form>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    <div class="row m-2 block-shadow-10 form-wrapper">
+        <div class="col-12 ml-2">
+        <h3>
+            {{ 'Edit passport data'|trans }}
+        </h3>
+        {{ form_row(form.userId) }}
+        {{ form_row(form.number) }}
+        {{ form_row(form.issued) }}
+        {{ form_row(form.authorityCode) }}
+        {{ form_row(form.registrationAddress) }}
+        {{ form_row(form.birthday) }}
+        <div class="form-group">
+        {{ form_widget(form.save) }}
+        {{ form_widget(form.saveandback) }}
+        </div>
+    </div>
+</div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('userinfo') }}
+{% endblock %}

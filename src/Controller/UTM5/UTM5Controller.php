@@ -2,8 +2,11 @@
 
 namespace App\Controller\UTM5;
 
+use App\Entity\UTM5\Passport;
 use App\Form\SMS\SmsTemplateData;
 use App\Form\SMS\SmsTemplateForm;
+use App\Form\UTM5\PassportForm;
+use App\Form\UTM5\PassportFormData;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Service\BitrixCal\BitirixCalService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,11 +32,13 @@ class UTM5Controller extends AbstractController
     private function calEvents(BitirixCalService $bitirix_cal_service)
     {
         $result = $bitirix_cal_service->getActualCallEvents();
-        $events = $result['events'];
-        $events_count = array_shift($events);
-        if (null !== $events && $events_count > 0) {
-            foreach ($events as $event) {
-                $this->addFlash('info', "{$event[0]['title']}: {$event[0]['description']}");
+        if(array_key_exists('events', $result)) {
+            $events = $result['events'];
+            $events_count = array_shift($events);
+            if (null !== $events && $events_count > 0) {
+                foreach ($events as $event) {
+                    $this->addFlash('info', "{$event[0]['title']}: {$event[0]['description']}");
+                }
             }
         }
     }
@@ -120,7 +125,6 @@ class UTM5Controller extends AbstractController
                 $smsTemplateForm->handleRequest($request);
                 $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();
-                $search_result->getUnserializedPassport();
                 return $this->render('Utm/find.html.twig', $template_data);
             }
             // @todo поправить количество строк на странице
@@ -182,7 +186,6 @@ class UTM5Controller extends AbstractController
      */
     public function UTM5UserCommentDeleteAction($id, UTM5UserCommentService $UTM5_user_comment_service)
     {
-
         try {
             $id = $UTM5_user_comment_service->delete($id);
             $this->addFlash('notice', 'utm5_user_comment.deleted');
@@ -234,5 +237,63 @@ class UTM5Controller extends AbstractController
             $em->flush();
         }
         return $this->json(['refresh' => true]);
+    }
+
+    /**
+     * @param Request $request
+     * @Route("/utm5/passport/{id}/edit/", name="utm5_passport_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
+     */
+    public function editPassportAction(Request $request, int $id, UTM5DbService $UTM5DbService, URFAService $URFAService)
+    {
+
+        $passportFormData = new PassportFormData();
+        try {
+            $user = $UTM5DbService->search($id, 'id');
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('search_default');
+        }
+        $passportFormData->setUserId($user->getId());
+        $form = $this->createForm(PassportForm::class, $passportFormData);
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $passportFormData = $form->getData();
+                $passport = new Passport();
+                $passport->setNumber($passportFormData->getNumber());
+                $passport->setRegistrationAddress($passportFormData->getRegistrationAddress());
+                $passport->setIssued($passportFormData->getIssued());
+                $passport->setAuthorityCode($passportFormData->getAuthorityCode());
+                $passport->setBirthday($passportFormData->getBirthday());
+                try {
+                    $URFAService->editPassport($passport, $user->getId());
+                    if($form['saveandback']->isClicked()) {
+                        return $this->redirectToRoute('search', ['value' => $user->getId(), 'type' => 'id']);
+                    }
+                } catch (\Exception $e) {
+                    $this->addFlash('error', $e->getMessage());
+                }
+            }
+        } else {
+            if (($passport = $user->getPassportO()) instanceof Passport) {
+                if (!is_null($authorityCode = $passport->getAuthorityCode())) {
+                    $passportFormData->setAuthorityCode($authorityCode);
+                }
+                if (!is_null($issued = $passport->getIssued())) {
+                    $passportFormData->setIssued($issued);
+                }
+                if (!is_null($number = $passport->getNumber())) {
+                    $passportFormData->setNumber($number);
+                }
+                if (!is_null($registrationAddress = $passport->getRegistrationAddress())) {
+                    $passportFormData->setRegistrationAddress($registrationAddress);
+                }
+                if (!is_null($birthday = $passport->getBirthday())) {
+                    $passportFormData->setBirthday($birthday);
+                }
+            }
+            $form->setData($passportFormData);
+        }
+        return $this->render('Utm/edit-passport.html.twig', ['form' => $form->createView()]);
     }
 }

@@ -1,5 +1,5 @@
 <div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
-    <div class="{% if user.passport is empty%}user-info-block-warn-inner{% else %}user-info-block-main-inner{% endif %} pt-2 pb-2 pl-3 pr-3">
+    <div class="user-info-block-main-inner pt-2 pb-2 pl-3 pr-3">
         <h4>Основная информация</h4>
         <ol>
             <li><span>ID</span>: {{ user.id }}</li>
@@ -8,7 +8,6 @@
             <li><span>Пароль</span>: <span class="password" onclick="this.innerHTML='{{ user.password }}'">Показать</span></li>
             <li><span>Лицевой счет</span>: {{ user.account }}</li>
             {% if user.juridicalAddress %}<li><span>Юр. адрес</span>: {{ user.juridicalAddress }}</li>{% endif %}
-            <li>{% if user.passport is not empty %}<span>Паспортные данные:</span> {{ user.passport }}{% else %}<h4>Необходимо заполнить паспортные данные</h4>{% endif %}</li>
             <li><span>Адрес дома</span>: {{ user.actualAddress }}</li>
             <li><span>Фактический адрес</span>: {{ user.address }}</li>
             {% if user.homePhone is not null %}<li><span>Домашний телефон</span>:{{ user.homePhone }}</li>{% endif %}
@@ -48,6 +47,22 @@
                 </a>
             </li>
         </ol>
+        <div class="{% if user.passportO is null%}passport-warn{% endif %}">
+        <h4>Паспортные данные</h4>
+        <ol>
+            {% if user.passportO is not null %}
+                {% set msg = "NEED FILL IN"|trans %}
+                <li><span>Серия и номер:</span> {{ user.passportO.number ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
+                <li><span>Кем и когда выдан:</span> {{ user.passportO.issued ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
+                <li><span>Код подразделения:</span> {{ user.passportO.authorityCode ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
+                <li><span>Адрес регистрации:</span> {{ user.passportO.registrationAddress ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
+                <li><span>Дата рождения:</span> {{ user.passportO.birthday ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
+            {% else %}
+                {{ "NEED FEEL IN PASSPORT DATA"|trans }}
+            {% endif %}
+            <li><a class="text-primary" href="{{ path('utm5_passport_edit', {'id': user.id}) }}">{{ 'Edit passport data'|trans }}</a></li>
+        </ol>
+        </div>
     </div>
 </div>
 <div class="user-info-block col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 p-2">
@@ -101,8 +116,10 @@
             {% for ip in user.ips %}
                 <li>{{ ip }}</li>
             {% endfor %}
+            {% if user.ips6 is not null %}
                 <li><span>WAN</span>: {{ user.ips6['wan'] }}</li>
                 <li><span>Local Net</span>: {{ user.ips6['local_net'] }}</li>
+            {% endif %}
         </ol>
         <h4>Цепочка свичей</h4>
         <ol>

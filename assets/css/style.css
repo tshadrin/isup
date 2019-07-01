@@ -210,6 +210,9 @@ div.user-info-block-warn-inner {
     background: #ffdad8;
     box-shadow: 0 0 10px #000;
 }
+.passport-warn {
+    background: #ffdad8;
+}
 /* utm/userinfo */
 div.user-info-block-inner {
     font-size: 1.1rem;

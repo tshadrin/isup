@@ -344,7 +344,7 @@ class Order
         $order = new self;
         $order->setUtmId($user->getId());
         $order->setFullName($user->getFullName());
-        $order->setAddress($user->getActualAddress());
+        $order->setAddress($user->getAddress());
         $ips = $user->getIps();
         $order->setIpAddress($ips[0]);
         if(!is_null($phone = $user->getMobilePhone())) {

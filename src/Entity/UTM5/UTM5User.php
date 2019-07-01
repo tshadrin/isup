@@ -46,6 +46,11 @@ class UTM5User
      * @var string
      */
     protected $passport;
+
+    /**
+     * @var Passport
+     */
+    protected $passportO;
     /**
      * @var \DateTimeImmutable
      */
@@ -188,6 +193,14 @@ class UTM5User
     public function getPassport(): string
     {
         return $this->passport;
+    }
+
+    /**
+     * @return Passport
+     */
+    public function getPassportO(): ?Passport
+    {
+        return $this->passportO;
     }
 
     /**
@@ -487,6 +500,14 @@ class UTM5User
     }
 
     /**
+     * @param Passport $passportO
+     */
+    public function setPassportO(Passport $passportO): void
+    {
+        $this->passportO = $passportO;
+    }
+
+    /**
      * @param \DateTimeImmutable $created
      */
     public function setCreated(\DateTimeImmutable $created): void
@@ -743,10 +764,5 @@ class UTM5User
     public function setRequirementPayment($requirement_payment)
     {
         $this->requirement_payment = $requirement_payment;
-    }
-
-    public function getUnserializedPassport()
-    {
-        //dump($this->passport);exit;
     }
 }

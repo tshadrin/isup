@@ -1,10 +1,16 @@
 <?php
 namespace App\Service\UTM5;
 
+use App\Entity\UTM5\Passport;
 use App\Entity\UTM5\UTM5UrfaUser;
 
 class URFAService
 {
+    const PARAM_NUMBER = 4;
+    const PARAM_ISSUED = 5;
+    const PARAM_REGISTRATION = 6;
+    const PARAM_AUTHORITYCODE = 7;
+    const PARAM_BIRTHDAY = 8;
     /**
      * @var \URFAClient_API
      * Объект соединения с UTM5
@@ -174,8 +180,43 @@ class URFAService
         if(array_key_exists('parameters_size', $user)) {
             $user['parameters_count'] = $user['parameters_size'];
             foreach($user['parameters_count'] as $k => $parameter) {
-                if(3 == $parameter['parameter_id']) {
+                if(3 === $parameter['parameter_id']) {
                     $user['parameters_count'][$k]['parameter_value'] = (1 == $parameter['parameter_value'])?'':1;
+                }
+            }
+        }
+        $this->getUrfa()->rpcf_edit_user_new($user);
+    }
+
+    /**
+     * @param Passport $passport
+     * @param int $id
+     */
+    public function editPassport(Passport $passport, int $id): void
+    {
+        $user = $this->getUserInfo($id);
+        if(array_key_exists('parameters_size', $user)) {
+            $user['parameters_count'] = $user['parameters_size'];
+            foreach ($user['parameters_count'] as $num => $param) {
+                if($param['parameter_id'] === self::PARAM_NUMBER) {
+                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getNumber()))?
+                        $passport->getNumber():'';
+                }
+                if($param['parameter_id'] === self::PARAM_ISSUED) {
+                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getIssued()))?
+                        $passport->getIssued():'';
+                }
+                if($param['parameter_id'] === self::PARAM_REGISTRATION) {
+                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getRegistrationAddress()))?
+                        $passport->getRegistrationAddress():'';
+                }
+                if($param['parameter_id'] === self::PARAM_AUTHORITYCODE) {
+                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getAuthorityCode()))?
+                        $passport->getAuthorityCode():'';
+                }
+                if($param['parameter_id'] === self::PARAM_BIRTHDAY) {
+                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getBirthday()))?
+                        $passport->getBirthday():'';
                 }
             }
         }
