@@ -264,6 +264,7 @@ class UTM5User
                 return $house->__toString();
             }
         }
+        return null;
     }
 
     /**

@@ -2,26 +2,18 @@
 
 namespace App\Controller\UTM5;
 
-use App\Entity\UTM5\Passport;
-use App\Form\SMS\SmsTemplateData;
-use App\Form\SMS\SmsTemplateForm;
-use App\Form\UTM5\PassportForm;
-use App\Form\UTM5\PassportFormData;
-use Knp\Component\Pager\PaginatorInterface;
-use App\Service\BitrixCal\BitirixCalService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use App\Collection\UTM5\UTM5UserCollection;
-use App\Entity\UTM5\UTM5User;
+use App\Entity\UTM5\{ UTM5User, Passport };
 use App\Event\UTM5UserFoundEvent;
-use App\Form\UTM5\UTM5UserCommentForm;
-use App\Service\UTM5\UTM5DbService;
-use App\Service\UTM5\URFAService;
-use App\Service\UTM5\UTM5UserCommentService;
+use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
+use App\Form\UTM5\{ PassportForm, PassportFormData, UTM5UserCommentForm };
+use App\Service\BitrixCal\BitirixCalService;
+use App\Service\UTM5\{ URFAService, UTM5DbService, UTM5UserCommentService };
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse};
 use Symfony\Component\Routing\Annotation\Route;
 
 class UTM5Controller extends AbstractController

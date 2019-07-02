@@ -1,0 +1,31 @@
+version: '3'
+services:
+    isup-nginx:
+        build:
+            context: ./docker/development
+            dockerfile: nginx.docker
+        volumes:
+            - ./:/app
+        depends_on:
+            - isup-php-fpm
+        ports:
+            - "8088:80"
+    isup-php-fpm:
+        build:
+            context: ./docker/development
+            dockerfile: php-fpm.docker
+        environment:
+            APP_DEBUG: 1
+        volumes:
+            - ./:/app
+    isup-php-cli:
+        build:
+            context: ./docker/development
+            dockerfile: php-cli.docker
+        environment:
+            APP_DEBUG: 1
+        volumes:
+            - ./:/app
+            - composer:/root/.composer/cache
+volumes:
+    composer:

@@ -22,7 +22,10 @@ class URFAService
      * @param $parameters
      * В конструкторе просто создает соединение с UTM5
      */
-    public function __construct($parameters) { $this->urfa = \URFAClient::init($parameters); }
+    public function __construct($parameters)
+    {
+        $this->urfa = \URFAClient::init($parameters);
+    }
 
     /**
      * @return \URFAClient_API
