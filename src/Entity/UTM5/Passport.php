@@ -2,95 +2,123 @@
 
 namespace App\Entity\UTM5;
 
+use App\Form\UTM5\PassportFormData;
+
 class Passport
 {
+    /**
+     * @var string
+     */
     private $number;
 
+    /**
+     * @var string
+     */
     private $issued;
 
+    /**
+     * @var string
+     */
     private $registrationAddress;
 
+    /**
+     * @var string
+     */
     private $authorityCode;
 
+    /**
+     * @var string
+     */
     private $birthday;
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getNumber()
+    public function getNumber(): ?string
     {
         return $this->number;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getIssued()
+    public function getIssued(): ?string
     {
         return $this->issued;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getRegistrationAddress()
+    public function getRegistrationAddress(): ?string
     {
         return $this->registrationAddress;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getAuthorityCode()
+    public function getAuthorityCode(): ?string
     {
         return $this->authorityCode;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getBirthday()
+    public function getBirthday(): ?string
     {
         return $this->birthday;
     }
 
     /**
-     * @param mixed $number
+     * @param int $number
      */
-    public function setNumber($number): void
+    public function setNumber(?string $number): void
     {
         $this->number = $number;
     }
 
     /**
-     * @param mixed $issued
+     * @param string $registrationAddress
      */
-    public function setIssued($issued): void
-    {
-        $this->issued = $issued;
-    }
-
-    /**
-     * @param mixed $registrationAddress
-     */
-    public function setRegistrationAddress($registrationAddress): void
+    public function setRegistrationAddress(?string $registrationAddress): void
     {
         $this->registrationAddress = $registrationAddress;
     }
 
     /**
-     * @param mixed $authorityCode
+     * @param string $authorityCode
      */
-    public function setAuthorityCode($authorityCode): void
+    public function setAuthorityCode(?string $authorityCode): void
     {
         $this->authorityCode = $authorityCode;
     }
 
     /**
-     * @param mixed $birthday
+     * @param string $issued
      */
-    public function setBirthday($birthday): void
+    public function setIssued(?string $issued): void
+    {
+        $this->issued = $issued;
+    }
+
+    /**
+     * @param string $birthday
+     */
+    public function setBirthday(?string $birthday): void
     {
         $this->birthday = $birthday;
+    }
+
+    public static function createFromPassportFormData(PassportFormData $passportFormData): self
+    {
+        $passport = new self;
+        $passport->setNumber($passportFormData->getNumber());
+        $passport->setRegistrationAddress($passportFormData->getRegistrationAddress());
+        $passport->setIssued($passportFormData->getIssued());
+        $passport->setAuthorityCode($passportFormData->getAuthorityCode());
+        $passport->setBirthday($passportFormData->getBirthday());
+        return $passport;
     }
 }

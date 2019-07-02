@@ -2,8 +2,8 @@
 
 namespace App\Form\UTM5;
 
+use App\Entity\UTM5\Passport;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class PassportFormData
 {
@@ -41,7 +41,7 @@ class PassportFormData
     /**
      * @return int
      */
-    public function getUserId(): int
+    public function getUserId(): ?int
     {
         return $this->userId;
     }
@@ -97,7 +97,7 @@ class PassportFormData
     /**
      * @param string $issued
      */
-    public function setIssued(string $issued): void
+    public function setIssued(?string $issued): void
     {
         $this->issued = $issued;
     }
@@ -105,7 +105,7 @@ class PassportFormData
     /**
      * @param string $registrationAddress
      */
-    public function setRegistrationAddress(string $registrationAddress): void
+    public function setRegistrationAddress(?string $registrationAddress): void
     {
         $this->registrationAddress = $registrationAddress;
     }
@@ -113,7 +113,7 @@ class PassportFormData
     /**
      * @param string $authorityCode
      */
-    public function setAuthorityCode(string $authorityCode): void
+    public function setAuthorityCode(?string $authorityCode): void
     {
         $this->authorityCode = $authorityCode;
     }
@@ -121,7 +121,7 @@ class PassportFormData
     /**
      * @param string $birthday
      */
-    public function setBirthday(string $birthday): void
+    public function setBirthday(?string $birthday): void
     {
         $this->birthday = $birthday;
     }
@@ -129,8 +129,23 @@ class PassportFormData
     /**
      * @param string $number
      */
-    public function setNumber(string $number): void
+    public function setNumber(?string $number): void
     {
         $this->number = $number;
+    }
+
+    /**
+     * @param Passport $passport
+     * @return PassportFormData
+     */
+    public static function createFromPassport(Passport $passport): self
+    {
+        $passportFormData = new self;
+        $passportFormData->setAuthorityCode($passport->getAuthorityCode());
+        $passportFormData->setIssued($passport->getIssued());
+        $passportFormData->setNumber($passport->getNumber());
+        $passportFormData->setRegistrationAddress($passport->getRegistrationAddress());
+        $passportFormData->setBirthday($passport->getBirthday());
+        return $passportFormData;
     }
 }

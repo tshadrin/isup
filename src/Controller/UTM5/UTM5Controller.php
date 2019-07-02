@@ -15,6 +15,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse};
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UTM5Controller extends AbstractController
 {
@@ -235,30 +236,26 @@ class UTM5Controller extends AbstractController
      * @param Request $request
      * @Route("/utm5/passport/{id}/edit/", name="utm5_passport_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function editPassportAction(Request $request, int $id, UTM5DbService $UTM5DbService, URFAService $URFAService)
+    public function editPassportAction(Request $request, int $id,
+                                       UTM5DbService $UTM5DbService, URFAService $URFAService,
+                                       TranslatorInterface $translator)
     {
-
-        $passportFormData = new PassportFormData();
         try {
             $user = $UTM5DbService->search($id, 'id');
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('search_default');
         }
-        $passportFormData->setUserId($user->getId());
-        $form = $this->createForm(PassportForm::class, $passportFormData);
+
+        $form = $this->createForm(PassportForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $passportFormData = $form->getData();
-                $passport = new Passport();
-                $passport->setNumber($passportFormData->getNumber());
-                $passport->setRegistrationAddress($passportFormData->getRegistrationAddress());
-                $passport->setIssued($passportFormData->getIssued());
-                $passport->setAuthorityCode($passportFormData->getAuthorityCode());
-                $passport->setBirthday($passportFormData->getBirthday());
+                $passport = Passport::createFromPassportFormData($passportFormData);
                 try {
                     $URFAService->editPassport($passport, $user->getId());
+                    $this->addFlash("notice", "Data updated");
                     if($form['saveandback']->isClicked()) {
                         return $this->redirectToRoute('search', ['value' => $user->getId(), 'type' => 'id']);
                     }
@@ -268,21 +265,8 @@ class UTM5Controller extends AbstractController
             }
         } else {
             if (($passport = $user->getPassportO()) instanceof Passport) {
-                if (!is_null($authorityCode = $passport->getAuthorityCode())) {
-                    $passportFormData->setAuthorityCode($authorityCode);
-                }
-                if (!is_null($issued = $passport->getIssued())) {
-                    $passportFormData->setIssued($issued);
-                }
-                if (!is_null($number = $passport->getNumber())) {
-                    $passportFormData->setNumber($number);
-                }
-                if (!is_null($registrationAddress = $passport->getRegistrationAddress())) {
-                    $passportFormData->setRegistrationAddress($registrationAddress);
-                }
-                if (!is_null($birthday = $passport->getBirthday())) {
-                    $passportFormData->setBirthday($birthday);
-                }
+                $passportFormData = PassportFormData::createFromPassport($passport);
+                $passportFormData->setUserId($user->getId());
             }
             $form->setData($passportFormData);
         }
