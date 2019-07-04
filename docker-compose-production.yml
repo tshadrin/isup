@@ -33,34 +33,5 @@ services:
             - isup-redis
     isup-redis:
         image: redis:5.0-alpine
-    isup-phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "8090:80"
-        environment:
-            PMA_HOST: 10.3.7.18
-            PMA_PORT: 3306
-            PMA_ABSOLUTE_URI: /pmasup/
-    isup-phpmyadmin-sber-utm5:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "8091:80"
-        environment:
-            PMA_HOST: 10.3.7.42
-            PMA_PORT: 3306
-            PMA_PASSWORD: /pmasutm5/
-    isup-node-watch:
-        image: node:11.13-alpine
-        volumes:
-            - ./:/app
-        working_dir: /app
-        command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && yarn encore dev --watch"
-    isup-node:
-        build:
-            context: ./docker/development
-            dockerfile: node.docker
-        volumes:
-            - ./:/app
-        working_dir: /app
 volumes:
     composer:
