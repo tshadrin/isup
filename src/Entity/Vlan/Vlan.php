@@ -60,14 +60,14 @@ class Vlan
      */
     public function __construct()
     {
-        $this->deleted = false;
-        $this->points = [null];
+        $this->setDeleted(false);
+        $this->setPoints(['']);
     }
 
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -75,7 +75,7 @@ class Vlan
     /**
      * @return int
      */
-    public function getNumber()
+    public function getNumber(): ?int
     {
         return $this->number;
     }
@@ -83,7 +83,7 @@ class Vlan
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -91,7 +91,7 @@ class Vlan
     /**
      * @return array
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         return $this->points;
     }
@@ -99,55 +99,47 @@ class Vlan
     /**
      * @return bool
      */
-    public function getDeleted()
+    public function isDeleted(): bool
     {
         return $this->deleted;
     }
 
     /**
      * @param int $number
-     * @return $this
      */
-    public function setNumber($number)
+    public function setNumber(int $number): void
     {
-        WAssert::notEmpty($number);
-        $this->number = $number; return $this;
+        $this->number = $number;
     }
 
     /**
      * @param string $name
-     * @return $this
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
-        WAssert::notEmpty($name);
-        $this->name = $name; return $this;
+        $this->name = $name;
     }
 
     /**
-     * @param $points
-     * @return $this
+     * @param array $points
      */
-    public function setPoints($points)
+    public function setPoints(array $points): void
     {
-        WAssert::notEmpty($points);
-        WAssert::minCount($points, 1);
         $this->points = $points;
-        return $this;
     }
 
     /**
      * @param bool $deleted
-     * @return $this
      */
-    public function setDeleted($deleted)
+    public function setDeleted(bool $deleted): void
     {
-        WAssert::notEmpty($deleted);
-        WAssert::boolean($deleted);
-        $this->deleted = $deleted; return $this;
+        $this->deleted = $deleted;
     }
 
-    public function __toString()
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
         return empty($this->number)?'Vlan':$this->number."->".$this->name;
     }

@@ -44,6 +44,18 @@ isup-test-unit:
 isup-assets-dev:
 	docker-compose run --rm isup-node yarn encore dev
 
+build-production:
+	docker build --pull --file=docker/production/nginx.docker --tag ${REGISTRY_ADDRESS}/isup-nginx:${IMAGE_TAG} ./
+	docker build --pull --file=docker/production/php-fpm.docker --tag ${REGISTRY_ADDRESS}/isup-php-fpm:${IMAGE_TAG} ./
+	docker build --pull --file=docker/production/php-cli.docker --tag ${REGISTRY_ADDRESS}/isup-php-cli:${IMAGE_TAG} ./
+	docker build --pull --file=docker/production/redis.docker --tag ${REGISTRY_ADDRESS}/isup-redis:${IMAGE_TAG} ./
+
+push-production:
+	docker push ${REGISTRY_ADDRESS}/isup-nginx:${IMAGE_TAG}
+	docker push ${REGISTRY_ADDRESS}/isup-php-fpm:${IMAGE_TAG}
+	docker push ${REGISTRY_ADDRESS}/isup-php-cli:${IMAGE_TAG}
+	docker push ${REGISTRY_ADDRESS}/isup-redis:${IMAGE_TAG}
+
 cli:
 	docker-compose run --rm isup-php-cli php -v
 

@@ -1,37 +1,36 @@
 version: '3'
 services:
     isup-nginx:
-        build:
-            context: ./docker/development
-            dockerfile: nginx.docker
-        volumes:
-            - ./:/app
+        image: ${REGISTRY_ADDRESS}/isup-nginx:${IMAGE_TAG}
+        restart: always
         depends_on:
             - isup-php-fpm
         ports:
             - "8088:80"
     isup-php-fpm:
-        build:
-            context: ./docker/development
-            dockerfile: php-fpm.docker
+        image: ${REGISTRY_ADDRESS}/isup-php-fpm:${IMAGE_TAG}
+        restart: always
         environment:
-            APP_DEBUG: 1
-        volumes:
-            - ./:/app
+            APP_SECRET: ${ISUP_APP_SECRET}
         depends_on:
-          - isup-redis
+            - isup-redis
     isup-php-cli:
-        build:
-            context: ./docker/development
-            dockerfile: php-cli.docker
+        image: ${REGISTRY_ADDRESS}/isup-php-cli:${IMAGE_TAG}
         environment:
-            APP_DEBUG: 1
-        volumes:
-            - ./:/app
-            - composer:/root/.composer/cache
+            APP_SECRET: ${ISUP_APP_SECRET}
         depends_on:
             - isup-redis
     isup-redis:
-        image: redis:5.0-alpine
+        image: ${REGISTRY_ADDRESS}/isup-redis:${IMAGE_TAG}
+        restart: always
+        volumes:
+            - isup-redis:/data
+        #command:
+        #    - 'redis-server'
+        #    - '--databases 2'
+        #    - '--save 900 1'
+        #    - '--save 300 10'
+        #    - '--save 60 10000'
+        #    - '--requirepass ${ISUP_REDIS_PASSWORD}'
 volumes:
-    composer:
+    isup-redis:

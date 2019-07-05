@@ -1,0 +1,62 @@
+FROM php:7.2-cli AS php-cli-builder
+
+RUN apt-get update && apt-get install -y unzip libssh2-1-dev libssh2-1 \
+    && pecl install -o -f ssh2-1.1.2 \
+    && docker-php-ext-enable ssh2 \
+    && rm -rf /tmp/pear
+
+RUN docker-php-ext-install bcmath
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/bin --filename=composer --quiet
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
+WORKDIR /app
+
+COPY ./composer.json ./composer.lock ./
+
+RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
+
+######################
+
+FROM node:11.13-alpine AS node-builder
+
+RUN apk add git
+
+WORKDIR /app
+
+COPY ./package.json ./yarn.lock ./
+
+RUN yarn install && npm rebuild node-sass
+
+COPY ./ ./
+
+RUN yarn encore production
+
+######################
+
+FROM php:7.2-fpm
+
+RUN apt-get update && apt-get install -y libssh2-1-dev libssh2-1 \
+    && pecl install -o -f ssh2-1.1.2 \
+    && docker-php-ext-enable ssh2 \
+    && pecl install -o -f redis \
+    && docker-php-ext-enable redis \
+    && rm -rf /tmp/pear
+
+RUN docker-php-ext-install opcache pdo_mysql mysqli bcmath
+
+COPY ./docker/production/php/default.ini /usr/local/etc/php/conf.d/default.ini
+
+WORKDIR /app
+
+COPY --from=php-cli-builder /app ./
+COPY --from=node-builder /app/public/build ./public/build
+COPY ./ ./
+
+ENV APP_ENV prod
+
+RUN php bin/console assets:install
+
+RUN php bin/console cache:warmup \
+&& chown -R www-data:www-data ./var
