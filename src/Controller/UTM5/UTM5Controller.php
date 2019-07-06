@@ -3,6 +3,7 @@
 namespace App\Controller\UTM5;
 
 use App\Collection\UTM5\UTM5UserCollection;
+use App\Entity\SMS\SmsTemplate;
 use App\Entity\UTM5\{ UTM5User, Passport };
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
@@ -110,10 +111,8 @@ class UTM5Controller extends AbstractController
                 $form = $this->createForm(UTM5UserCommentForm::class, $comment);
                 $form->handleRequest($request);
                 $smsTemplateData = new SmsTemplateData();
-                if(!is_null($phone = $search_result->getMobilePhone())) {
-                    $smsTemplateData->setPhone($search_result->getMobilePhone());
-                }
                 $smsTemplateData->setUtmId($search_result->getId());
+                $smsTemplateData->setPhone($search_result->getMobilePhone());
                 $smsTemplateForm = $this->createForm(SmsTemplateForm::class, $smsTemplateData);
                 $smsTemplateForm->handleRequest($request);
                 $template_data['smsForm'] = $smsTemplateForm->createView();
@@ -133,7 +132,6 @@ class UTM5Controller extends AbstractController
                 $paged_users->setCustomParameters(['align' => 'center', 'size' => 'small',]);
                 return $this->render('Utm/find.html.twig', ['users' => $paged_users, 'rows' => $rows]);
             }
-
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
         }

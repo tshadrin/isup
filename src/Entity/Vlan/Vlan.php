@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Entity\Vlan;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Webmozart\Assert\Assert as WAssert;
 
 /**
  * Влан
@@ -105,6 +106,14 @@ class Vlan
     }
 
     /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @param int $number
      */
     public function setNumber(int $number): void
@@ -141,6 +150,6 @@ class Vlan
      */
     public function __toString(): string
     {
-        return empty($this->number)?'Vlan':$this->number."->".$this->name;
+        return "{$this->getNumber()} - {$this->getName()}";
     }
 }

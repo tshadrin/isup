@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository\Vlan;
 
-use Doctrine\ORM\EntityRepository;
 use App\Entity\Vlan\Vlan;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Class VlanRepository
@@ -14,7 +15,7 @@ class VlanRepository extends EntityRepository
     /**
      * @return array
      */
-    public function getAll(): array
+    public function findAll(): array
     {
         $query = $this->createQueryBuilder('v')
                 ->where('v.deleted = 0')
@@ -27,10 +28,10 @@ class VlanRepository extends EntityRepository
     }
 
     /**
-     * @param $data
-     * @return \Doctrine\ORM\Query
+     * @param string $data
+     * @return mixed
      */
-    public function getFromAllFields($data)
+    public function findByCriteria(string $data): array
     {
         $query = $this->createQueryBuilder('v')
             ->where('v.deleted = 0')
@@ -50,11 +51,11 @@ class VlanRepository extends EntityRepository
 
     /**
      * Поиск неудаленного VLAN по id
-     * @param $id
+     * @param int $id
      * @return Vlan
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getById($id): Vlan
+    public function findById(int $id): Vlan
     {
         $query = $this->createQueryBuilder('v')
             ->where('v.deleted = 0')
@@ -72,29 +73,37 @@ class VlanRepository extends EntityRepository
      * @param Vlan $phone
      * @throws \Doctrine\ORM\ORMException
      */
-    public function save(Vlan $vlan)
+    public function save(Vlan $vlan): void
     {
         $this->getEntityManager()->persist($vlan);
     }
 
-    public function delete(Vlan $vlan)
+    /**
+     * @param Vlan $vlan
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function delete(Vlan $vlan): void
     {
-        $phone->setDeleted(true);
+        $vlan->setDeleted(true);
         $this->save($vlan);
     }
+
     /**
      * Выполнение запроса
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function flush()
+    public function flush(): void
     {
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return Vlan
+     */
     public function getNew(): Vlan
     {
         return new Vlan();
     }
-
 }
+

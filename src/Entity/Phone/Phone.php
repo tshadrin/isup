@@ -116,10 +116,6 @@ class Phone
      */
     public function __construct()
     {
-        $this->number = '';
-        $this->location = '';
-        $this->name = '';
-        $this->ip = '';
         $this->setLogin('admin');
         $this->setPassword(substr(md5(uniqid(rand(),true)),7,8));
         $this->setDeleted(false);
@@ -136,7 +132,7 @@ class Phone
     /**
      * @return string
      */
-    public function getNumber(): string
+    public function getNumber(): ?string
     {
         return $this->number;
     }
@@ -152,7 +148,7 @@ class Phone
     /**
      * @return string
      */
-    public function getLocation(): string
+    public function getLocation(): ?string
     {
         return $this->location;
     }
@@ -160,7 +156,7 @@ class Phone
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -176,7 +172,7 @@ class Phone
     /**
      * @return string
      */
-    public function getIp(): string
+    public function getIp(): ?string
     {
         return $this->ip;
     }
@@ -211,6 +207,14 @@ class Phone
     public function isDeleted(): bool
     {
         return $this->deleted;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**

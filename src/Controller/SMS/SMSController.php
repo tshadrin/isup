@@ -2,7 +2,8 @@
 
 namespace App\Controller\SMS;
 
-use App\Form\SMS\SmsTemplateData;
+use App\Service\SMS\SenderInterface;
+use App\Service\SMS\smscSender;
 use App\Form\SMS\SmsTemplateForm;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -59,41 +60,23 @@ class SMSController extends AbstractController
 
     /**
      * @param Request $request
-     * @Route("/sms/sendtemplate/", name="sms_sendtemplate", methods={"POST"})
+     * @Route("/sms/sendbytemplate/", name="sms_sendtemplate", methods={"POST"})
      */
-    public function sendSmsTemplate(Request $request, TranslatorInterface $translator) {
+    public function sendSmsByTemplate(Request $request, smscSender $sender) {
         $form = $this->createForm(SmsTemplateForm::class);
         $form->handleRequest($request);
-        $data = $form->getData();
         if($form->isSubmitted() && $form->isValid()) {
-            $this->sendSMSViaSmsc($data->getPhone(),$data->getSmsTemplate()->getMessage());
+            $smsTemplateData = $form->getData();
+            $sender->send($smsTemplateData->getPhone(),$smsTemplateData->getSmsTemplate()->getMessage());
             $this->addFlash("notice", "Message sended");
         } else {
             $errors = $form->getErrors(true);
             foreach ($errors as $error) {
                 $this->addFlash('error', $error->getMessage());
             }
-
         }
-        return $this->redirectToRoute("search", ['type' => 'id', 'value' => $data->getUtmId()]);
+        return $this->redirectToRoute("search", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
 
-    }
-    /**
-     * @param $phone
-     * @param $message
-     */
-    private function sendSMSViaSmsc($phone, $message)
-    {
-        $message = urlencode($message);
-        // Отправка sms
-        if ($ch = curl_init("http://smsc.ru/sys/send.php?login=abex&psw=73GSA8hgiLkGqO1hq08h8&phones=+7{$phone}&mes={$message}&cost=0")) {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_exec($ch);
-            curl_close($ch);
-        } else {
-            throw new \DomainException("Ошибка при отправке сообщения через smsc на номер {$phone}", 5);
-        }
     }
 
     /**

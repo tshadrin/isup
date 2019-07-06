@@ -43,7 +43,7 @@ class SmsTemplate
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -51,7 +51,7 @@ class SmsTemplate
     /**
      * @return string
      */
-    public function getMessage(): string
+    public function getMessage(): ?string
     {
         return $this->message;
     }
@@ -86,11 +86,5 @@ class SmsTemplate
     public function __toString(): string
     {
         return $this->getName();
-    }
-
-    public function __construct()
-    {
-        $this->name = '';
-        $this->message = '';
     }
 }

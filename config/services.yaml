@@ -4,13 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 imports:
-    - { resource: custom/parameters.yaml }
-    - { resource: custom/bitrix_cal.yaml }
-    - { resource: custom/bitrix.yaml }
-    - { resource: custom/ssh.yaml }
-    - { resource: custom/urfa.yaml }
-    - { resource: custom/add_firm.yaml }
-    - { resource: custom/bot.yaml }
+    - { resource: custom_parameters.yaml }
 parameters:
     locale: 'ru'
 
@@ -26,8 +20,8 @@ services:
         calls:
             - method: connect
               arguments:
-                  - '%redis_host%'
-                  - '%redis_port%'
+                  - '%env(REDIS_HOST)%'
+                  - '%env(REDIS_PORT)%'
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
             - '@Redis'
@@ -88,6 +82,9 @@ services:
     App\Service\BitrixCal\BitirixCalService:
         bind:
             $parameters: '%bitrix_cal%'
+    App\Service\SMS\smscSender:
+        bind:
+            $parameters: '%smsc%'
     ### Обработчики событий ###
     App\EventListener\SberbankReport\ConfigureMenuListener:
         tags:

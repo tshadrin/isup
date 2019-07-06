@@ -1,3 +1,0 @@
-parameters:
-    bitrix_cal:
-        path: '%bitrix_cal_path%'

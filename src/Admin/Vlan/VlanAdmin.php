@@ -1,31 +1,33 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Admin\Vlan;
 
 use Sonata\AdminBundle\Admin\AbstractAdmin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
-use Sonata\AdminBundle\Datagrid\DatagridMapper;
-use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Sonata\AdminBundle\Datagrid\{ ListMapper, DatagridMapper };
+use Sonata\AdminBundle\Show\ShowMapper;
+use Symfony\Component\Form\Extension\Core\Type\{ CollectionType, IntegerType, TextType };
 
 class VlanAdmin extends AbstractAdmin
 {
-    protected function configureFormFields(FormMapper $formMapper)
+    protected function configureFormFields(FormMapper $formMapper): void
     {
         $formMapper->add('number', IntegerType::class);
         $formMapper->add('name', TextType::class);
-        $formMapper->add('points', CollectionType::class,[
-            'required' => false,
-            'allow_add' => true,
-            'allow_delete' => true,
-            'prototype' => true,
-            ]);
-        $formMapper->add('deleted', null,['required' => false]);
+        $formMapper->add(
+            'points',
+            CollectionType::class,[
+                'required' => false,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                ]
+        );
+        $formMapper->add('deleted', null, ['required' => false]);
     }
 
-    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
+    protected function configureDatagridFilters(DatagridMapper $datagridMapper): void
     {
         $datagridMapper->add('number');
         $datagridMapper->add('name');
@@ -33,7 +35,7 @@ class VlanAdmin extends AbstractAdmin
         $datagridMapper->add('deleted');
     }
 
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper->addIdentifier('number')
             ->add('name', null, ['editable' => true])
@@ -49,7 +51,7 @@ class VlanAdmin extends AbstractAdmin
 
     }
 
-    protected function configureShowFields(ShowMapper $showMapper)
+    protected function configureShowFields(ShowMapper $showMapper): void
     {
         $showMapper
             ->add('number')

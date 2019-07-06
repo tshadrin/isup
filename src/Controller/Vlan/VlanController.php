@@ -1,15 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\Vlan;
 
-use Knp\Component\Pager\PaginatorInterface;
-use App\Form\Vlan\VlanFilterForm;
-use App\Form\Vlan\VlanForm;
+use App\Form\Vlan\{ VlanFilterForm, VlanForm };
 use App\Repository\Vlan\VlanRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse};
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -30,7 +28,12 @@ class VlanController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/vlan/{filter}/list/", name="vlan_default", defaults={"filter": "_all"}, methods={"GET"})
      */
-    public function getAllVlansAction($filter, Request $request, Session $session, PaginatorInterface $paginator, VlanRepository $vlan_repository)
+    public function getAllVlansAction(
+        string $filter,
+        Request $request,
+        Session $session,
+        PaginatorInterface $paginator,
+        VlanRepository $vlan_repository)
     {
         $vlan_filter_form = $this->createForm(VlanFilterForm::class);
 
@@ -40,11 +43,11 @@ class VlanController extends AbstractController
 
         try {
             if ("_all" === $filter) {
-                $vlans = $vlan_repository->getAll();
+                $vlans = $vlan_repository->findAll();
             } else {
                 $vlan_filter_form->handleRequest($request);
                 $vlan_filter_form->setData(['search' => $filter]);
-                $vlans = $vlan_repository->getFromAllFields($filter);
+                $vlans = $vlan_repository->findByCriteria($filter);
             }
         } catch (\DomainException $e) {
             $this->addFlash("error", $e->getMessage());
@@ -74,10 +77,10 @@ class VlanController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/vlan/{id}/edit/", name="vlan_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function editVlanAction($id, Request $request, VlanRepository $vlan_repository)
+    public function editVlanAction(int $id, Request $request, VlanRepository $vlan_repository)
     {
         try {
-            $vlan = $vlan_repository->getById($id);
+            $vlan = $vlan_repository->findById($id);
             $form = $this->createForm(VlanForm::class, $vlan);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
@@ -126,10 +129,10 @@ class VlanController extends AbstractController
      * @return RedirectResponse
      * @Route("/vlan/{id}/delete", name="vlan_delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function deleteVlanAction($id, VlanRepository $vlan_repository)
+    public function deleteVlanAction(int $id, VlanRepository $vlan_repository): RedirectResponse
     {
         try{
-            $vlan = $vlan_repository->getById($id);
+            $vlan = $vlan_repository->findById($id);
             $vlan_repository->delete($vlan);
             $vlan_repository->flush();
             $this->addFlash('notice', 'vlan.deleted');
@@ -138,7 +141,7 @@ class VlanController extends AbstractController
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
         }
-        return $this->redirectToRoute('phone_default');
+        return $this->redirectToRoute('vlan_default');
     }
 
     /**
@@ -147,7 +150,7 @@ class VlanController extends AbstractController
      * @return RedirectResponse
      * @Route("/vlan/find/", name="vlan_find_process", methods={"POST"})
      */
-    public function findVlanProcessAction(Request $request)
+    public function findVlanProcessAction(Request $request): RedirectResponse
     {
         $form = $this->createForm(VlanFilterForm::class);
         $form->handleRequest($request);

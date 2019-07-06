@@ -30,7 +30,7 @@ security:
             logout:       true
             anonymous:    true
             remember_me:
-                secret:      "%secret%"
+                secret:      "%kernel.secret%"
                 lifetime: 604800
                 path:     /
                 domain:   ~

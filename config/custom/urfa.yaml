@@ -1,7 +1,0 @@
-parameters:
-    urfa:
-        login: "%urfa_login%"
-        password: "%urfa_password%"
-        protocol: "%urfa_protocol%"
-        address: "%urfa_address%"
-        api: "%urfa_api%"

@@ -1,6 +1,0 @@
-parameters:
-    bitrix:
-        path: '%bitrix_path%'
-        user_id: '%bitrix_user_id%'
-        key: '%bitrix_key%'
-        chat_id: '%bitrix_chat_id%'

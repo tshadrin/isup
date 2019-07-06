@@ -1,14 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Form\Vlan;
 
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-//use Sonata\AdminBundle\Form\Type\CollectionType;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\{ AbstractType, FormBuilderInterface };
+use Symfony\Component\Form\Extension\Core\Type\{ TextType, SubmitType, IntegerType, CollectionType };
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Форма редактирования/добавления влана
@@ -21,7 +18,7 @@ class VlanForm extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('number',
             IntegerType::class,
@@ -79,7 +76,7 @@ class VlanForm extends AbstractType
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => '\App\Entity\Vlan\Vlan',

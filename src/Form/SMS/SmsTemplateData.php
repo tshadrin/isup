@@ -26,7 +26,7 @@ class SmsTemplateData
     private $utmId;
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPhone(): ?string
     {
@@ -34,7 +34,7 @@ class SmsTemplateData
     }
 
     /**
-     * @return SmsTemplate
+     * @return SmsTemplate|null
      */
     public function getSmsTemplate(): ?SmsTemplate
     {
@@ -42,7 +42,7 @@ class SmsTemplateData
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getUtmId(): ?int
     {
@@ -50,9 +50,9 @@ class SmsTemplateData
     }
 
     /**
-     * @param string $phone
+     * @param string|null $phone
      */
-    public function setPhone(string $phone): void
+    public function setPhone(?string $phone): void
     {
         $this->phone = $phone;
     }
