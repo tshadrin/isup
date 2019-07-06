@@ -6,6 +6,9 @@
 imports:
     - { resource: custom_parameters.yaml }
 parameters:
+    add_firm:
+        files_dir: '%kernel.project_dir%/public/files'
+        ippark_group: 910
     locale: 'ru'
 
 services:

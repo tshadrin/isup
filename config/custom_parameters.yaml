@@ -1,7 +1,4 @@
 parameters:
-    add_firm:
-        files_dir: '%env(PAYMENTS_FIRM_FILES_PATH)%'
-        ippark_group: '%env(PAYMENTS_FIRM_IPPARK_GROUP)%'
     bitrix:
         path: '%env(BITRIX_API_PATH)%'
         user_id: '%env(BITRIX_API_USER_ID)%'
