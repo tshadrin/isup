@@ -3,12 +3,60 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
-imports:
-    - { resource: custom_parameters.yaml }
 parameters:
     add_firm:
         files_dir: '%kernel.project_dir%/public/files'
         ippark_group: 910
+    urfa:
+        login: "%env(URFA_LOGIN)%"
+        password: "%env(URFA_PASSWORD)%"
+        protocol: "auto"
+        address: "%env(URFA_HOST)%"
+        api: "%kernel.root_dir%/../vendor/k-shym/urfa-client/xml/api_53-005.xml"
+    bitrix:
+        path: '%env(BITRIX_API_PATH)%'
+        user_id: '%env(BITRIX_API_USER_ID)%'
+        key: '%env(BITRIX_API_KEY)%'
+        chat_id: '%env(BITRIX_API_CHAT_ID)%'
+    bitrix_cal:
+        path: '%env(BITRIX_CALENDAR_PATH)%'
+    bot:
+        bot_path: '%env(BOT_PATH)%'
+    smsc:
+        url: "%env(SMSC_URL)%"
+        login: "%env(SMSC_LOGIN)%"
+        password: "%env(SMSC_PASSWORD)%"
+    ssh:
+        servers:
+            66: 'BUZ'
+            67: 'DEDOVSK'
+            68: 'DEDOVSK'
+            35: 'DEDOVSK'
+            34: 'DEDOVSK'
+            58: 'DB'
+            52: 'GLEB'
+            53: 'SNEG'
+            62: 'GLEB'
+            49: 'GREEN'
+            60: 'KOTEL'
+            57: 'MAN'
+            55: 'NUTR'
+            59: 'IPK'
+            61: 'AGRO'
+            54: 'SHNYR'
+            27: 'SOUTH'
+            50: 'VEI'
+            26: 'GIDRO'
+            40: 'A@'
+            39: 'A@'
+            44: 'L$'
+            45: 'L$'
+            37: 'L%'
+            48: 'SNEG'
+            51: 'SLOB'
+        prefix: '%env(SSH_PASSWORD_PREFIX)%'
+        suffix: '%env(SSH_PASSWORD_SUFFIX)%'
+        user: '%env(SSH_USER)%'
     locale: 'ru'
 
 services:
