@@ -17,7 +17,7 @@ class CommutatorController extends AbstractController
      * @param $ip
      * @Route("/switchinfo/show/{ip}", name="switch_info_show", methods={"GET"}, requirements={"ip": "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z"})
      */
-    public function showInfoSwitchAction($ip, CommutatorRepository $commutatorRepository, BotService $botService)
+    public function showInfoSwitch($ip, CommutatorRepository $commutatorRepository, BotService $botService)
     {
         $data = [];
         try {

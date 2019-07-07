@@ -84,7 +84,7 @@ class UTM5Controller extends AbstractController
      * @return Response
      * @Route("/search/{type}/{value}/", name="search", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login"})
      */
-    public function searchAction($type,
+    public function search($type,
                                  $value,
                                  Request $request,
                                  BitirixCalService $bitirix_cal_service,
@@ -144,7 +144,7 @@ class UTM5Controller extends AbstractController
      * @return Response
      * @Route("/search/", name="search_default", methods={"GET"})
      */
-    public function searchDefaultAction(BitirixCalService $bitirix_cal_service)
+    public function searchDefault(BitirixCalService $bitirix_cal_service)
     {
         $this->calEvents($bitirix_cal_service);
         return $this->render('Utm/find.html.twig');
@@ -158,7 +158,7 @@ class UTM5Controller extends AbstractController
      * @return RedirectResponse
      * @Route("/search/", name="search_post", methods={"POST"})
      */
-    public function searchPostAction(Request $request)
+    public function searchPost(Request $request)
     {
         if ($request->request->has('type') && $request->request->has('value')) {
             $type = $request->request->getAlpha('type');
@@ -175,7 +175,7 @@ class UTM5Controller extends AbstractController
      * @return RedirectResponse
      * @Route("/utm5-user-comment/{id}/delete/", name="utm5_user_comment_delete", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function UTM5UserCommentDeleteAction($id, UTM5UserCommentService $UTM5_user_comment_service)
+    public function UTM5UserCommentDelete($id, UTM5UserCommentService $UTM5_user_comment_service)
     {
         try {
             $id = $UTM5_user_comment_service->delete($id);
@@ -196,7 +196,7 @@ class UTM5Controller extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/utm5-user-comment/add/", name="utm5_user_comment_add", methods={"POST"})
      */
-    public function  UTM5UserCommentAddAction(Request $request, UTM5UserCommentService $UTM5_user_comment_service)
+    public function  UTM5UserCommentAdd(Request $request, UTM5UserCommentService $UTM5_user_comment_service)
     {
         $comment = $UTM5_user_comment_service->getNewUTM5UserComment($this->getUser());
         $form = $this->createForm(UTM5UserCommentForm::class, $comment);
@@ -218,7 +218,7 @@ class UTM5Controller extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/search/rop/", name="utm5_rows_on_page", methods={"POST"})
      */
-    public function rowsOnPageAction(Request $request)
+    public function rowsOnPage(Request $request)
     {
         $user = $this->getUser();
         if($request->request->has('rows')) {
@@ -234,7 +234,7 @@ class UTM5Controller extends AbstractController
      * @param Request $request
      * @Route("/utm5/passport/{id}/edit/", name="utm5_passport_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function editPassportAction(Request $request, int $id,
+    public function editPassport(Request $request, int $id,
                                        UTM5DbService $UTM5DbService, URFAService $URFAService,
                                        TranslatorInterface $translator)
     {

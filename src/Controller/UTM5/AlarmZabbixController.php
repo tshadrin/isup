@@ -25,7 +25,7 @@ class AlarmZabbixController extends AbstractController
      * @throws \Exception
      * @Route("/zabbix/alarm/", name="alarm_zabbix", methods={"GET", "POST"})
      */
-    public function alarmAction(Request $request,
+    public function alarm(Request $request,
                                 BitrixRestService $bitrix_rest_service,
                                 UTM5DbService $UTM5_db_service,
                                 LoggerInterface $logger)

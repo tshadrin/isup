@@ -23,7 +23,7 @@ class IntercomController extends AbstractController
      * @return Response
      * @Route("/intercom/", name="intercom_index", methods={"GET"})
      */
-    public function indexAction(Request $request, IntercomService $intercomService): Response
+    public function index(Request $request, IntercomService $intercomService): Response
     {
         try {
             $tasks = $intercomService->getAllTasksPaginate($request->query->getInt('page', 1));
@@ -41,7 +41,7 @@ class IntercomController extends AbstractController
      * @return RedirectResponse
      * @Route("/intercom/{id}/delete/", name="intercom_delete", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function deleteAction(int $id, IntercomService $intercomService): RedirectResponse
+    public function delete(int $id, IntercomService $intercomService): RedirectResponse
     {
         try {
             $intercomService->deleteTask($id);
@@ -60,7 +60,7 @@ class IntercomController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/intercom/{id}/edit/", name="intercom_edit", methods={"GET","POST"}, requirements={"id": "\d+"})
      */
-    public function editAction(int $id, Request $request, IntercomService $intercomService)
+    public function edit(int $id, Request $request, IntercomService $intercomService)
     {
         try {
             $task = $intercomService->getOneTaskById($id);
@@ -88,7 +88,7 @@ class IntercomController extends AbstractController
      * @throws \Exception
      * @Route("/intercom/add/", name="intercom_add", methods={"GET", "POST"})
      */
-    public function addAction(Request $request, IntercomService $intercomService)
+    public function add(Request $request, IntercomService $intercomService)
     {
         $task = $intercomService->getNewTask();
         $form = $this->createForm(TaskForm::class, $task);

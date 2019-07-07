@@ -18,7 +18,7 @@ class SSHController extends AbstractController
      * @return JsonResponse
      * @Route("/ssh/tmpopen/{account}", name="ssh_tmpopen", methods={"GET"}, requirements={"account": "\d+"})
      */
-    public function tmpOpenAction($account, SSHService $SSHService, URFAService $URFAService)
+    public function tmpOpen($account, SSHService $SSHService, URFAService $URFAService)
     {
         $user = $URFAService->getUserByAccount($account);
         $result = [];
@@ -44,7 +44,7 @@ class SSHController extends AbstractController
      * @return JsonResponse
      * @Route("/ssh/diagnostic/{server}/{ip}/{command}", name="ssh_diagnostic", methods={"GET"}, requirements={"command": "ping|kk|kkip|spd|itu|port"})
      */
-    public function diagnosticAction($server, $ip, $command, SSHService $SSHService)
+    public function diagnostic($server, $ip, $command, SSHService $SSHService)
     {
         $diag = $SSHService->getConnection($server);
         if ("ping" == $command)
@@ -76,7 +76,7 @@ class SSHController extends AbstractController
      * @return JsonResponse
      * @Route("/ssh/checkturbo/{account}", name="ssh_checkturbo", methods={"GET"}, requirements={"account": "\d+"})
      */
-    public function checkTurboAction(int $account, SSHService $SSHService, URFAService $URFAService): JsonResponse
+    public function checkTurbo(int $account, SSHService $SSHService, URFAService $URFAService): JsonResponse
     {
         $user = $URFAService->getUserByAccount($account);
         foreach ($user->getRouters() as $router) {
@@ -98,7 +98,7 @@ class SSHController extends AbstractController
      * @return JsonResponse
      * @Route("/ssh/turboopen/{id}/{sid}", name="ssh_turboopen", methods={"GET"}, requirements={"id": "\d+", "sid": "\d+"})
      */
-    public function turboOpenAction(int $id, int $sid, SSHService $SSHService, URFAService $URFAService): JsonResponse
+    public function turboOpen(int $id, int $sid, SSHService $SSHService, URFAService $URFAService): JsonResponse
     {
         $user = $URFAService->getUserByAccount($id);
         $checkResult = false;

@@ -50,7 +50,7 @@ services:
             PMA_PORT: 3306
             PMA_PASSWORD: /pmasutm5/
     isup-node-watch:
-        image: node:11.13-alpine
+        image: node:12.6-alpine
         volumes:
             - ./:/app
         working_dir: /app
@@ -62,7 +62,7 @@ services:
         volumes:
             - ./:/app
         working_dir: /app
-    manager-mysql:
+    isup-mysql:
         build:
             context: ./docker/development
             dockerfile: mysql.docker
@@ -73,10 +73,10 @@ services:
             MYSQL_PASSWORD: 123
         volumes:
             - mysql:/var/lib/mysql
-    mailer:
+    isup-mailer:
         image: mailhog/mailhog
         ports:
-            - "8082:8025"
+            - "8089:8025"
 volumes:
     composer:
     mysql:

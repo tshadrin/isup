@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity\SMS;
 
@@ -15,12 +16,12 @@ class SmsTemplateTest extends TestCase
 
         $smsTemplate = new SmsTemplate();
         $smsTemplate->setId($id);
-        self::assertEquals($id, $smsTemplate->getId());
         $smsTemplate->setName($name);
-        self::assertEquals($name, $smsTemplate->getName());
         $smsTemplate->setMessage($message);
+
+        self::assertEquals($id, $smsTemplate->getId());
+        self::assertEquals($name, $smsTemplate->getName());
         self::assertEquals($message, $smsTemplate->getMessage());
         self::assertEquals($name, $smsTemplate->__toString());
     }
-
 }

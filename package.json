@@ -2,6 +2,8 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
     "@symfony/webpack-encore": "^0.27.0",
+    "core-js": "^3.0.0",
+    "webpack-notifier": "^1.6.0",
     "autosize": "https://github.com/jackmoore/autosize.git",
     "jquery-date-range-picker": "https://github.com/longbill/jquery-date-range-picker.git",
     "node-sass": "^4.11.0",
@@ -13,5 +15,7 @@
     "bootstrap-confirmation2": "^4.1.0",
     "expose-loader": "^0.7.5",
     "jquery": "^3.4.0"
-  }
+  },
+  "license": "UNLICENSED",
+  "private": true
 }

@@ -28,7 +28,7 @@ class VlanController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/vlan/{filter}/list/", name="vlan_default", defaults={"filter": "_all"}, methods={"GET"})
      */
-    public function getAllVlansAction(
+    public function getAll(
         string $filter,
         Request $request,
         Session $session,
@@ -77,7 +77,7 @@ class VlanController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/vlan/{id}/edit/", name="vlan_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function editVlanAction(int $id, Request $request, VlanRepository $vlan_repository)
+    public function edit(int $id, Request $request, VlanRepository $vlan_repository)
     {
         try {
             $vlan = $vlan_repository->findById($id);
@@ -107,7 +107,7 @@ class VlanController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/vlan/add/", name="vlan_add", methods={"GET", "POST"})
      */
-    public function addVlanAction(Request $request, VlanRepository $vlan_repository)
+    public function add(Request $request, VlanRepository $vlan_repository)
     {
         $vlan = $vlan_repository->getNew();
         $form = $this->createForm(VlanForm::class, $vlan);
@@ -129,7 +129,7 @@ class VlanController extends AbstractController
      * @return RedirectResponse
      * @Route("/vlan/{id}/delete", name="vlan_delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function deleteVlanAction(int $id, VlanRepository $vlan_repository): RedirectResponse
+    public function delete(int $id, VlanRepository $vlan_repository): RedirectResponse
     {
         try{
             $vlan = $vlan_repository->findById($id);
@@ -150,7 +150,7 @@ class VlanController extends AbstractController
      * @return RedirectResponse
      * @Route("/vlan/find/", name="vlan_find_process", methods={"POST"})
      */
-    public function findVlanProcessAction(Request $request): RedirectResponse
+    public function findProcess(Request $request): RedirectResponse
     {
         $form = $this->createForm(VlanFilterForm::class);
         $form->handleRequest($request);

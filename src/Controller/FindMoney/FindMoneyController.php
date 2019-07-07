@@ -22,7 +22,7 @@ class FindMoneyController extends AbstractController
      * @return Response
      * @Route("/findmoney/", name="find_money", methods={"GET"})
      */
-    public function indexAction(Request $request, FindMoneyService $findMoneyService): Response
+    public function index(Request $request, FindMoneyService $findMoneyService): Response
     {
         $template_data = [];
         try {

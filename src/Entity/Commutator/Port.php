@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Commutator;
 
@@ -13,134 +14,134 @@ use Doctrine\ORM\Mapping as ORM;
 class Port
 {
     /**
-     * @var
+     * @var int
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
     private $id;
     /**
-     * @var
+     * @var int
      * @ORM\Column(type="integer")
      */
     private $number;
     /**
-     * @var
+     * @var string
      * @ORM\Column(type="string", length=1000)
      */
     private $description;
     /**
-     * @var
+     * @var PortType
      * @ORM\ManyToOne(targetEntity="App\Entity\Commutator\PortType")
      * @ORM\JoinColumn(name="type", referencedColumnName="id", nullable=true)
      */
     private $type;
     /**
-     * @var
+     * @var int
      * @ORM\Column(type="integer")
      */
     private $speed;
     /**
-     * @var
+     * @var Commutator
      * @ORM\ManyToOne(targetEntity="App\Entity\Commutator\Commutator", inversedBy="ports")
      * @ORM\JoinColumn(name="commutator", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private $commutator;
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getNumber()
+    public function getNumber(): int
     {
         return $this->number;
     }
 
     /**
-     * @return mixed
+     * @return PortType
      */
-    public function getType()
+    public function getType(): PortType
     {
         return $this->type;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getSpeed()
+    public function getSpeed(): int
     {
         return $this->speed;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
-     * @return mixed
+     * @return Commutator
      */
-    public function getCommutator()
+    public function getCommutator(): ?Commutator
     {
         return $this->commutator;
     }
 
     /**
-     * @param mixed $number
+     * @param int $id
      */
-    public function setNumber($number): void
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param int $number
+     */
+    public function setNumber(int $number): void
     {
         $this->number = $number;
     }
 
     /**
-     * @param mixed $type
+     * @param PortType $type
      */
-    public function setType($type): void
+    public function setType(PortType $type): void
     {
         $this->type = $type;
     }
 
     /**
-     * @param mixed $speed
+     * @param int $speed
      */
-    public function setSpeed($speed): void
+    public function setSpeed(int $speed): void
     {
         $this->speed = $speed;
     }
 
     /**
-     * @param mixed $description
+     * @param string $description
      */
-    public function setDescription($description): void
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
     /**
-     * @param mixed $commutator
+     * @param Commutator $commutator
      */
-    public function setCommutator($commutator): void
+    public function setCommutator(?Commutator $commutator): void
     {
         $this->commutator = $commutator;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id): void
-    {
-        $this->id = $id;
     }
 
     public function __toString()

@@ -20,7 +20,7 @@ class AjaxController extends BaseController
      * @return JsonResponse
      * @Route("/ajax/showhide/", name="ajax_showhide", methods={"GET"}, options={"expose": true})
      */
-    public function showHideAction(Request $request, Session $session)
+    public function showHide(Request $request, Session $session)
     {
         if($request->query->has('block_name') && $request->query->has('value')) {
             $session->set('hide_block_'.$request->query->get('block_name'), $request->query->getBoolean('value'));

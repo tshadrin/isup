@@ -30,7 +30,7 @@ class PhoneController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/phone/{filter}/list/", name="phone_default", defaults={"filter": "_all"}, methods={"GET"})
      */
-    public function getAllPhonesAction(
+    public function getAllPhones(
         $filter,
         Request $request,
         Session $session,
@@ -80,7 +80,7 @@ class PhoneController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/phone/{id}/edit/", name="phone_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function editPhoneAction($id, Request $request, PhoneRepository $phone_repository)
+    public function editPhone($id, Request $request, PhoneRepository $phone_repository)
     {
         try {
             $phone = $phone_repository->getById($id);
@@ -108,7 +108,7 @@ class PhoneController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/phone/add/", name="phone_add", methods={"GET", "POST"})
      */
-    public function addPhoneAction(Request $request, PhoneRepository $phone_repository)
+    public function addPhone(Request $request, PhoneRepository $phone_repository)
     {
         $phone = $phone_repository->getNew();
         $form = $this->createForm(PhoneForm::class, $phone);
@@ -131,7 +131,7 @@ class PhoneController extends AbstractController
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @Route("/phone/{id}/delete", name="phone_delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function deletePhoneAction($id, PhoneRepository $phone_repository)
+    public function deletePhone($id, PhoneRepository $phone_repository)
     {
         try{
             $phone = $phone_repository->getById($id);
@@ -152,7 +152,7 @@ class PhoneController extends AbstractController
      * @return RedirectResponse
      * @Route("/phone/find/", name="phone_find_process", methods={"POST"})
      */
-    public function findPhoneProcessAction(Request $request)
+    public function findPhoneProcess(Request $request)
     {
         $form = $this->createForm(PhoneFilterForm::class);
         $form->handleRequest($request);
@@ -169,7 +169,7 @@ class PhoneController extends AbstractController
      * @return bool|RedirectResponse
      * @Route("/phone/{filter}/list/", name="phone_rows", defaults={"filter": "_all"}, methods={"POST"})
      */
-    public function setRowsOnPageAction(Request $request, Session $session)
+    public function setRowsOnPage(Request $request, Session $session)
     {
         $form = $this->createForm(RowsForm::class);
         $form->handleRequest($request);

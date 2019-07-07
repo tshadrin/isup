@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Commutator;
 
@@ -22,22 +23,22 @@ class Commutator
      */
     private $id;
     /**
-     * @var
+     * @var string
      * @ORM\Column(type="string", length=100)
      */
     private $name;
     /**
-     * @var
+     * @var string
      * @ORM\Column(type="string", length=100)
      */
     private $model;
     /**
-     * @var
+     * @var string
      * @ORM\Column(type="string", length=40, unique=true)
      */
     private $ip;
     /**
-     * @var
+     * @var string
      * @ORM\Column(type="string", length=40)
      */
     private $mac;
@@ -48,119 +49,120 @@ class Commutator
     private $notes;
 
     /**
+     * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Entity\Commutator\Port", mappedBy="commutator", orphanRemoval=true, cascade={"persist"})
      * @ORM\OrderBy({"number" = "ASC"})
      */
     private $ports;
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getIp()
+    public function getIp(): string
     {
         return $this->ip;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getMac()
+    public function getMac(): string
     {
         return $this->mac;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getModel()
+    public function getModel(): string
     {
         return $this->model;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getNotes()
+    public function getNotes(): string
     {
         return $this->notes;
     }
 
     /**
-     * @return mixed
+     * @return ArrayCollection
      */
-    public function getPorts()
+    public function getPorts(): ArrayCollection
     {
         return $this->ports;
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      */
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
     /**
-     * @param mixed $ip
+     * @param string $ip
      */
-    public function setIp($ip): void
+    public function setIp(string $ip): void
     {
         $this->ip = $ip;
     }
 
     /**
-     * @param mixed $mac
+     * @param string $mac
      */
-    public function setMac($mac): void
+    public function setMac(string $mac): void
     {
         $this->mac = $mac;
     }
 
     /**
-     * @param mixed $model
+     * @param string $model
      */
-    public function setModel($model): void
+    public function setModel(string $model): void
     {
         $this->model = $model;
     }
 
     /**
-     * @param mixed $notes
+     * @param string $notes
      */
-    public function setNotes($notes): void
+    public function setNotes(string $notes): void
     {
         $this->notes = $notes;
     }
 
     /**
-     * @param mixed $ports
+     * @param ArrayCollection $ports
      */
-    public function setPorts($ports)
+    public function setPorts(ArrayCollection $ports): void
     {
         foreach($ports as $port) {
             $port->setCommutator($this);
@@ -168,7 +170,10 @@ class Commutator
         }
     }
 
-    public function addPort(Port $port)
+    /**
+     * @param Port $port
+     */
+    public function addPort(Port $port): void
     {
         if ($this->ports->contains($port)) {
             return;
@@ -177,28 +182,39 @@ class Commutator
         $this->ports[] = $port;
     }
 
-    public function removePort(Port $port)
+    /**
+     * @param Port $port
+     */
+    public function removePort(Port $port): void
     {
         $this->ports->removeElement($port);
         // установите владеющую сторону, как null
         $port->setCommutator(null);
     }
 
+    /**
+     * Commutator constructor.
+     */
     public function __construct()
     {
         $this->ports = new ArrayCollection();
     }
 
-    public function __toString()
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
-         return (string)$this->getName();
+         return $this->getName();
     }
 
-    public function onSonataPreUpdatePersist()
+    /**
+     * При добавлении портов через sonata admin перед сохранением присваиваем каждому порту коммутатор
+     */
+    public function onSonataPreUpdatePersist(): void
     {
         foreach($this->ports as $port) {
             $port->setCommutator($this);
         }
-        //dump($this);exit;
     }
 }

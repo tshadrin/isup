@@ -14,7 +14,7 @@ class BitrixCalController extends AbstractController
      * @return JsonResponse
      * @Route("/api/getbitrixcal", name="get_bitrix_cal", methods={"GET"})
      */
-    public function indexAction(BitirixCalService $bitirixCalService): JsonResponse
+    public function index(BitirixCalService $bitirixCalService): JsonResponse
     {
         return $this->json($bitirixCalService->getActualCallEvents());
     }

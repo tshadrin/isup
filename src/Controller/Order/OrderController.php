@@ -28,7 +28,7 @@ class OrderController extends AbstractController
      * @return RedirectResponse
      * @Route("/order/{id}/delete/", name="order_delete", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function deleteAction($id, OrderService $orderService, AuthorizationCheckerInterface $authorizationChecker, TranslatorInterface $translator)
+    public function delete($id, OrderService $orderService, AuthorizationCheckerInterface $authorizationChecker, TranslatorInterface $translator)
     {
         try {
             if ($authorizationChecker->isGranted('ROLE_ORDER_MODERATOR')) {
@@ -50,7 +50,7 @@ class OrderController extends AbstractController
      * @return JsonResponse
      * @Route("/order/filter/", name="order_filter", methods={"POST"})
      */
-    public function filterAction(Request $request, Session $session, TranslatorInterface $translator)
+    public function filter(Request $request, Session $session, TranslatorInterface $translator)
     {
         if ($request->request->has('filter')) {
             $session->set('filter', $request->request->get('filter'));
@@ -68,7 +68,7 @@ class OrderController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/order/{id}/print/", name="order_print", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function printAction($id, OrderService $orderService, UTM5UserRepository $UTM5UserRepository)
+    public function print($id, OrderService $orderService, UTM5UserRepository $UTM5UserRepository)
     {
         try {
             $order = $orderService->getOrder($id);
@@ -92,7 +92,7 @@ class OrderController extends AbstractController
      * @throws \Exception
      * @Route("/orders/", name="orders_index", methods={"GET", "POST"}, options={"expose": true})
      */
-    public function indexAction(Request $request, OrderService $orderService, Session $session, UTM5UserRepository $UTM5UserRepository)
+    public function index(Request $request, OrderService $orderService, Session $session, UTM5UserRepository $UTM5UserRepository)
     {
         $hideid1 = $session->get('hide_id1', false);
         $hideid2 = $session->get('hide_id2', false);
@@ -145,7 +145,7 @@ class OrderController extends AbstractController
      * @return JsonResponse
      * @Route("/order/showhide/", name="order_showhide", methods={"POST"}, options={"expose": true})
      */
-    public function showHideAction(Request $request, Session $session)
+    public function showHide(Request $request, Session $session)
     {
         if ($request->request->has('hide_id') &&
             $request->request->has('value')
@@ -164,7 +164,7 @@ class OrderController extends AbstractController
      * @return RedirectResponse
      * @Route("/order/create/", name="order_create", methods={"POST"})
      */
-    public function createAction(Request $request,
+    public function create(Request $request,
                                  OrderService $orderService,
                                  UTM5DbService $UTM5DbService,
                                  TranslatorInterface $translator)
@@ -190,7 +190,7 @@ class OrderController extends AbstractController
      * @throws \Exception
      * @Route("/order/add/", name="order_add", methods={"GET", "POST"})
      */
-    public function addAction(Request $request, OrderService $orderService, UTM5DbService $UTM5DbService)
+    public function add(Request $request, OrderService $orderService, UTM5DbService $UTM5DbService)
     {
         if($request->request->has('create') && 'full' == $request->request->has('create')) {
             $utm_user = $UTM5DbService->search($request->request->getInt('id'));
@@ -222,7 +222,7 @@ class OrderController extends AbstractController
      * @return JsonResponse
      * @Route("/order/ajax/getstatuses/", name="order_get_statuses", methods={"GET"})
      */
-    public function getStatusesAction(OrderService $orderService)
+    public function getStatuses(OrderService $orderService)
     {
         $statuses = $orderService->getStatusesForFormSelect();
         return $this->json($statuses);
@@ -235,7 +235,7 @@ class OrderController extends AbstractController
      * @return JsonResponse
      * @Route("/order/ajax/getemployees/", name="order_get_employees", methods={"GET"})
      */
-    public function getEmployeesAction(OrderService $orderService)
+    public function getEmployees(OrderService $orderService)
     {
         $users = $orderService->getUsersForFormSelect();
         return $this->json($users);
@@ -248,7 +248,7 @@ class OrderController extends AbstractController
      * @return JsonResponse|RedirectResponse
      * @Route("/order/ajax/change-editable-filed/", name="order_change_editable_field", methods={"POST"})
      */
-    public function changeEditableFieldAction(Request $request, OrderService $orderService)
+    public function changeEditableField(Request $request, OrderService $orderService)
     {
         try {
             if ($request->request->has('name') &&

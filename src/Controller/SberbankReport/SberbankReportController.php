@@ -22,7 +22,7 @@ class SberbankReportController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\Response
      * @Route("/sberbank/", name="sberbank_report_index", methods={"GET", "POST"})
      */
-    public function indexAction(Request $request, SberbankReportService $sberbankReportService, Session $session)
+    public function index(Request $request, SberbankReportService $sberbankReportService, Session $session)
     {
         $form = $this->createForm(PaymentFilterForm::class, new Payment());
         $form->handleRequest($request);
@@ -44,7 +44,7 @@ class SberbankReportController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\Response
      * @Route("/sberbank/log/{pay_num}", name="sberbank_log", methods={"GET"}, requirements={"pay_num": "\d+"})
      */
-    public function paymentLogAction($pay_num, SberbankReportService $sberbankReportService)
+    public function paymentLog($pay_num, SberbankReportService $sberbankReportService)
     {
         return $this->render('SberbankReport/more.html.twig', ['info' => $sberbankReportService->getPaymentLog($pay_num)]);
     }

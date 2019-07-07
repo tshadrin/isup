@@ -19,7 +19,7 @@ class SMSController extends AbstractController
      * @return JsonResponse
      * @Route("/sms/send/{type}", defaults={"type": "modem"}, name="sms_send", methods={"GET", "PUT"}, requirements={"type": "smsc|modem|all"})
      */
-    public function sendSMSAction($type, Request $request, LoggerInterface $logger)
+    public function sendSMS($type, Request $request, LoggerInterface $logger)
     {
 
         try {
