@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Commutator;
 
@@ -84,14 +85,8 @@ class PortType
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->description;
-    }
-
-    public function __construct()
-    {
-        $this->setName('');
-        $this->setDescription('');
     }
 }

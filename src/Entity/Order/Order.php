@@ -24,63 +24,48 @@ class Order
      * @ORM\Column(type="integer")
      */
     private $id;
-
     /**
      * Идентификатор пользователя UTM5
      * @var int
      * @ORM\Column(type="integer", nullable=true, name="utm_id")
      */
     private $utmId;
-
     /**
      * Имя пользователя
      * @var string
      * @ORM\Column(type="string", length=90, name="full_name")
      */
     private $fullName;
-
     /**
      * Адрес пользователя
      * @var string
      * @ORM\Column(type="string", length=120)
      */
     private $address;
-
     /**
      * Имя сервера
      * @var string
      * @ORM\Column(type="string", length=30, nullable=true, name="server_name")
      */
     private $serverName;
-
     /**
      * IP пользователя
      * @var string
      * @ORM\Column(type="string", length=30, nullable=true, name="ip_address")
      */
-    private $ipAddress;
-
+    private $ip;
     /**
      * Комментарий к заявке
      * @var string
      * @ORM\Column(type="string", length=300)
      */
     private $comment;
-
-    /**
-     * Флаг удаленной заявки
-     * @var bool
-     * @ORM\Column(type="boolean", length=255, name="is_deleted")
-     */
-    private $isDeleted = false;
-
     /**
      * Мобильный телефон пользователя UTM5
      * @var string
      * @ORM\Column(type="string", length=80, name="mobile_telephone")
      */
-    private $mobileTelephone;
-
+    private $phone;
     /**
      * Пользователь добавивший заявку
      * @var User
@@ -88,14 +73,12 @@ class Order
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     private $user;
-
     /**
      * Дата завершения заявки в формате unix_timestamp
      * @var int
      * @ORM\Column(type="integer", length=255, nullable=true)
      */
     private $completed;
-
     /**
      * Пользователь выполняющий заявку
      * @var User
@@ -103,7 +86,6 @@ class Order
      * @ORM\JoinColumn(name="executed", referencedColumnName="id", nullable=true)
      */
     private $executed;
-
     /**
      * Пользователь удаливший заявку
      * @var User
@@ -111,7 +93,6 @@ class Order
      * @ORM\JoinColumn(name="deleted_id", referencedColumnName="id", nullable=true)
      */
     private $deletedId;
-
     /**
      * Статус заявки
      * @var Status
@@ -119,37 +100,29 @@ class Order
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id", nullable=false)
      */
     private $status;
-
     /**
      * @var \Datetime
      * @ORM\Column(type="datetime")
      */
     private $created;
-
-    private $emptyPassport = false;
-
-    public function __construct(array $data = array())
-    {
-        if (count($data)) {
-            $this->utmId = $data['user_id'];
-            $this->fullName = $data['full_name'];
-            $this->address = $data['address'];
-            $this->serverName = $data['server_name'];
-            $this->ipAddress = $data['ip_address'];
-            $this->user = $data['user'];
-            $this->mobileTelephone = $data['mobile'];
-            $this->comment = $data['comment'];
-            $this->status=$data['status'];
-        }
-        $this->isDeleted = false;
-        $this->created = new \Datetime();
-        $this->emptyPassport = false;
-    }
+    /**
+     * Флаг удаленной заявки
+     * @var bool
+     * @ORM\Column(type="boolean", length=255, name="is_deleted")
+     */
+    private $isDeleted;
+    /**
+     * @var bool
+     */
+    private $emptyPassport;
 
     /**
      * @return int
      */
-    public function getId() { return $this->id; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
     /**
      * @return int
@@ -160,112 +133,123 @@ class Order
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFullName() { return $this->fullName; }
+    public function getFullName(): ?string
+    {
+        return $this->fullName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getServerName(): ?string
+    {
+        return $this->serverName;
+    }
 
     /**
      * @return string
      */
-    public function getAddress() { return $this->address; }
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getServerName() { return $this->serverName; }
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getIpAddress() { return $this->ipAddress; }
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
 
     /**
-
-     * @return bool
+     * @return User
      */
-    public function getIsDeleted() { return $this->isDeleted; }
-
-    /**
-     * @return string
-     */
-    public function getComment() { return $this->comment; }
-
-    /**
-     * @return User|mixed
-     */
-    public function getUser() { return $this->user; }
+    public function getUser(): User
+    {
+        return $this->user;
+    }
 
     /**
      * @return int
      */
-    public function getCompleted() { return $this->completed; }
-
-    /**
-     * @return User
-     */
-    public function getExecuted() { return $this->executed; }
-
-    /**
-     * @return User
-     */
-    public function getDeletedId() { return $this->deletedId; }
-
-    /**
-     * @return string
-     */
-    public function getPhone() { return $this->mobileTelephone; }
-
-    /**
-     * @return Status
-     */
-    public function getStatus() { return $this->status; }
-
-    /**
-     * @param $comment
-     * @return $this
-     */
-    public function setComment($comment) { $this->comment = strip_tags($comment); return $this; }
-
-    /**
-     * @param User $executed
-     * @return $this
-     */
-    public function setExecuted(User $executed) { $this->executed = $executed; return $this; }
-
-    /**
-     * @param $isDeleted
-     * @return $this
-     */
-    public function setIsDeleted($isDeleted) { $this->isDeleted = $isDeleted; return $this; }
-
-    /**
-     * @param $completed
-     * @return $this
-     */
-    public function setCompleted($completed) { $this->completed = $completed; return $this; }
-
-    /**
-     * @param User $deleted
-     * @return $this
-     */
-    public function setDeletedId(User $deleted) { $this->deletedId = $deleted; return $this; }
-
-    /**
-     * @return mixed|string
-     */
-    public function getMobileTelephone()
+    public function getCompleted(): int
     {
-        return $this->mobileTelephone;
+        return $this->completed;
     }
-    /**
-     * @param Status $status
-     * @return $this
-     */
-    public function setStatus(Status $status) { $this->status = $status; return $this; }
 
-    public function deleteExecuted()
+    /**
+     * @return User|null
+     */
+    public function getExecuted(): ?User
     {
-        $this->executed = null;
+        return $this->executed;
+    }
+
+    /**
+     * @return User
+     */
+    public function getDeletedId(): User
+    {
+        return $this->deletedId;
+    }
+
+    /**
+     * @return Status|null
+     */
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getCreated(): \Datetime
+    {
+        return $this->created;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmptyPassport(): ?bool
+    {
+        return $this->emptyPassport;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**
@@ -293,27 +277,35 @@ class Order
     }
 
     /**
-     * @param string $ipAddress
-     */
-    public function setIpAddress(string $ipAddress): void
-    {
-        $this->ipAddress = $ipAddress;
-    }
-
-    /**
-     * @param string $mobileTelephone
-     */
-    public function setMobileTelephone(string $mobileTelephone): void
-    {
-        $this->mobileTelephone = $mobileTelephone;
-    }
-
-    /**
      * @param string $serverName
      */
     public function setServerName(string $serverName): void
     {
         $this->serverName = $serverName;
+    }
+
+    /**
+     * @param string $ip
+     */
+    public function setIp(string $ip): void
+    {
+        $this->ip = $ip;
+    }
+
+    /**
+     * @param string $comment
+     */
+    public function setComment(string $comment): void
+    {
+        $this->comment = strip_tags($comment);
+    }
+
+    /**
+     * @param string $phone
+     */
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
     }
 
     /**
@@ -325,47 +317,51 @@ class Order
     }
 
     /**
-     * @return \Datetime
+     * @param int $completed
      */
-    public function getCreated()
+    public function setCompleted(int $completed): void
     {
-        return $this->created;
+        $this->completed = $completed;
+    }
+
+    /**
+     * @param User $executed
+     */
+    public function setExecuted(User $executed): void
+    {
+        $this->executed = $executed;
+    }
+
+    /**
+     * @param User $deletedId
+     */
+    public function setDeletedId(User $deletedId): void
+    {
+        $this->deletedId = $deletedId;
+    }
+
+    /**
+     * @param Status $status
+     */
+    public function setStatus(Status $status): void
+    {
+        $this->status = $status;
     }
 
     /**
      * @param \Datetime $created
      */
-    public function setCreated(\Datetime $created)
+    public function setCreated(\Datetime $created): void
     {
         $this->created = $created;
     }
 
-    public static function createByUTM5User(UTM5User $user)
-    {
-        $order = new self;
-        $order->setUtmId($user->getId());
-        $order->setFullName($user->getFullName());
-        $order->setAddress($user->getAddress());
-        $ips = $user->getIps();
-        $order->setIpAddress($ips[0]);
-        if(!is_null($phone = $user->getMobilePhone())) {
-            $order->setMobileTelephone($phone);
-        }
-        $routers = $user->getRouters();
-        $order->setServerName($routers[0]->getName());
-        return $order;
-    }
-    public function __toString()
-    {
-        return "{$this->id} - {$this->fullName}";
-    }
-
     /**
-     * @return bool
+     * @param bool $isDeleted
      */
-    public function isEmptyPassport(): bool
+    public function setIsDeleted(bool $isDeleted): void
     {
-        return $this->emptyPassport;
+        $this->isDeleted = $isDeleted;
     }
 
     /**
@@ -374,5 +370,50 @@ class Order
     public function setEmptyPassport(bool $emptyPassport): void
     {
         $this->emptyPassport = $emptyPassport;
+    }
+
+
+    public function deleteExecuted()
+    {
+        $this->executed = null;
+    }
+
+    /**
+     * Order constructor.
+     * @param array $data
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->isDeleted = false;
+        $this->emptyPassport = false;
+        $this->created = new \Datetime();
+    }
+
+    /**
+     * @param UTM5User $user
+     * @return Order
+     * @throws \Exception
+     */
+    public static function createByUTM5User(UTM5User $user)
+    {
+        $order = new self;
+        $order->setUtmId($user->getId());
+        $order->setFullName($user->getFullName());
+        $order->setAddress($user->getAddress());
+        $ips = $user->getIps();
+        $order->setIp($ips[0]);
+        $order->setPhone($user->getMobilePhone());
+        $routers = $user->getRouters();
+        $order->setServerName($routers[0]->getName());
+        return $order;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return "{$this->id} - {$this->fullName}";
     }
 }

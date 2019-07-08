@@ -11,7 +11,7 @@
     <p><span>Абонент: </span>{{ order.fullname }}</p>
     {% if order.utmid > 1 %}
     <p><span>Id: {{ order.utmid }} адрес: {{ order.address }}</span></p>
-    <p><span>IP: {{ order.ipaddress }}</span></p>
+    <p><span>IP: {{ order.ip }}</span></p>
     {% else %}
     <p><span>Aдрес: {{ order.address }}</span></p>
     {% endif %}

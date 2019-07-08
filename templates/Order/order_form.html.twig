@@ -77,18 +77,18 @@
             </div>
             <div class="form-group row pl-3 pr-3">
                 {% if form.vars.value.utmId is empty %}
-                    {% do form.ipaddress.setRendered %}
+                    {% do form.ip.setRendered %}
                 {% endif %}
                 {% if form.vars.value.utmId is not empty %}
-                    {{ form_label(form.ipaddress) }}
+                    {{ form_label(form.ip) }}
                 {% endif %}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                            {{ form_widget(form.ipaddress) }}
+                            {{ form_widget(form.ip) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
-                            {{ form_errors(form.ipaddress) }}
+                            {{ form_errors(form.ip) }}
                         </div>
                     </div>
                 </div>
@@ -107,14 +107,14 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.mobileTelephone) }}
+                {{ form_label(form.phone) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                            {{ form_widget(form.mobileTelephone) }}
+                            {{ form_widget(form.phone) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
-                            {{ form_errors(form.mobileTelephone) }}
+                            {{ form_errors(form.phone) }}
                         </div>
                     </div>
                 </div>

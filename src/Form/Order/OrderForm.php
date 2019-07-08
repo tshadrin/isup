@@ -69,7 +69,7 @@ class OrderForm  extends AbstractType
                         'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
                     ],
                 ])
-            ->add('ipaddress',
+            ->add('ip',
                 TextType::class,
                 [
                     'label' => 'order.form.ip',
@@ -94,7 +94,7 @@ class OrderForm  extends AbstractType
                         'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
                     ],
                 ])
-            ->add('mobileTelephone',
+            ->add('phone',
                 TextType::class,
                 [
                     'label' => 'order.form.phone',

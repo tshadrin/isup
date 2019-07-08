@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Entity\Commutator;
 
 use Doctrine\Common\Collections\{ Collection, ArrayCollection };
-use Doctrine\ORM\{ Mapping as ORM, PersistentCollection };
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class Commutator
