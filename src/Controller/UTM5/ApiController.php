@@ -1,20 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\UTM5;
 
+use App\Entity\UTM5\UTM5User;
+use App\Service\UTM5\{ BitrixRestService, UTM5DbService, URFAService };
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use App\Entity\UTM5\UTM5User;
+use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
 use Symfony\Component\Routing\Annotation\Route;
-use App\Service\UTM5\BitrixRestService;
-use App\Service\UTM5\UTM5DbService;
-use App\Service\UTM5\URFAService;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-
+/**
+ * Class ApiController
+ * @package App\Controller\UTM5
+ */
 class ApiController extends AbstractController
 {
     /**
@@ -27,9 +27,9 @@ class ApiController extends AbstractController
      * @Route("/api/bitrixcreateuser/", name="bitrix_create_user", methods={"GET", "POST"})
      */
     public function createUTM5User(Request $request,
-                                         BitrixRestService $bitrix_rest_service,
-                                         URFAService $URFAService,
-                                         LoggerInterface $logger)
+                                   BitrixRestService $bitrix_rest_service,
+                                   URFAService $URFAService,
+                                   LoggerInterface $logger): JsonResponse
     {
         if($request->request->has('document_id')) {
             $did = $request->request->get('document_id');
@@ -55,9 +55,9 @@ class ApiController extends AbstractController
      * @Route("/api/bitrixremoveuser/", name="bitrix_remove_user", methods={"GET", "POST"})
      */
     public function  removeUTM5User(Request $request,
-                                          BitrixRestService $bitrixRestService,
-                                          URFAService $URFAService,
-                                          LoggerInterface $logger)
+                                    BitrixRestService $bitrixRestService,
+                                    URFAService $URFAService,
+                                    LoggerInterface $logger): JsonResponse
     {
         if($request->request->has('document_id')) {
             $did = $request->request->get('document_id');
@@ -88,9 +88,9 @@ class ApiController extends AbstractController
      * @Route("/api/paycheck/", name="bitrix_check_payments", methods={"GET", "POST"})
      */
     public function checkUTM5Payments(Request $request,
-                                            BitrixRestService $bitrix_rest_service,
-                                            UTM5DbService $UTM5_db_service,
-                                            LoggerInterface $logger)
+                                      BitrixRestService $bitrix_rest_service,
+                                      UTM5DbService $UTM5_db_service,
+                                      LoggerInterface $logger): JsonResponse
     {
         if($request->request->has('document_id')) {
             $did = $request->request->get('document_id');
@@ -137,12 +137,12 @@ class ApiController extends AbstractController
     /**
      * Меняет статус Интернета пользователя
      * и перенаправляет на его профиль
-     * @param string $id  - id клиента
+     * @param int $id  - id клиента
      * @param URFAService $URFA_service
      * @return JsonResponse
      * @Route("/urfa/change-remindme/{id}/", name="utm_change_remindme", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function changeRemindMe($id, URFAService $URFA_service)
+    public function changeRemindMe(int $id, URFAService $URFA_service): JsonResponse
     {
         try{
             $URFA_service->changeRemindMe($id);
@@ -157,12 +157,12 @@ class ApiController extends AbstractController
     /**
      * Меняет статус Интернета пользователя
      * и перенаправляет на его профиль
-     * @param string $id  - id клиента
+     * @param int $id  - id клиента
      * @param URFAService $URFA_service
      * @return JsonResponse
      * @Route("/urfa/change-intstatus/{id}/", name="utm_change_intstatus", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function changeStatus($id, URFAService $URFA_service)
+    public function changeStatus(int $id, URFAService $URFA_service): JsonResponse
     {
         try {
             if($URFA_service->changeInternetStatus($id))
@@ -180,7 +180,9 @@ class ApiController extends AbstractController
      * @return JsonResponse
      * @Route("/urfa/change-editable-filed/", name="user_change_editable_field", methods={"POST"})
      */
-    public function changeEditableField(Request $request, URFAService $URFAService, TranslatorInterface $translator)
+    public function changeEditableField(Request $request,
+                                        URFAService $URFAService,
+                                        TranslatorInterface $translator): JsonResponse
     {
         try {
             if ($request->request->has('name') &&

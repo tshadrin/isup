@@ -1,15 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Service\Intercom;
 
 use App\Entity\Intercom\Task;
-use App\Entity\User\User;
 use App\Repository\Intercom\TaskRepository;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Zend\EventManager\Exception\DomainException;
 
 
 class IntercomService
@@ -48,7 +47,7 @@ class IntercomService
 
     /**
      * Выборка всех активных задач постранично
-     * @param $page
+     * @param int $page
      * @param int $rows
      * @return PaginationInterface
      */

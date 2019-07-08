@@ -33,7 +33,7 @@ class Port
     /**
      * @var PortType
      * @ORM\ManyToOne(targetEntity="App\Entity\Commutator\PortType")
-     * @ORM\JoinColumn(name="type", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="type", referencedColumnName="id", nullable=false)
      */
     private $type;
     /**

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Command\Commutator;
 
@@ -9,6 +10,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class ParseData
+ * @package App\Command\Commutator
+ */
 class ParseData extends Command
 {
     /**
@@ -16,6 +21,10 @@ class ParseData extends Command
      */
     private $entityManager;
 
+    /**
+     * Папка с файлами отчетов
+     * @var mixed
+     */
     private $files_dir;
 
 
@@ -31,6 +40,11 @@ class ParseData extends Command
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|void|null
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $work_file=	"all.txt"; # база

@@ -1,16 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\Phone;
 
-use Knp\Component\Pager\PaginatorInterface;
-use App\Form\Phone\PhoneForm;
-use App\Form\Phone\PhoneFilterForm;
-use App\Form\Phone\RowsForm;
+use App\Form\Phone\{ PhoneForm, PhoneFilterForm, RowsForm };
 use App\Repository\Phone\PhoneRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse };
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,7 +19,7 @@ class PhoneController extends AbstractController
 {
     /**
      * Вывод списка телефонов постранично
-     * @param $filter
+     * @param string $filter
      * @param Request $request
      * @param Session $session
      * @param PhoneRepository $phone_repository
@@ -30,8 +27,8 @@ class PhoneController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/phone/{filter}/list/", name="phone_default", defaults={"filter": "_all"}, methods={"GET"})
      */
-    public function getAllPhones(
-        $filter,
+    public function getAll(
+        string $filter,
         Request $request,
         Session $session,
         PhoneRepository $phone_repository,
@@ -72,7 +69,7 @@ class PhoneController extends AbstractController
 
     /**
      * Редактирование телефона
-     * @param $id
+     * @param int $id
      * @param Request $request
      * @param PhoneRepository $phone_repository
      * @return RedirectResponse|Response
@@ -80,7 +77,7 @@ class PhoneController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/phone/{id}/edit/", name="phone_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function editPhone($id, Request $request, PhoneRepository $phone_repository)
+    public function edit(int $id, Request $request, PhoneRepository $phone_repository)
     {
         try {
             $phone = $phone_repository->getById($id);
@@ -108,7 +105,7 @@ class PhoneController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/phone/add/", name="phone_add", methods={"GET", "POST"})
      */
-    public function addPhone(Request $request, PhoneRepository $phone_repository)
+    public function add(Request $request, PhoneRepository $phone_repository)
     {
         $phone = $phone_repository->getNew();
         $form = $this->createForm(PhoneForm::class, $phone);
@@ -125,13 +122,13 @@ class PhoneController extends AbstractController
 
     /**
      * Удаление телефона
-     * @param $id
+     * @param int $id
      * @param PhoneRepository $phone_repository
      * @return RedirectResponse
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @Route("/phone/{id}/delete", name="phone_delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function deletePhone($id, PhoneRepository $phone_repository)
+    public function delete(int $id, PhoneRepository $phone_repository): RedirectResponse
     {
         try{
             $phone = $phone_repository->getById($id);
@@ -152,7 +149,7 @@ class PhoneController extends AbstractController
      * @return RedirectResponse
      * @Route("/phone/find/", name="phone_find_process", methods={"POST"})
      */
-    public function findPhoneProcess(Request $request)
+    public function findProcess(Request $request): RedirectResponse
     {
         $form = $this->createForm(PhoneFilterForm::class);
         $form->handleRequest($request);
@@ -166,7 +163,8 @@ class PhoneController extends AbstractController
     /**
      * Изменение количества выводимых записей на странице
      * @param Request $request
-     * @return bool|RedirectResponse
+     * @param Session $session
+     * @return RedirectResponse
      * @Route("/phone/{filter}/list/", name="phone_rows", defaults={"filter": "_all"}, methods={"POST"})
      */
     public function setRowsOnPage(Request $request, Session $session)

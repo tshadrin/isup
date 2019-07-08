@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Intercom;
 
@@ -86,7 +87,7 @@ class Type
      */
     public function __toString()
     {
-        return $this->description;
+        return $this->getDescription();
     }
 
 }

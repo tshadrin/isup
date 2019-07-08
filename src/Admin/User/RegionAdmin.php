@@ -1,36 +1,56 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Admin\User;
 
 use Sonata\AdminBundle\Admin\AbstractAdmin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
-use Sonata\AdminBundle\Datagrid\DatagridMapper;
-use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\AdminBundle\Datagrid\{ DatagridMapper, ListMapper };
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
+/**
+ * Class RegionAdmin
+ * @package App\Admin\User
+ */
 class RegionAdmin extends AbstractAdmin
 {
-    protected function configureFormFields(FormMapper $formMapper)
+    /**
+     * @param FormMapper $formMapper
+     */
+    protected function configureFormFields(FormMapper $formMapper): void
     {
-        $formMapper->add('name', TextType::class);
-        $formMapper->add('description', TextType::class);
+        $formMapper->add('name', TextType::class)
+            ->add('description', TextType::class)
+        ;
     }
 
-    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
+    /**
+     * @param DatagridMapper $datagridMapper
+     */
+    protected function configureDatagridFilters(DatagridMapper $datagridMapper): void
     {
-        $datagridMapper->add('name');
-        $datagridMapper->add('description');
+        $datagridMapper->add('name')
+            ->add('description')
+        ;
     }
 
-    protected function configureListFields(ListMapper $listMapper)
+    /**
+     * @param ListMapper $listMapper
+     */
+    protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper->addIdentifier('name')
-                   ->add('description');
+                   ->add('description')
+        ;
     }
-    protected function configureShowFields(ShowMapper $showMapper)
+
+    /**
+     * @param ShowMapper $showMapper
+     */
+    protected function configureShowFields(ShowMapper $showMapper): void
     {
-        $showMapper
-            ->add('name')
+        $showMapper->add('name')
             ->add('description')
         ;
     }

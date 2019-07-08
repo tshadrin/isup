@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\UTM5;
 
 use App\Collection\UTM5\UTM5UserCollection;
-use App\Entity\SMS\SmsTemplate;
 use App\Entity\UTM5\{ UTM5User, Passport };
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
@@ -14,18 +14,18 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse};
+use Symfony\Component\HttpFoundation\{ JsonResponse, Request, Response, RedirectResponse };
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UTM5Controller extends AbstractController
 {
     /**
-     * @param BitirixCalService $bitirix_cal_service
+     * @param BitirixCalService $bitirixCalService
      */
-    private function calEvents(BitirixCalService $bitirix_cal_service)
+    private function calEvents(BitirixCalService $bitirixCalService): void
     {
-        $result = $bitirix_cal_service->getActualCallEvents();
+        $result = $bitirixCalService->getActualCallEvents();
         if(array_key_exists('events', $result)) {
             $events = $result['events'];
             $events_count = array_shift($events);
@@ -40,7 +40,8 @@ class UTM5Controller extends AbstractController
     /**
      * @param UTM5User $user
      */
-    private function setChain(UTM5User $user) {
+    private function setChain(UTM5User $user): void
+    {
         $queryData = http_build_query(['id' => $user->getId()]);
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -84,15 +85,15 @@ class UTM5Controller extends AbstractController
      * @return Response
      * @Route("/search/{type}/{value}/", name="search", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login"})
      */
-    public function search($type,
+    public function search(string $type,
                                  $value,
-                                 Request $request,
-                                 BitirixCalService $bitirix_cal_service,
-                                 UTM5DbService $UTM5_db_service,
-                                 URFAService $URFA_service,
-                                 UTM5UserCommentService $UTM5_user_comment_service,
-                                 EventDispatcherInterface $event_dispatcher,
-                                 PaginatorInterface $paginator)
+                           Request $request,
+                           BitirixCalService $bitirix_cal_service,
+                           UTM5DbService $UTM5_db_service,
+                           URFAService $URFA_service,
+                           UTM5UserCommentService $UTM5_user_comment_service,
+                           EventDispatcherInterface $event_dispatcher,
+                           PaginatorInterface $paginator): Response
     {
         $this->calEvents($bitirix_cal_service);
 
@@ -144,7 +145,7 @@ class UTM5Controller extends AbstractController
      * @return Response
      * @Route("/search/", name="search_default", methods={"GET"})
      */
-    public function searchDefault(BitirixCalService $bitirix_cal_service)
+    public function searchDefault(BitirixCalService $bitirix_cal_service): Response
     {
         $this->calEvents($bitirix_cal_service);
         return $this->render('Utm/find.html.twig');
@@ -158,7 +159,7 @@ class UTM5Controller extends AbstractController
      * @return RedirectResponse
      * @Route("/search/", name="search_post", methods={"POST"})
      */
-    public function searchPost(Request $request)
+    public function searchPost(Request $request): RedirectResponse
     {
         if ($request->request->has('type') && $request->request->has('value')) {
             $type = $request->request->getAlpha('type');
@@ -170,12 +171,13 @@ class UTM5Controller extends AbstractController
 
     /**
      * Удаление комментария
-     * @param $id
+     * @param int $id
      * @param UTM5UserCommentService $UTM5_user_comment_service
      * @return RedirectResponse
      * @Route("/utm5-user-comment/{id}/delete/", name="utm5_user_comment_delete", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function UTM5UserCommentDelete($id, UTM5UserCommentService $UTM5_user_comment_service)
+    public function UTM5UserCommentDelete(int $id,
+                                          UTM5UserCommentService $UTM5_user_comment_service): RedirectResponse
     {
         try {
             $id = $UTM5_user_comment_service->delete($id);
@@ -196,7 +198,8 @@ class UTM5Controller extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/utm5-user-comment/add/", name="utm5_user_comment_add", methods={"POST"})
      */
-    public function  UTM5UserCommentAdd(Request $request, UTM5UserCommentService $UTM5_user_comment_service)
+    public function  UTM5UserCommentAdd(Request $request,
+                                        UTM5UserCommentService $UTM5_user_comment_service): RedirectResponse
     {
         $comment = $UTM5_user_comment_service->getNewUTM5UserComment($this->getUser());
         $form = $this->createForm(UTM5UserCommentForm::class, $comment);
@@ -213,12 +216,12 @@ class UTM5Controller extends AbstractController
 
     /**
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return JsonResponse
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/search/rop/", name="utm5_rows_on_page", methods={"POST"})
      */
-    public function rowsOnPage(Request $request)
+    public function rowsOnPage(Request $request): JsonResponse
     {
         $user = $this->getUser();
         if($request->request->has('rows')) {
@@ -232,11 +235,15 @@ class UTM5Controller extends AbstractController
 
     /**
      * @param Request $request
+     * @param int $id
+     * @param UTM5DbService $UTM5DbService
+     * @param URFAService $URFAService
+     * @return RedirectResponse|Response
      * @Route("/utm5/passport/{id}/edit/", name="utm5_passport_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function editPassport(Request $request, int $id,
-                                       UTM5DbService $UTM5DbService, URFAService $URFAService,
-                                       TranslatorInterface $translator)
+    public function editPassport(int $id, Request $request,
+                                 UTM5DbService $UTM5DbService,
+                                 URFAService $URFAService)
     {
         try {
             $user = $UTM5DbService->search($id, 'id');

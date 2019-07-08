@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\BitrixCal;
 
@@ -7,6 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class BitrixCalController
+ * @package App\Controller\BitrixCal
+ */
 class BitrixCalController extends AbstractController
 {
     /**

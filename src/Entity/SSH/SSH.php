@@ -1,113 +1,205 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Entity\SSH;
 
 class SSH
 {
+    const SHELL_NAME = 'bash';
     /**
      * @var string
      * Сервер для соединения
      */
-    private $host = "";
+    private $host;
     /**
-     * @var string
+     * @var int
      * Порт для соединения
      */
-    private $port = "";
+    private $port;
     /**
      * @var string
      * Полный составленный пароль к серверу
      */
-    private $pass = "";
+    private $password;
     /**
-     * @var
+     * @var resource
      * Дескриптор соединения ssh
      */
-    private $conn;
-
-    private $config;
+    private $connection;
     /**
-     * SSH constructor.
-     * @param $host
-     * @param $config
-     * Конструктор принмает ip сервера с которым нужно соедениться
-     * Вычисляет номер порта к серверу
-     * Вычисляет пароль к серверу
-     * Соединяется с сервером по SSH
-     * Авторизуется и запускает интерпретатор
+     * @var array
      */
-    public function __construct($host, $config)
+    private $config;
+
+    /**
+     * В конструкторе вычисляются порт и пароль для хоста.
+     * Далее устанавливается соединение, происходит авторизация пользователя
+     * и загружается интерпретатор(bash)
+     * SSH constructor.
+     * @param string $host
+     * @param array $config
+     */
+    public function __construct(string $host, array $config)
+    {
+        $this->setConfig($config);
+        $this->setHost($host);
+        $this->setPort($this->calculatePort($host));
+        $this->setPassword($this->calculatePassword($host));
+        $connection = $this->connect($this->getHost(), $this->getPort());
+        $this->setConnection($connection);
+        $this->auth($this->getConnection(), $config['user'], $this->getPassword());
+        $this->shell($this->getConnection());
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPort(): int
+    {
+        return $this->port;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @return resource
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param string $host
+     */
+    public function setHost(string $host): void
+    {
+        $this->host = $host;
+    }
+
+    /**
+     * @param int $port
+     */
+    public function setPort(int $port): void
+    {
+        $this->port = $port;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @param resource $connection
+     */
+    public function setConnection($connection): void
+    {
+        $this->connection = $connection;
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setConfig(array $config): void
     {
         $this->config = $config;
-        $this->host = $host;
-        $data = explode(".",$host);
-        $this->port = $this->_calcPort($data);
-        $this->pass = $this->_calcPass($data);
-        $this->_sshConnect();
-        $this->_sshAuth();
-        $this->_sshShell();
     }
 
     /**
-     * @param $data
+     * @param string $host
+     * @return int
+     */
+    private function calculatePort(string $host): int
+    {
+        $data = explode(".", $host);
+        return (int)"{$data[1]}{$data[2]}0{$data[3]}";
+    }
+
+    /**
+     * @param string $host
      * @return string
-     * Вычислить номер порта
      */
-    private function _calcPort($data)
+    private function calculatePassword(string $host): string
     {
-        return (int)$data[1].$data[2]."0".$data[3];
+        $data = explode(".", $host);
+        return "{$this->config['prefix']}{$this->config['servers'][$data[3]]}{$this->config['suffix']}";
     }
 
     /**
-     * @param $data
-     * @return string
-     * Вычислить пароль сервера
+     * @param string $host
+     * @param int $port
+     * @return resource
      */
-    private function _calcPass($data)
+    private function connect(string $host, int $port)
     {
-        return $this->config['prefix'].$this->config['servers'][$data[3]].$this->config['suffix'];
+        if (!($connection = ssh2_connect($host, $port))) {
+            throw new \DomainException("SSH Connection error");
+        }
+        return $connection;
     }
 
     /**
-     * Метод создает дескриптор соединения ssh
+     * @param $connection
+     * @param string $user
+     * @param string $password
      */
-    private function _sshConnect()
+    private function auth($connection, string $user, string $password): void
     {
-        if (!$this->conn = ssh2_connect($this->host,$this->port))
-            die("Ошибка соединения с сервером");
+        if (!ssh2_auth_password($connection, $user, $password)) {
+            throw new \DomainException("SSH Authentication error");
+        }
     }
 
     /**
-     * Метод авторизации по ssh
-     * Работает только после соединения
+     * @param $connection
      */
-    private function _sshAuth()
+    private function shell($connection): void
     {
-        if (!ssh2_auth_password($this->conn,$this->config['user'],$this->pass))
-            die("Ошибка авторизации");
+        if(!ssh2_shell($connection, self::SHELL_NAME)) {
+            throw new \DomainException("SSH Shell error");
+        }
     }
 
     /**
-     * Установка интерпретатора
-     */
-    private function _sshShell()
-    {
-        ssh2_shell($this->conn,"bash");
-    }
-
-    /**
+     * Выполнение команды на сервере
      * @param $command
      * @return string
-     * Выполнение команды с сервера
      */
-    public function ssh_exec($command)
+    public function exec($command): string
     {
-        $stream = ssh2_exec($this->conn,$command);
+        $stream = ssh2_exec($this->getConnection(), $command);
         stream_set_blocking($stream,true);
-        $data = "";
-        while ($o = fgets($stream)) {
-            $data .= $o;
+        $output = "";
+        while ($data = fgets($stream)) {
+            $output .= $data;
         }
-        return $data;
+        return $output;
     }
 
     /**
@@ -116,14 +208,10 @@ class SSH
      * @param string $ip
      * @return bool
      */
-    public function hasOpenTemporary(string $ip): bool
+    public function isOpenTemporary(string $ip): bool
     {
-        $data = $this->ssh_exec("ipset -L USER_TMP | grep {$ip}");
-
-        if (empty($data))
-            return false;
-        else
-            return true;
+        $data = $this->exec("ipset -L USER_TMP | grep {$ip}");
+        empty($data)?false:true;
     }
 
     /**
@@ -133,7 +221,7 @@ class SSH
      */
     public function openTemporary(string $ip): void
     {
-        $this->ssh_exec("ipset add USER_TMP {$ip}");
+        $this->exec("ipset add USER_TMP {$ip}");
     }
 
     /**
@@ -143,13 +231,12 @@ class SSH
      */
     public function checkInTurboTable(string $ip): ?int
     {
-        $data = $this->ssh_exec("ipset -L TURBO | grep {$ip}");
-        if (empty($data)) {
-            return null;
-        } else {
+        $data = $this->exec("ipset -L TURBO | grep {$ip}");
+        if(!empty($data)) {
             $data = explode(' ', $data);
-            return trim($data[2]);
+            return (int)$data[2];
         }
+        return null;
     }
 
     /**
@@ -160,12 +247,8 @@ class SSH
      */
     public function isTurbo(string $ip): bool
     {
-        $data = $this->ssh_exec("ipset -L TURBO | grep {$ip}");
-
-        if (empty($data))
-            return false;
-        else
-            return true;
+        $data = $this->exec("ipset -L TURBO | grep {$ip}");
+        empty($data)?false:true;
     }
 
     /**
@@ -175,6 +258,6 @@ class SSH
      */
     public function enableTurbo(string $ip): void
     {
-        $this->ssh_exec("ipset add TURBO {$ip}");
+        $this->exec("ipset add TURBO {$ip}");
     }
 }

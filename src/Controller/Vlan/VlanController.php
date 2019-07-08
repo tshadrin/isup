@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse};
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 /**
  * Class VlanController
  * @package Mainbundle\Controller\Vlan
@@ -68,7 +67,7 @@ class VlanController extends AbstractController
 
     /**
      * Редактирование vlan
-     * @param $id
+     * @param int $id
      * @param Request $request
      * @param VlanRepository $vlan_repository
      * @return RedirectResponse|Response

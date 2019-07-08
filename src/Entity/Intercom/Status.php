@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Intercom;
 
@@ -80,11 +81,12 @@ class Status
     {
         $this->description = $description;
     }
+
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->description;
+        return $this->getDescription();
     }
 }

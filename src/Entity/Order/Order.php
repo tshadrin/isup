@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Order;
 
@@ -27,7 +28,7 @@ class Order
     /**
      * Идентификатор пользователя UTM5
      * @var int
-     * @ORM\Column(type="bigint", nullable=true, name="utm_id")
+     * @ORM\Column(type="integer", nullable=true, name="utm_id")
      */
     private $utmId;
 
@@ -153,7 +154,7 @@ class Order
     /**
      * @return int
      */
-    public function getUtmId()
+    public function getUtmId(): ?int
     {
         return $this->utmId;
     }

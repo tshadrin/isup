@@ -265,6 +265,7 @@ profit_for_townships: 'Платежи в поселках'
 "Download": "Скачать"
 "Map image": "Карта сегмента"
 "Switch log": "Журнал свича"
+"Speed": "Скорость"
 
 #userinfo template
 "Add order": "Создать заявку"
@@ -332,3 +333,12 @@ commutators: 'Коммутаторы'
 'Birthday': 'Дата рождения'
 'Save and show user info': 'Сохранить и вернуться к пользователю'
 'Data updated': 'Данные обновлены'
+
+#sonata admin roles
+'role_user': 'Пользователь'
+'role_support': 'Сотрудник тех. поддержки'
+'role_moderator': 'Модератор'
+'role_admin': 'Администратор'
+'role_knowledge_base_moderator': 'Модератор базы знаний'
+'role_intercoms': 'Домофоны'
+'Bitrix id': 'Идентификатор пользователя в Bitrix'

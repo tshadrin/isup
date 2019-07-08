@@ -1,14 +1,18 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Command\UTM5;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Filesystem\Filesystem;
 use App\Service\UTM5\UTM5DbService;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\{ InputArgument, InputInterface };
+use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Class AddFirmForPaymentsCommand
+ * @package App\Command\UTM5
+ */
 class AddFirmForPaymentsCommand extends Command
 {
     /**
@@ -35,13 +39,6 @@ class AddFirmForPaymentsCommand extends Command
         $this->ippark_group = $parameters['ippark_group'];
         $this->UTM5DbService = $UTM5DbService;
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this->setDescription("Добавить название фирмы в платежи.")
-             ->setHelp('Добавляет поле с названием фирмы для csv списка платежей.')
-             ->addArgument('file_name', InputArgument::REQUIRED, 'CSV file name');
     }
 
     /**
@@ -86,5 +83,12 @@ class AddFirmForPaymentsCommand extends Command
         } else {
             $output->writeln("Ошибка. Файл не найден.");
         }
+    }
+
+    protected function configure(): void
+    {
+        $this->setDescription("Добавить название фирмы в платежи.")
+            ->setHelp('Добавляет поле с названием фирмы для csv списка платежей.')
+            ->addArgument('file_name', InputArgument::REQUIRED, 'CSV file name');
     }
 }

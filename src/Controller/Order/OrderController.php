@@ -1,98 +1,36 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\Order;
 
-use App\Entity\UTM5\UTM5User;
-use App\Form\Order\OrderFilterType;
-use App\Repository\UTM5\UTM5UserRepository;
-use App\Service\Order\OrderService;
 use App\Form\Order\OrderForm;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use App\Repository\UTM5\UTM5UserRepository;
+use App\Service\UTM5\UTM5DbService;
+use App\Service\Order\OrderService;
+use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Routing\Annotation\Route;
-use App\Service\UTM5\UTM5DbService;
 
+/**
+ * Class OrderController
+ * @package App\Controller\Order
+ */
 class OrderController extends AbstractController
 {
     /**
-     * @param $id
-     * @param OrderService $orderService
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param TranslatorInterface $translator
-     * @return RedirectResponse
-     * @Route("/order/{id}/delete/", name="order_delete", methods={"GET"}, requirements={"id": "\d+"})
-     */
-    public function delete($id, OrderService $orderService, AuthorizationCheckerInterface $authorizationChecker, TranslatorInterface $translator)
-    {
-        try {
-            if ($authorizationChecker->isGranted('ROLE_ORDER_MODERATOR')) {
-                $order_id = $orderService->deleteOrder($id);
-                $this->addFlash('notice', $translator->trans('delete_order.success', ["%id%" => $order_id]));
-            } else {
-                $this->addFlash('notice', 'Недостаточно прав на удаление заявки.');
-            }
-        } catch (\DomainException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
-        return $this->redirectToRoute("orders_index");
-    }
-
-    /**
      * @param Request $request
-     * @param Session $session
-     * @param TranslatorInterface $translator
-     * @return JsonResponse
-     * @Route("/order/filter/", name="order_filter", methods={"POST"})
-     */
-    public function filter(Request $request, Session $session, TranslatorInterface $translator)
-    {
-        if ($request->request->has('filter')) {
-            $session->set('filter', $request->request->get('filter'));
-            $this->addFlash('notice', $translator->trans('filter_set'));
-        } else {
-            $this->addFlash('error', $translator->trans('filter_not_set'));
-        }
-        return $this->json(['refresh' => true]);
-    }
-
-    /**
-     * Печать заявки
-     * @param $id
-     * @param OrderService $orderService
-     * @return RedirectResponse|Response
-     * @Route("/order/{id}/print/", name="order_print", methods={"GET"}, requirements={"id": "\d+"})
-     */
-    public function print($id, OrderService $orderService, UTM5UserRepository $UTM5UserRepository)
-    {
-        try {
-            $order = $orderService->getOrder($id);
-            if(!is_null($order->getUtmId())) {
-                if(!is_null($order->getUtmId())) {
-                    $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
-                    $order->setEmptyPassport($passport);
-                }
-            }
-            return $this->render('Order/pritable.html.twig', ['order' => $order]);
-        } catch (\DomainException $e) {
-            $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('orders_index');
-        }
-    }
-
-    /**
      * @param OrderService $orderService
      * @param Session $session
+     * @param UTM5UserRepository $UTM5UserRepository
      * @return Response
      * @throws \Exception
      * @Route("/orders/", name="orders_index", methods={"GET", "POST"}, options={"expose": true})
      */
-    public function index(Request $request, OrderService $orderService, Session $session, UTM5UserRepository $UTM5UserRepository)
+    public function index(Request $request, OrderService $orderService,
+                          Session $session, UTM5UserRepository $UTM5UserRepository): Response
     {
         $hideid1 = $session->get('hide_id1', false);
         $hideid2 = $session->get('hide_id2', false);
@@ -111,10 +49,8 @@ class OrderController extends AbstractController
         $today_orders = $orderService->findOrdersByFilter($filter);
         foreach($today_orders as $order) {
             if(!is_null($order->getUtmId())) {
-                if(!is_null($order->getUtmId())) {
-                    $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
-                    $order->setEmptyPassport($passport);
-                }
+                $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
+                $order->setEmptyPassport($passport);
             }
         }
 
@@ -139,61 +75,16 @@ class OrderController extends AbstractController
     }
 
     /**
-     * Скрытие или показ таблиц заявок
-     * @param Request $request
-     * @param Session $session
-     * @return JsonResponse
-     * @Route("/order/showhide/", name="order_showhide", methods={"POST"}, options={"expose": true})
-     */
-    public function showHide(Request $request, Session $session)
-    {
-        if ($request->request->has('hide_id') &&
-            $request->request->has('value')
-        ) {
-            $session->set('hide_id'.$request->request->get('hide_id'), $request->request->getBoolean('value'));
-        }
-        return $this->json([]);
-    }
-
-    /**
-     * Действие по умолчанию
-     * @param Request $request
-     * @param OrderService $orderService
-     * @param UTM5DbService $UTM5DbService
-     * @param TranslatorInterface $translator
-     * @return RedirectResponse
-     * @Route("/order/create/", name="order_create", methods={"POST"})
-     */
-    public function create(Request $request,
-                                 OrderService $orderService,
-                                 UTM5DbService $UTM5DbService,
-                                 TranslatorInterface $translator)
-    {
-        try {
-            if ("full" == $request->request->get("create")) {
-                $user = $UTM5DbService->search($request->request->getInt("id"));
-                $order = $orderService->createOrderByUTM5User($user, $request->request->get('comment', ''));
-                $orderService->saveOrder($order);
-                $this->addFlash('notice', $translator->trans("order.order_created"));
-            }
-        } catch (\Exception $e) {
-            $this->addFlash('notice', $e->getMessage());
-        }
-        return $this->redirectToRoute("search", ['type' => 'id', 'value' => $request->request->getInt("id"),]);
-    }
-
-    /**
      * @param Request $request
      * @param OrderService $orderService
      * @param UTM5DbService $UTM5DbService
      * @return RedirectResponse|Response
-     * @throws \Exception
      * @Route("/order/add/", name="order_add", methods={"GET", "POST"})
      */
     public function add(Request $request, OrderService $orderService, UTM5DbService $UTM5DbService)
     {
         if($request->request->has('create') && 'full' == $request->request->has('create')) {
-            $utm_user = $UTM5DbService->search($request->request->getInt('id'));
+            $utm_user = $UTM5DbService->search((string)$request->request->getInt('id'));
             $order = $orderService->createOrderByUTM5User($utm_user, $request->request->get('comment'));
             $form = $this->createForm(OrderForm::class, $order);
             $form->handleRequest($request);
@@ -210,10 +101,87 @@ class OrderController extends AbstractController
             if ($form['saveandlist']->isCLicked())
                 return $this->redirectToRoute('orders_index');
             if ($form['saveandback']->isCLicked())
-                return $this->redirectToRoute('search', ['type' => 'id', 'value' => $order->getUtmId(),]);
+                return $this->redirectToRoute('search',
+                    ['type' => 'id', 'value' => $order->getUtmId(),]);
         }
         return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
     }
+
+    /**
+     * @param Request $request
+     * @param OrderService $orderService
+     * @param UTM5DbService $UTM5DbService
+     * @param TranslatorInterface $translator
+     * @return RedirectResponse
+     * @Route("/order/create/", name="order_create", methods={"POST"})
+     */
+    public function create(Request $request,
+                           OrderService $orderService,
+                           UTM5DbService $UTM5DbService,
+                           TranslatorInterface $translator): RedirectResponse
+    {
+        try {
+            if ("full" == $request->request->get("create")) {
+                $user = $UTM5DbService->search((string)$request->request->getInt("id"));
+                $order = $orderService->createOrderByUTM5User($user, $request->request->get('comment', ''));
+                $orderService->saveOrder($order);
+                $this->addFlash('notice', $translator->trans("order.order_created"));
+            }
+        } catch (\Exception $e) {
+            $this->addFlash('notice', $e->getMessage());
+        }
+        return $this->redirectToRoute("search", ['type' => 'id', 'value' => $request->request->getInt("id"),]);
+    }
+
+    /**
+     * @param int $id
+     * @param OrderService $orderService
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param TranslatorInterface $translator
+     * @return RedirectResponse
+     * @Route("/order/{id}/delete/", name="order_delete", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function delete(int $id, OrderService $orderService,
+                           AuthorizationCheckerInterface $authorizationChecker,
+                           TranslatorInterface $translator): RedirectResponse
+    {
+        try {
+            if ($authorizationChecker->isGranted('ROLE_ORDER_MODERATOR')) {
+                $order_id = $orderService->deleteOrder($id);
+                $this->addFlash('notice', $translator->trans('delete_order.success', ["%id%" => $order_id]));
+            } else {
+                $this->addFlash('notice', 'Недостаточно прав на удаление заявки.');
+            }
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+        return $this->redirectToRoute("orders_index");
+    }
+
+    /**
+     * Печать заявки
+     * @param int $id
+     * @param OrderService $orderService
+     * @return RedirectResponse|Response
+     * @Route("/order/{id}/print/", name="order_print", methods={"GET"}, requirements={"id": "\d+"})
+     */
+    public function print(int $id, OrderService $orderService, UTM5UserRepository $UTM5UserRepository)
+    {
+        try {
+            $order = $orderService->getOrder($id);
+            if(!is_null($order->getUtmId())) {
+                if(!is_null($order->getUtmId())) {
+                    $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
+                    $order->setEmptyPassport($passport);
+                }
+            }
+            return $this->render('Order/pritable.html.twig', ['order' => $order]);
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('orders_index');
+        }
+    }
+
 
     /**
      * Возвращает список статусов для select поля
@@ -222,7 +190,7 @@ class OrderController extends AbstractController
      * @return JsonResponse
      * @Route("/order/ajax/getstatuses/", name="order_get_statuses", methods={"GET"})
      */
-    public function getStatuses(OrderService $orderService)
+    public function getStatuses(OrderService $orderService): JsonResponse
     {
         $statuses = $orderService->getStatusesForFormSelect();
         return $this->json($statuses);
@@ -235,10 +203,46 @@ class OrderController extends AbstractController
      * @return JsonResponse
      * @Route("/order/ajax/getemployees/", name="order_get_employees", methods={"GET"})
      */
-    public function getEmployees(OrderService $orderService)
+    public function getEmployees(OrderService $orderService): JsonResponse
     {
         $users = $orderService->getUsersForFormSelect();
         return $this->json($users);
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     * @param TranslatorInterface $translator
+     * @return JsonResponse
+     * @Route("/order/filter/", name="order_filter", methods={"POST"})
+     */
+    public function filter(Request $request, Session $session, TranslatorInterface $translator): JsonResponse
+    {
+        if ($request->request->has('filter')) {
+            $session->set('filter', $request->request->get('filter'));
+            $this->addFlash('notice', $translator->trans('filter_set'));
+        } else {
+            $this->addFlash('error', $translator->trans('filter_not_set'));
+        }
+        return $this->json(['refresh' => true]);
+    }
+
+    /**
+     * Скрытие или показ таблиц заявок
+     * @param Request $request
+     * @param Session $session
+     * @return JsonResponse
+     * @Route("/order/showhide/", name="order_showhide", methods={"POST"}, options={"expose": true})
+     */
+    public function showHide(Request $request, Session $session): JsonResponse
+    {
+        if ($request->request->has('hide_id') &&
+            $request->request->has('value')
+        ) {
+            $session->set('hide_id'.$request->request->get('hide_id'),
+                $request->request->getBoolean('value'));
+        }
+        return $this->json([]);
     }
 
     /**

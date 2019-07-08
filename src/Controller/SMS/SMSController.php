@@ -1,25 +1,29 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\SMS;
 
-use App\Service\SMS\SenderInterface;
 use App\Service\SMS\smscSender;
 use App\Form\SMS\SmsTemplateForm;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Request };
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Class SMSController
+ * @package App\Controller\SMS
+ */
 class SMSController extends AbstractController
 {
     /**
+     * @param string $type
      * @param Request $request
+     * @param LoggerInterface $logger
      * @return JsonResponse
      * @Route("/sms/send/{type}", defaults={"type": "modem"}, name="sms_send", methods={"GET", "PUT"}, requirements={"type": "smsc|modem|all"})
      */
-    public function sendSMS($type, Request $request, LoggerInterface $logger)
+    public function sendSMS(string $type, Request $request, LoggerInterface $logger): JsonResponse
     {
 
         try {
@@ -60,9 +64,12 @@ class SMSController extends AbstractController
 
     /**
      * @param Request $request
+     * @param smscSender $sender
+     * @return RedirectResponse
      * @Route("/sms/sendbytemplate/", name="sms_sendtemplate", methods={"POST"})
      */
-    public function sendSmsByTemplate(Request $request, smscSender $sender) {
+    public function sendSmsByTemplate(Request $request, smscSender $sender): RedirectResponse
+    {
         $form = $this->createForm(SmsTemplateForm::class);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()) {
@@ -80,10 +87,10 @@ class SMSController extends AbstractController
     }
 
     /**
-     * @param $phone
-     * @param $message
+     * @param string $phone
+     * @param string $message
      */
-    private function sendSMSViaModem($phone, $message)
+    private function sendSMSViaModem(string $phone, string $message): void
     {
         exec("/usr/bin/smssend +7{$phone} '{$message}'", $data, $code);
         if (0 !== $code) {

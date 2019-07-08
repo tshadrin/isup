@@ -1,36 +1,49 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\UTM5;
 
+use App\Entity\UTM5\UTM5User;
+use App\Service\UTM5\{ BitrixRestService, UTM5DbService };
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Entity\UTM5\UTM5User;
-use App\Service\UTM5\BitrixRestService;
-use App\Service\UTM5\UTM5DbService;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+/**
+ * Class AlarmZabbixController
+ * @package App\Controller\UTM5
+ */
 class AlarmZabbixController extends AbstractController
 {
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+
+    /**
+     * @var \Swift_Mailer
+     */
+    protected $mailer;
 
     /**
      * @param Request $request
      * @param BitrixRestService $bitrix_rest_service
      * @param UTM5DbService $UTM5_db_service
      * @param LoggerInterface $logger
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return JsonResponse
      * @throws \Exception
      * @Route("/zabbix/alarm/", name="alarm_zabbix", methods={"GET", "POST"})
      */
     public function alarm(Request $request,
-                                BitrixRestService $bitrix_rest_service,
-                                UTM5DbService $UTM5_db_service,
-                                LoggerInterface $logger)
+                          BitrixRestService $bitrix_rest_service,
+                          UTM5DbService $UTM5_db_service,
+                          LoggerInterface $logger,
+                          \Swift_Mailer $mailer): JsonResponse
     {
         $this->logger = $logger;
+        $this->mailer = $mailer;
         if($request->request->has('subject') && $request->request->has('message')) {
             $subject = $this->replaceSpecialChars($request->request->get("subject"));
             $message_body = $this->replaceSpecialChars($request->request->get("message"));
@@ -80,23 +93,21 @@ class AlarmZabbixController extends AbstractController
     }
 
     /**
-     * Очистка строки от спецсимволов
-     * @param $message
+     * @param string $message
      * @return string
      */
-    function replaceSpecialChars($message) {
+    function replaceSpecialChars(string $message): string
+    {
         return html_entity_decode(htmlspecialchars_decode($message));
     }
 
     /**
-     * Отправка письма
-     * @param $email
-     * @param $subject
-     * @param $message
-     * @param \Swift_Mailer $mailer
+     * @param string $email
+     * @param string $subject
+     * @param string $message
      */
-    function sendEmail($email, $subject, $message) {
-        $mailer = $this->get('mailer');
+    function sendEmail(string $email, string $subject, string $message): void
+    {
         $letter = (new \Swift_Message($subject))
             ->setFrom('no-reply@istranet.ru')
             ->setTo($email)
@@ -109,7 +120,7 @@ class AlarmZabbixController extends AbstractController
 //                    ),
 //                    'text/html'
 //                )
-        $mailer->send($letter);
+        $this->mailer->send($letter);
         $this->logger->info('Оповещение отправлено на почту',
             ['email' => $email, 'subject' => $subject, 'message' => $message,]);
     }

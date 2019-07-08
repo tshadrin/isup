@@ -1,17 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Command\UTM5;
 
 use App\Service\UTM5\UTM5DbService;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\{ InputArgument, InputInterface };
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Class AddFirmForAcquiroPaymentsCommand
+ * @package App\Command\UTM5
+ */
 class AddFirmForAcquiroPaymentsCommand extends Command
 {
-
     /**
      * @var string
      */
@@ -28,8 +31,8 @@ class AddFirmForAcquiroPaymentsCommand extends Command
     private $UTM5DbService;
 
     /**
-     * AddFirmForAcquirPaymentsCommand constructor.
-     * @param string $files_dir
+     * AddFirmForAcquiroPaymentsCommand constructor.
+     * @param array $parameters
      * @param UTM5DbService $UTM5DbService
      */
     public function __construct(array $parameters, UTM5DbService $UTM5DbService)
@@ -40,18 +43,10 @@ class AddFirmForAcquiroPaymentsCommand extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->setDescription("Добавить название фирмы в платежи.")
-            ->setHelp('Добавляет поле с названием фирмы для csv списка платежей.')
-            ->addArgument('file_name', InputArgument::REQUIRED, 'CSV file name');
-    }
-
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|void|null
-     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -88,5 +83,13 @@ class AddFirmForAcquiroPaymentsCommand extends Command
         } else {
             $output->writeln("Ошибка. Файл не найден.");
         }
+    }
+
+
+    protected function configure(): void
+    {
+        $this->setDescription("Добавить название фирмы в платежи.")
+            ->setHelp('Добавляет поле с названием фирмы для csv списка платежей.')
+            ->addArgument('file_name', InputArgument::REQUIRED, 'CSV file name');
     }
 }

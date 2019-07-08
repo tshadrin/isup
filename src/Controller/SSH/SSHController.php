@@ -48,21 +48,21 @@ class SSHController extends AbstractController
     {
         $diag = $SSHService->getConnection($server);
         if ("ping" == $command)
-            $data = $diag->ssh_exec("arping -c 3 -I eth1 {$ip}");
+            $data = $diag->exec("arping -c 3 -I eth1 {$ip}");
         if ("kk" == $command)
-            $data = $diag->ssh_exec("kk");
+            $data = $diag->exec("kk");
         if ("spd" == $command)
-            $data = $diag->ssh_exec("spd {$ip}");
+            $data = $diag->exec("spd {$ip}");
         if ("kkip" == $command)
-            $data = $diag->ssh_exec("kk {$ip}");
+            $data = $diag->exec("kk {$ip}");
         if ("itu" == $command) {
-            $data = $diag->ssh_exec("/usr/local/bin/check_traff {$ip}");
+            $data = $diag->exec("/usr/local/bin/check_traff {$ip}");
         }
         if ("turbo" == $command) {
-            $data = $diag->ssh_exec("ipset -L TURBO | grep -w {$ip}");
+            $data = $diag->exec("ipset -L TURBO | grep -w {$ip}");
         }
         if ("mail" == $command) {
-            $data = $diag->ssh_exec("ipset -L MAIL | grep -w {$ip}");
+            $data = $diag->exec("ipset -L MAIL | grep -w {$ip}");
         }
         if(empty($data)) { $data = "Нет данных."; }
         return $this->json(['ping_data' => $data,]);

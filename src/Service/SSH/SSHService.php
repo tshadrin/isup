@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Service\SSH;
 
 use App\Entity\SSH\SSH;
@@ -26,7 +28,7 @@ class SSHService
      * Создаем соединение и возвращаем его объект
      *
      */
-    public function getConnection($host)
+    public function getConnection(string $host)
     {
         //TODO сделать провеку на существование и сделать соединение полем класса
         return new SSH($host, $this->parameters);
@@ -35,12 +37,12 @@ class SSHService
     /**
      * Возвращает количество секунд турбо-режима, если он включен
      * @param string $ip
-     * @param string $serverIp
+     * @param string $router
      * @return int|null
      */
-    public function checkTurboForUser(string $ip, string $serverIp): ?int
+    public function checkTurboForUser(string $ip, string $router): ?int
     {
-        $connection = $this->getConnection($serverIp);
+        $connection = $this->getConnection($router);
         return $connection->checkInTurboTable($ip);
     }
 
@@ -62,12 +64,12 @@ class SSHService
      * - возвращает true
      * Если открыть доступ не удалось - возвращает false
      * @param string $ip
-     * @param string $serverIp
+     * @param string $router
      * @return bool
      */
-    public function openTurbo(string $ip, string $serverIp): bool
+    public function openTurbo(string $ip, string $router): bool
     {
-        $connection = $this->getConnection($serverIp);
+        $connection = $this->getConnection($router);
         $connection->enableTurbo($ip);
 
         return $connection->isTurbo($ip)?true:false;
@@ -81,16 +83,13 @@ class SSHService
      * @param $router string
      * @return bool
      */
-    public function openInternetTemporary($ip, $router)
+    public function openInternetTemporary(string $ip, string $router): bool
     {
         $connection = $this->getConnection($router);
-        if($connection->hasOpenTemporary($ip))
+        if($connection->isOpenTemporary($ip)) {
             return true;
-        else
-            $connection->openTemporary($ip);
-        if($connection->hasOpenTemporary($ip))
-            return true;
-        else
-            return false;
+        }
+        $connection->openTemporary($ip);
+        $connection->isOpenTemporary($ip)?true:false;
     }
 }

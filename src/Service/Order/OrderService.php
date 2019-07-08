@@ -2,10 +2,12 @@
 
 namespace App\Service\Order;
 
+use App\Repository\Order\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Order\Order;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Entity\UTM5\UTM5User;
 
 class OrderService
@@ -22,6 +24,10 @@ class OrderService
      * @var TokenStorageInterface
      */
     private $token_storage;
+    /**
+     * @var OrderRepository
+     */
+    private $orderRepository;
 
     /**
      * OrderService constructor.
@@ -29,11 +35,12 @@ class OrderService
      * @param TranslatorInterface $translator
      * @param TokenStorageInterface $token_storage
      */
-    public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, TokenStorageInterface $token_storage)
+    public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, TokenStorageInterface $token_storage, OrderRepository $orderRepository)
     {
         $this->em = $em;
         $this->translator = $translator;
         $this->token_storage = $token_storage;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
@@ -171,18 +178,19 @@ class OrderService
     }
 
     /**
-     * Поиск заявок по фильтрам
-     * @param $filter
+     * Поиск задач по фильтру
+     * @param string $filter
      * @param bool $today
-     * @return mixed
+     * @return ArrayCollection
      * @throws \Exception
      */
-    public function findOrdersByFilter($filter, $today = true)
+    public function findOrdersByFilter(string $filter, bool $today = true): ArrayCollection
     {
-        if('my' == $filter)
-            return $this->em->getRepository('App:Order\Order')->findMyOrders($this->token_storage->getToken()->getUser()->getId(), $today);
-        else
-            return $this->em->getRepository('App:Order\Order')->findByFilterNotDeleted($filter, $today);
+        if('my' === $filter)
+            return $this->orderRepository->findMyOrders($this->token_storage->getToken()->getUser()->getId(), $today);
+        else {
+            return $this->orderRepository->findByFilterNotDeleted($filter, $today);
+        }
     }
 
     /**

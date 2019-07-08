@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity\Phone;
 
 use App\Entity\Commutator\{ Commutator, Port, PortType };
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\{ Collection, ArrayCollection };
 use PHPUnit\Framework\TestCase;
 
 class CommutatorTest extends TestCase
@@ -31,7 +31,7 @@ class CommutatorTest extends TestCase
         self::assertEquals($ip, $commutator->getIp());
         self::assertEquals($mac, $commutator->getMac());
         self::assertEquals($notes, $commutator->getNotes());
-        self::assertTrue($commutator->getPorts() instanceof ArrayCollection);
+        self::assertTrue($commutator->getPorts() instanceof Collection);
 
         $port_id = 1;
         $number = 1;

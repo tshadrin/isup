@@ -1,12 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Command\Commutator;
 
 use App\Service\UTM5\UTM5DbService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\{ InputArgument, InputInterface };
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ParseNagios extends Command
@@ -16,6 +16,10 @@ class ParseNagios extends Command
      */
     private $entityManager;
 
+    /**
+     * Папка с файлами отчетов
+     * @var mixed
+     */
     private $files_dir;
 
     /**
@@ -30,6 +34,11 @@ class ParseNagios extends Command
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|void|null
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $work_file = $input->getArgument('file_name');
@@ -136,13 +145,5 @@ class ParseNagios extends Command
         } else {
             throw new \RuntimeException("Ошибка при открытии файла");
         }
-    }
-
-    protected function configure(): void
-    {
-        $this->setDescription("Добавить название фирмы в платежи.")
-            ->setHelp('Добавляет поле с названием фирмы для csv списка платежей.')
-            ->addArgument('file_name', InputArgument::REQUIRED, 'CSV file name')
-        ->addArgument('group', InputArgument::REQUIRED, 'CSV file name');
     }
 }

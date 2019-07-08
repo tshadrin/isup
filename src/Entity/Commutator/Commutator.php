@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Entity\Commutator;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\{ Collection, ArrayCollection };
+use Doctrine\ORM\{ Mapping as ORM, PersistentCollection };
 
 /**
  * Class Commutator
@@ -49,7 +49,7 @@ class Commutator
     private $notes;
 
     /**
-     * @var ArrayCollection
+     * @var Collection
      * @ORM\OneToMany(targetEntity="App\Entity\Commutator\Port", mappedBy="commutator", orphanRemoval=true, cascade={"persist"})
      * @ORM\OrderBy({"number" = "ASC"})
      */
@@ -90,7 +90,7 @@ class Commutator
     /**
      * @return string
      */
-    public function getModel(): string
+    public function getModel(): ?string
     {
         return $this->model;
     }
@@ -104,9 +104,9 @@ class Commutator
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection|null
      */
-    public function getPorts(): ArrayCollection
+    public function getPorts(): ?Collection
     {
         return $this->ports;
     }
@@ -160,14 +160,19 @@ class Commutator
     }
 
     /**
-     * @param ArrayCollection $ports
+     * @param Collection $ports
      */
-    public function setPorts(ArrayCollection $ports): void
+    public function setPorts(Collection $ports): void
     {
         foreach($ports as $port) {
             $port->setCommutator($this);
             $this->addPort($port);
         }
+    }
+
+    public function __construct()
+    {
+        $this->ports = new ArrayCollection();
     }
 
     /**
@@ -190,14 +195,6 @@ class Commutator
         $this->ports->removeElement($port);
         // установите владеющую сторону, как null
         $port->setCommutator(null);
-    }
-
-    /**
-     * Commutator constructor.
-     */
-    public function __construct()
-    {
-        $this->ports = new ArrayCollection();
     }
 
     /**

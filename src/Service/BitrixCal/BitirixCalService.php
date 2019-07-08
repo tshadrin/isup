@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Service\BitrixCal;
 
@@ -45,7 +46,7 @@ class BitirixCalService
         } catch (\Exception $e) {
             return ['error' => 'Error retrieving calendar. '. $e->getMessage()];
         }
-        if (0 == count($events)) {
+        if (0 === count($events)) {
             return ['events' => ['events_count' => count($events),],];
         }
         return ['events' => ['events_count' => count($events), $events,],];

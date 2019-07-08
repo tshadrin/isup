@@ -50,7 +50,7 @@ class User extends BaseUser
 
     /**
      * @var int
-     * @ORM\Column(type="integer", nullable=true, name="bitrix_id")
+     * @ORM\Column(type="integer", nullable=true, name="bitrix_id", nullable=true)
      */
     protected $bitrixId;
 
@@ -63,17 +63,17 @@ class User extends BaseUser
     /**
      * @return int
      */
-    public function getBitrixId()
+    public function getBitrixId(): ?int
     {
         return $this->bitrixId;
     }
 
     /**
-     * @param int $bitrix_id
+     * @param int $bitrixId
      */
-    public function setBitrixId(int $bitrixId)
+    public function setBitrixId(?int $bitrixId): void
     {
-        $this->bitrix_id = $bitrixId;
+        $this->bitrixId = $bitrixId;
     }
 
     /**

@@ -1,13 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\Intercom;
 
 use App\Form\Intercom\TaskForm;
 use App\Service\Intercom\IntercomService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{ Request, RedirectResponse, Response};
 use Symfony\Component\Routing\Annotation\Route;
 
 /**

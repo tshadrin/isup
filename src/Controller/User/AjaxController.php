@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\User;
 
 use FOS\UserBundle\Controller\SecurityController as BaseController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -20,7 +20,7 @@ class AjaxController extends BaseController
      * @return JsonResponse
      * @Route("/ajax/showhide/", name="ajax_showhide", methods={"GET"}, options={"expose": true})
      */
-    public function showHide(Request $request, Session $session)
+    public function showHide(Request $request, Session $session): JsonResponse
     {
         if($request->query->has('block_name') && $request->query->has('value')) {
             $session->set('hide_block_'.$request->query->get('block_name'), $request->query->getBoolean('value'));

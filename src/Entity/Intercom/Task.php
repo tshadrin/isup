@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Intercom;
 
-use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User\User;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -14,6 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Task
 {
+    const STATUS_COMPLETE = 'complete';
+
     /**
      * Идентификатор задачи
      * @var integer
@@ -27,26 +30,26 @@ class Task
      * @var string
      * @ORM\Column(type="string", length=255)
      */
-    private $phone = '';
+    private $phone;
     /**
      * ФИО Клиента
      * @var string
      * @ORM\Column(type="string", length=255, name="full_name")
      */
-    private $fullname = '';
+    private $fullname;
     /**
      * Адрес клиента
      * @var string
      * @ORM\Column(type="string", length=1024)
      */
-    private $address = '';
+    private $address;
     /**
      * Описание задачи
      * @var string
-     * @ORM\Column(type="string", length=4096)
+     * @ORM\Column(type="string", length=4096, nullable=true)
      * @Assert\Length(max="4096")
      */
-    private $description = '';
+    private $description;
     /**
      * Оператор создавший задачу
      * @var User
@@ -77,12 +80,6 @@ class Task
     private $created;
 
     /**
-     * @var bool
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $deleted = false;
-
-    /**
      * @var \DateTime
      * @ORM\Column(type="datetime", length=100, nullable=true)
      * @Assert\DateTime()
@@ -90,72 +87,10 @@ class Task
     private $completed;
 
     /**
-     * @return string
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
      */
-
-    /**
-     * @return mixed
-     */
-    public function getCompleted()
-    {
-        return $this->completed;
-    }
-
-    /**
-     * @param $completed
-     */
-    public function setCompleted($completed): void
-    {
-        $this->completed = $completed;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAddress(): string
-    {
-        return $this->address;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDeleted(): bool
-    {
-        return $this->deleted;
-    }
-
-    /**
-     * @param bool $deleted
-     */
-    public function setDeleted(bool $deleted): void
-    {
-        $this->deleted = $deleted;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreated()
-    {
-        return $this->created;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFullname(): string
-    {
-        return $this->fullname;
-    }
+    private $deleted;
 
     /**
      * @return int
@@ -168,9 +103,41 @@ class Task
     /**
      * @return string
      */
-    public function getPhone(): string
+    public function getPhone(): ?string
     {
         return $this->phone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullname(): ?string
+    {
+        return $this->fullname;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
     }
 
     /**
@@ -190,43 +157,27 @@ class Task
     }
 
     /**
-     * @return User
+     * @return \DateTime
      */
-    public function getUser(): User
+    public function getCreated(): \DateTime
     {
-        return $this->user;
+        return $this->created;
     }
 
     /**
-     * @param string $address
+     * @return \DateTime
      */
-    public function setAddress(string $address): void
+    public function getCompleted(): ?\DateTime
     {
-        $this->address = $address;
+        return $this->completed;
     }
 
     /**
-     * @param \DateTime $created
+     * @return bool
      */
-    public function setCreated($created): void
+    public function isDeleted(): bool
     {
-        $this->created = $created;
-    }
-
-    /**
-     * @param string $description
-     */
-    public function setDescription($description): void
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @param string $fullname
-     */
-    public function setFullname(string $fullname): void
-    {
-        $this->fullname = $fullname;
+        return $this->deleted;
     }
 
     /**
@@ -246,23 +197,27 @@ class Task
     }
 
     /**
-     * @param Status $status
-     * @throws \Exception
+     * @param string $fullname
      */
-    public function setStatus(Status $status): void
+    public function setFullname(string $fullname): void
     {
-        $this->status = $status;
-        if('complete' == $this->status->getName()) {
-            $this->completed = new \DateTime();
-        }
+        $this->fullname = $fullname;
     }
 
     /**
-     * @param Type $type
+     * @param string $address
      */
-    public function setType(Type $type): void
+    public function setAddress(string $address): void
     {
-        $this->type = $type;
+        $this->address = $address;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
     /**
@@ -274,13 +229,48 @@ class Task
     }
 
     /**
+     * @param Status $status
      * @throws \Exception
      */
-    public function onPrePersistSetCreated()
+    public function setStatus(Status $status): void
     {
-        if(!isset($this->description)) {
-            $this->setCreated(new \DateTime());
+        $this->status = $status;
+        if(self::STATUS_COMPLETE === $this->status->getName()) {
+            $this->completed = new \DateTime();
         }
+
+    }
+
+    /**
+     * @param Type $type
+     */
+    public function setType(Type $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @param \DateTime $created
+     */
+    public function setCreated(\DateTime $created): void
+    {
+        $this->created = $created;
+    }
+
+    /**
+     * @param \DateTime $completed
+     */
+    public function setCompleted(\DateTime $completed): void
+    {
+        $this->completed = $completed;
+    }
+
+    /**
+     * @param bool $deleted
+     */
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
     }
 
     /**
@@ -288,7 +278,7 @@ class Task
      */
     public function __toString(): string
     {
-        return "{$this->getFullname()}";
+        return $this->getFullname();
     }
 
     /**
@@ -299,6 +289,7 @@ class Task
     public function __construct(User $user)
     {
         $this->setCreated(new \DateTime());
-        $this->user = $user;
+        $this->setUser($user);
+        $this->setDeleted(false);
     }
 }

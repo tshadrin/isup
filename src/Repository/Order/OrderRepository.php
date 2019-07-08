@@ -1,19 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository\Order;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Class OrderRepository
+ * @package App\Repository\Order
+ */
 class OrderRepository extends EntityRepository
 {
     /**
-     * Поиск заявок по фильтру
-     * @param $filter
-     * @param $today
-     * @return mixed
+     * Поиск фильтрованных заявок прошлых дней
+     * @param string $filter
+     * @param bool $today
+     * @return ArrayCollection
      * @throws \Exception
      */
-    public function findByFilterNotDeleted($filter, $today)
+    public function findByFilterNotDeleted(string $filter, bool $today): ArrayCollection
     {
         $d = new \DateTime();
         $date = $d->setTime(0,0,0)->format('Y-m-d H:i:s');
@@ -36,27 +42,31 @@ class OrderRepository extends EntityRepository
                 $q = "AND s.name != 'layoff'";
                 break;
         }
-        return $em->createQuery("SELECT o FROM App:Order\Order o
+        $result = $em->createQuery("SELECT o FROM App:Order\Order o
                                       JOIN o.status s
                                       WHERE o.created {$symbol} '{$date}' AND o.isDeleted=0 {$q}
                                       ORDER BY o.created DESC")->getResult();
+        return new ArrayCollection($result);
     }
 
     /**
-     * Поиск заявок которые выполняет определенный пользователь
-     * @param $user_id
-     * @return mixed
+     * Поиск заявок назначенных на текущего пользователя
+     * @param int $id
+     * @param bool $today
+     * @return ArrayCollection
+     * @throws \Exception
      */
-    public function findMyOrders($user_id, $today)
+    public function findMyOrders(int $id, bool $today): ArrayCollection
     {
         $d = new \DateTime();
         $date = $d->setTime(0,0,0)->format('Y-m-d H:i:s');
         $symbol = $today?">":"<";
         $em = $this->getEntityManager();
-        return $em->createQuery("SELECT o FROM App:Order\Order o 
+        $result = $em->createQuery("SELECT o FROM App:Order\Order o 
                                       WHERE o.created {$symbol} '{$date}'
-                                      AND o.executed = {$user_id}
+                                      AND o.executed = {$id}
                                       AND o.isDeleted=0 
                                       ORDER BY o.created DESC")->getResult();
+        return new ArrayCollection($result);
     }
 }
