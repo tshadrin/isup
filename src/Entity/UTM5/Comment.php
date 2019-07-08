@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -28,7 +29,7 @@ abstract class Comment
 
     /**
      * Дата в формате unix_timestamp
-     * @var int
+     * @var string
      * @ORM\Column(type="bigint", length=100)
      */
     protected $datetime;
@@ -51,51 +52,76 @@ abstract class Comment
     /**
      * @return int
      */
-    public function getId() { return $this->id; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
     /**
      * @return int
      */
-    public function getDatetime() { return $this->datetime; }
+    public function getDatetime(): string
+    {
+        return $this->datetime;
+    }
 
     /**
      * @return string
      */
-    public function getComment() { return $this->comment; }
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
 
     /**
      * @return User
      */
-    public function getUserId() { return $this->userId; }
+    public function getUserId(): User
+    {
+        return $this->userId;
+    }
 
     /**
-     * @param $id
-     * @return $this
+     * @param int $id
      */
-    public function setId($id) { $this->id = $id; return $this; }
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
 
     /**
-     * @param $userId
-     * @return $this
+     * @param User $userId
      */
-    public function setUserId($user_id) { $this->userId = $userId; return $this; }
+    public function setUserId(User $userId): void
+    {
+        $this->userId = $userId;
+    }
 
     /**
-     * @param $datetime
-     * @return $this
+     * @param string $datetime
      */
-    public function setDatetime($datetime) { $this->datetime = $datetime; return $this; }
+    public function setDatetime(string $datetime): void
+    {
+        $this->datetime = $datetime;
+    }
 
     /**
-     * @param $comment
-     * @return $this
+     * @param string $comment
      */
-    public function setComment($comment) { $this->comment = $comment; return $this; }
+    public function setComment(string $comment): void
+    {
+        $this->comment = $comment;
+    }
 
+    /**
+     * Comment constructor.
+     * @param User $userId
+     * @throws \Exception
+     */
     public function __construct(User $userId)
     {
         $this->userId = $userId;
         $date = new \DateTime();
-        $this->datetime = $date->format("U");
+        $this->setDatetime($date->format("U"));
     }
 }

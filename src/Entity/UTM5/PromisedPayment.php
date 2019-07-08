@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -21,14 +22,6 @@ class PromisedPayment
      * @var int
      */
     private $transaction_id;
-
-    public function __construct(\DateTimeImmutable $start_date, \DateTimeImmutable $expire_date, float $amount, int $transaction_id)
-    {
-        $this->start_date = $start_date;
-        $this->expire_date = $expire_date;
-        $this->amount = $amount;
-        $this->transaction_id = $transaction_id;
-    }
 
     /**
      * @return \DateTimeImmutable
@@ -91,6 +84,21 @@ class PromisedPayment
      */
     public function setTransactionId(int $transaction_id): void
     {
+        $this->transaction_id = $transaction_id;
+    }
+
+    /**
+     * PromisedPayment constructor.
+     * @param DateTimeImmutable $start_date
+     * @param DateTimeImmutable $expire_date
+     * @param float $amount
+     * @param int $transaction_id
+     */
+    public function __construct(\DateTimeImmutable $start_date, \DateTimeImmutable $expire_date, float $amount, int $transaction_id)
+    {
+        $this->start_date = $start_date;
+        $this->expire_date = $expire_date;
+        $this->amount = $amount;
         $this->transaction_id = $transaction_id;
     }
 }

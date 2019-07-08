@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -80,6 +81,11 @@ class Service
         $this->type = $type;
     }
 
+    /**
+     * Service constructor.
+     * @param string $name
+     * @param float $cost
+     */
     public function __construct(string $name, float $cost)
     {
         $this->name = $name;

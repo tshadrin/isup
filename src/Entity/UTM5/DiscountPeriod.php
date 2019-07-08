@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -65,6 +66,12 @@ class DiscountPeriod
         $this->end = $end;
     }
 
+    /**
+     * DiscountPeriod constructor.
+     * @param int $id
+     * @param \DateTimeImmutable $start
+     * @param \DateTimeImmutable $end
+     */
     public function __construct(int $id, \DateTimeImmutable $start, \DateTimeImmutable $end)
     {
         $this->id = $id;

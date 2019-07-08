@@ -96,11 +96,11 @@ class SSHController extends AbstractController
      * @param SSHService $SSHService
      * @param URFAService $URFAService
      * @return JsonResponse
-     * @Route("/ssh/turboopen/{id}/{sid}", name="ssh_turboopen", methods={"GET"}, requirements={"id": "\d+", "sid": "\d+"})
+     * @Route("/ssh/turboopen/{account}/{sid}", name="ssh_turboopen", methods={"GET"}, requirements={"account": "\d+", "sid": "\d+"})
      */
-    public function turboOpen(int $id, int $sid, SSHService $SSHService, URFAService $URFAService): JsonResponse
+    public function turboOpen(int $account, int $sid, SSHService $SSHService, URFAService $URFAService): JsonResponse
     {
-        $user = $URFAService->getUserByAccount($id);
+        $user = $URFAService->getUserByAccount($account);
         $checkResult = false;
         // Проверяем на сервере, включена ли опция у пользователя
         foreach ($user->getRouters() as $router) {

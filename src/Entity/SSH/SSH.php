@@ -32,26 +32,6 @@ class SSH
     private $config;
 
     /**
-     * В конструкторе вычисляются порт и пароль для хоста.
-     * Далее устанавливается соединение, происходит авторизация пользователя
-     * и загружается интерпретатор(bash)
-     * SSH constructor.
-     * @param string $host
-     * @param array $config
-     */
-    public function __construct(string $host, array $config)
-    {
-        $this->setConfig($config);
-        $this->setHost($host);
-        $this->setPort($this->calculatePort($host));
-        $this->setPassword($this->calculatePassword($host));
-        $connection = $this->connect($this->getHost(), $this->getPort());
-        $this->setConnection($connection);
-        $this->auth($this->getConnection(), $config['user'], $this->getPassword());
-        $this->shell($this->getConnection());
-    }
-
-    /**
      * @return string
      */
     public function getHost(): string
@@ -129,6 +109,26 @@ class SSH
     public function setConfig(array $config): void
     {
         $this->config = $config;
+    }
+
+    /**
+     * В конструкторе вычисляются порт и пароль для хоста.
+     * Далее устанавливается соединение, происходит авторизация пользователя
+     * и загружается интерпретатор(bash)
+     * SSH constructor.
+     * @param string $host
+     * @param array $config
+     */
+    public function __construct(string $host, array $config)
+    {
+        $this->setConfig($config);
+        $this->setHost($host);
+        $this->setPort($this->calculatePort($host));
+        $this->setPassword($this->calculatePassword($host));
+        $connection = $this->connect($this->getHost(), $this->getPort());
+        $this->setConnection($connection);
+        $this->auth($this->getConnection(), $config['user'], $this->getPassword());
+        $this->shell($this->getConnection());
     }
 
     /**

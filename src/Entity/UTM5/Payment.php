@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -123,6 +124,15 @@ class Payment
         $this->reciever = $receiver;
     }
 
+    /**
+     * Payment constructor.
+     * @param int $amount
+     * @param \DateTimeImmutable $date
+     * @param int $transactionNumber
+     * @param string $method
+     * @param string $receiver
+     * @param string $userComment
+     */
     public function __construct(int $amount, \DateTimeImmutable $date, int $transactionNumber, string $method, string $receiver, string $userComment)
     {
         $this->date = $date;

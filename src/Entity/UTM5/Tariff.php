@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -87,6 +88,12 @@ class Tariff
         $this->services = $services;
     }
 
+    /**
+     * Tariff constructor.
+     * @param string $name
+     * @param string $nextName
+     * @param DiscountPeriod $discountPeriod
+     */
     public function __construct(string $name, string $nextName, DiscountPeriod $discountPeriod)
     {
         $this->name = $name;

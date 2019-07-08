@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -105,6 +106,14 @@ class House
         $this->number = $number;
     }
 
+    /**
+     * House constructor.
+     * @param int $id
+     * @param string $region
+     * @param string $city
+     * @param string $street
+     * @param string $number
+     */
     public function __construct(int $id, string $region,
                                 string $city, string $street,
                                 string $number)
@@ -117,7 +126,10 @@ class House
         $this->number = $number;
     }
 
-    public function __toString()
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
         $result = '';
         if(!empty($region = $this->getRegion())) {

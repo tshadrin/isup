@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -111,6 +112,10 @@ class Passport
         $this->birthday = $birthday;
     }
 
+    /**
+     * @param PassportFormData $passportFormData
+     * @return Passport
+     */
     public static function createFromPassportFormData(PassportFormData $passportFormData): self
     {
         $passport = new self;

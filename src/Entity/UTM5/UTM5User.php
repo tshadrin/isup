@@ -1,11 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Entity\UTM5;
 
-use App\Collection\UTM5\GroupCollection;
-use App\Collection\UTM5\PaymentCollection;
-use App\Collection\UTM5\RouterCollection;
-use App\Collection\UTM5\ServiceCollection;
-use App\Collection\UTM5\TariffCollection;
+use App\Collection\UTM5\{ GroupCollection, PaymentCollection, RouterCollection, ServiceCollection, TariffCollection };
 
 /**
  * Class UTM5User
@@ -156,7 +154,7 @@ class UTM5User
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getEmail(): ?string
     {
@@ -196,7 +194,7 @@ class UTM5User
     }
 
     /**
-     * @return Passport
+     * @return Passport|null
      */
     public function getPassportO(): ?Passport
     {
@@ -212,7 +210,7 @@ class UTM5User
     }
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getIps(): ?array
     {
@@ -220,7 +218,7 @@ class UTM5User
     }
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getIps6(): ?array
     {
@@ -236,7 +234,7 @@ class UTM5User
     }
 
     /**
-     * @return House
+     * @return House|null
      */
     public function getHouse(): ?House
     {
@@ -252,8 +250,7 @@ class UTM5User
     }
 
     /**
-     * Возвращает адрес по дому или, если нет дома, то из поля address
-     * @return string
+     * @return string|null
      */
     public function getActualAddress(): ?string
     {
@@ -268,7 +265,7 @@ class UTM5User
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAddress(): ?string
     {
@@ -280,7 +277,7 @@ class UTM5User
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getJuridicalAddress(): ?string
     {
@@ -296,7 +293,7 @@ class UTM5User
     }
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getPhones(): ?array
     {
@@ -337,7 +334,7 @@ class UTM5User
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUTM5Comments(): ?string
     {
@@ -353,7 +350,7 @@ class UTM5User
     }
 
     /**
-     * @return RouterCollection
+     * @return RouterCollection|null
      */
     public function getRouters(): ?RouterCollection
     {
@@ -361,7 +358,7 @@ class UTM5User
     }
 
     /**
-     * @return ServiceCollection
+     * @return ServiceCollection|null
      */
     public function getServices(): ?ServiceCollection
     {
@@ -369,7 +366,7 @@ class UTM5User
     }
 
     /**
-     * @return TariffCollection
+     * @return TariffCollection|null
      */
     public function getTariffs(): ?TariffCollection
     {
@@ -377,7 +374,7 @@ class UTM5User
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLifestreamLogin(): ?string
     {
@@ -397,7 +394,7 @@ class UTM5User
     }
 
     /**
-     * @return PromisedPayment
+     * @return PromisedPayment|null
      */
     public function getPromisedPayment(): ?PromisedPayment
     {
@@ -405,7 +402,7 @@ class UTM5User
     }
 
     /**
-     * @return PaymentCollection
+     * @return PaymentCollection|null
      */
     public function getPayments(): ?PaymentCollection
     {

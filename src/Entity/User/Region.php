@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\User;
 
@@ -40,37 +41,55 @@ class Region
     /**
      * @return int
      */
-    public function getId() { return $this->id; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
 
     /**
      * @return string
      */
-    public function getName() { return $this->name; }
-
-    /**
-     * @return string
-     */
-    public function getDescription() { return $this->description; }
-
-    /**
-     * @param $id
-     * @return $this
-     */
-    public function setId($id) { $this->id = $id; return $this; }
-
-    /**
-     * @param $name
-     * @return $this
-     */
-    public function setName($name) { $this->name = $name; return $this; }
-
-    /**
-     * @param $description
-     * @return $this
-     */
-    public function setDescription($description) { $this->description = $description; return $this; }
-
-    public function __toString()
+    public function __toString(): string
     {
         return empty($this->description)?'Region':$this->description;
     }

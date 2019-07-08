@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -45,6 +46,11 @@ class Group
         $this->name = $name;
     }
 
+    /**
+     * Group constructor.
+     * @param int $id
+     * @param string $name
+     */
     public function __construct(int $id, string $name)
     {
         $this->id = $id;

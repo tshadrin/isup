@@ -246,7 +246,7 @@ class UTM5Controller extends AbstractController
                                  URFAService $URFAService)
     {
         try {
-            $user = $UTM5DbService->search($id, 'id');
+            $user = $UTM5DbService->search((string)$id, 'id');
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('search_default');
@@ -272,8 +272,8 @@ class UTM5Controller extends AbstractController
             if (($passport = $user->getPassportO()) instanceof Passport) {
                 $passportFormData = PassportFormData::createFromPassport($passport);
                 $passportFormData->setUserId($user->getId());
+                $form->setData($passportFormData);
             }
-            $form->setData($passportFormData);
         }
         return $this->render('Utm/edit-passport.html.twig', ['form' => $form->createView()]);
     }

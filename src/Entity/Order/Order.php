@@ -205,9 +205,9 @@ class Order
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function getDeletedId(): User
+    public function getDeletedId(): ?User
     {
         return $this->deletedId;
     }

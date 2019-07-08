@@ -1,25 +1,28 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Entity\UTM5;
 
-use App\Collection\UTM5\GroupCollection;
-use App\Collection\UTM5\RouterCollection;
-use App\Collection\UTM5\ServiceCollection;
-use App\Collection\UTM5\TariffCollection;
+use App\Collection\UTM5\{ GroupCollection, RouterCollection, ServiceCollection, TariffCollection };
 
 class UTM5UrfaUser extends UTM5User
 {
     const MIN_ROUTER_GROUP = 300;
     const MAX_ROUTER_GROUP = 350;
+
     /**
      * @var \URFAClient_API
      */
     private $urfa;
 
     /**
+     * UTM5UrfaUser constructor.
      * @param \URFAClient_API $urfa
-     * В конструкторе передаем объект клиента к UTM5
      */
-    public function __construct(\URFAClient_API $urfa) { $this->urfa = $urfa; }
+    public function __construct(\URFAClient_API $urfa)
+    {
+        $this->urfa = $urfa;
+    }
 
     /**
      * Поиск ip адресов по сервисам тарифа с типом 3
@@ -36,7 +39,7 @@ class UTM5UrfaUser extends UTM5User
                             $linkV6Info = $this->urfa->rpcf_get_iptraffic_service_link_ipv6(['slink_id' => $service->getLink(),]);
                             foreach ($linkV6Info['ip_groups_count'] as $ipgroup) {
                                 if(32 == $ipgroup['mask']){
-                                    $this->addIP($ipgroup['ip_address']);
+                                    $this->ips[] = $ipgroup['ip_address'];
                                 }
                             }
                         }
@@ -45,11 +48,6 @@ class UTM5UrfaUser extends UTM5User
             }
         }
         return parent::getIps();
-    }
-
-    public function addIP(string $ip): void
-    {
-        $this->ips[] = $ip;
     }
 
     /**
@@ -71,8 +69,8 @@ class UTM5UrfaUser extends UTM5User
                 $dpData = $this->urfa->rpcf_get_discount_period(['discount_period_id' => $tariffData['discount_period_id_array'],]);
                 $tariff = new Tariff($tariffInfoData['tariff_name'], $tariffInfoNextData['tariff_name'], new DiscountPeriod(
                     $tariffData['discount_period_id_array'],
-                    \DateTimeImmutable::createFromFormat("U", $dpData['start_date']),
-                    \DateTimeImmutable::createFromFormat("U", $dpData['end_date']))
+                    \DateTimeImmutable::createFromFormat("U", (string)$dpData['start_date']),
+                    \DateTimeImmutable::createFromFormat("U", (string)$dpData['end_date']))
                 );
                 $tariff->setServices($services);
                 $tariffs->add($tariff);
@@ -164,33 +162,11 @@ class UTM5UrfaUser extends UTM5User
     }
 
     /**
-     * @param $id
+     * @param int $account
      * @return $this
-     * Загрузка данных пользователя
      */
-    public function load($id)
+    public function loadByAccount(int $account)
     {
-        if(empty($this->id)) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $data = $this->urfa->rpcf_get_userinfo(['user_id' => $id,]);
-            $this->id = $data['user_id'];
-            $this->full_name = $data['full_name'];
-            $this->login = $data['login'];
-            $this->account = $data['basic_account'];
-            $this->addresses['jur_address'] = $data['jur_address'];
-            $this->addresses['act_address'] = $data['act_address'];
-            if (!empty($data['flat_number']))
-                $this->addresses['act_address'] .= " {$data['flat_number']}";
-            $this->phones['work_tel'] = $data['work_tel'];
-            $this->phones['home_tel'] = $data['home_tel'];
-            $this->phones['mob_tel'] = $data['mob_tel'];
-        }
-        return $this;
-    }
-
-    public function loadByAccount($account)
-    {
-        $account = (int) $account;
         /** @noinspection PhpUndefinedMethodInspection */
         $data = $this->urfa->rpcf_search_users_new(['select_type' => 0,
                                                     'patterns_count' => [
@@ -219,17 +195,11 @@ class UTM5UrfaUser extends UTM5User
     }
 
     /**
-     * @param $id
+     * @param string $account
      * @param \URFAClient_API $urfa
      * @return UTM5UrfaUser
      */
-    public static function findById($id, \URFAClient_API $urfa)
-    {
-        $user = new self($urfa);
-        return $user->load($id);
-    }
-
-    public static function findByAccount($account, $urfa)
+    public static function findByAccount(int $account, \URFAClient_API $urfa): self
     {
         $user = new self($urfa);
         return $user->loadByAccount($account);

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
@@ -23,17 +24,23 @@ class UTM5UserComment extends Comment
     /**
      * @return int
      */
-    public function getUtmId() { return $this->utmId; }
+    public function getUtmId(): int
+    {
+        return $this->utmId;
+    }
 
     /**
      * @param int $utmId
-     * @return $this
      */
-    public function setUtmId(int $utmId) { $this->utmId = $utmId; return $this; }
+    public function setUtmId(int $utmId): void
+    {
+        $this->utmId = $utmId;
+    }
 
     /**
      * UTM5UserComment constructor.
      * @param User $user
+     * @throws \Exception
      */
     public function __construct(User $user)
     {

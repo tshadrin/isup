@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Entity\User;
 
 use FOS\UserBundle\Model\User as BaseUser;
@@ -21,24 +23,11 @@ class User extends BaseUser
     protected $id;
 
     /**
-     * @var array
-     * @ORM\Column(type="array", nullable=true)
-     */
-    protected $options = [];
-
-    /**
      * ФИО пользователя
      * @var string
      * @ORM\Column(type="string", length=255, name="full_name")
      */
     protected $fullName;
-
-    /**
-     * Работает ли пользователь?
-     * @var bool
-     * @ORM\Column(type="boolean", name="on_work")
-     */
-    protected $onWork = false;
 
     /**
      * Регион работы пользователя
@@ -54,11 +43,26 @@ class User extends BaseUser
      */
     protected $bitrixId;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    /**
+     * Работает ли пользователь?
+     * @var bool
+     * @ORM\Column(type="boolean", name="on_work")
+     */
+    protected $onWork;
 
+    /**
+     * @var array
+     * @ORM\Column(type="array", nullable=true)
+     */
+    protected $options = [];
+
+    /**
+     * @return string|null
+     */
+    public function getFullName(): ?string
+    {
+        return $this->fullName;
+    }
 
     /**
      * @return int
@@ -66,6 +70,38 @@ class User extends BaseUser
     public function getBitrixId(): ?int
     {
         return $this->bitrixId;
+    }
+
+    /**
+     * @return Region|null
+     */
+    public function getRegion(): ?Region
+    {
+        return $this->region;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOnWork(): bool
+    {
+        return $this->onWork;
+    }
+
+    /**
+     * @param string $fullName
+     */
+    public function setFullName(string $fullName): void
+    {
+        $this->fullName = $fullName;
     }
 
     /**
@@ -77,91 +113,78 @@ class User extends BaseUser
     }
 
     /**
-     * @return string
+     * @param Region $region
      */
-    public function getFullName()
-    {
-        return $this->fullName;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getOnWork()
-    {
-        return $this->onWork;
-    }
-
-    /**
-     * @return Region
-     */
-    public function getRegion()
-    {
-        return $this->region;
-    }
-
-    /**
-     * @param $on_work
-     * @return $this
-     */
-    public function setOnWork($onWork)
-    {
-        $this->on_work = $onWork;
-        return $this;
-    }
-
-    /**
-     * @param $full_name
-     * @return $this
-     */
-    public function setFullName($fullName)
-    {
-        $this->full_name = $fullName;
-        $this->full_name = $fullName;
-        return $this;
-    }
-
-    /**
-     * @param $region
-     * @return $this
-     */
-    public function setRegion($region)
+    public function setRegion(Region $region): void
     {
         $this->region = $region;
-        return $this;
     }
 
-    public function __toString()
-    {
-        return empty($this->getFullName())?'User':$this->getFullName();
-    }
-
-    public function getOptions()
-    {
-        return $this->options;
-    }
-    public function setOptions()
+    /**
+     * @param array $options
+     */
+    public function setOptions(array $options): void
     {
         $this->options = $options;
     }
-    public function removeOption($key)
+
+    /**
+     * @param bool $onWork
+     */
+    public function setOnWork(bool $onWork): void
+    {
+        $this->onWork = $onWork;
+    }
+
+    /**
+     * @param $key
+     */
+    public function removeOption(string $key): void
     {
         unset($this->options[$key]);
     }
-    public function hasOption($key)
+
+    /**
+     * @param $key
+     * @return bool
+     */
+    public function hasOption(string $key): bool
     {
-        if(array_key_exists($key, $this->options))
-        {
-            return true;
-        }
-        return false;
+        return array_key_exists($key, $this->options)?true:false;
     }
+
+    /**
+     * @param $key
+     * @return mixed|null
+     */
     public function getOption($key)
     {
-        return $this->options[$key];
+        return $this->hasOption($key)?$this->options[$key]:null;
     }
-    public function setOption($key, $value)
+
+    /**
+     * @param string $key
+     * @param $value
+     */
+    public function setOption(string $key, $value): void
     {
         $this->options[$key] = $value;
+    }
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->onWork = false;
+        parent::__construct();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return empty($this->getFullName())?'User':$this->getFullName();
     }
 }

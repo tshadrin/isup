@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity\Phone;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Webmozart\Assert\Assert as WAssert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -108,19 +108,6 @@ class Phone
      */
     private $deleted;
 
-
-    /**
-     * Phone конструктор.
-     * При создании нового объекта генерируются
-     * логин и пароль.
-     */
-    public function __construct()
-    {
-        $this->setLogin('admin');
-        $this->setPassword(substr(md5(uniqid(rand(),true)),7,8));
-        $this->setDeleted(false);
-    }
-
     /**
      * @return int
      */
@@ -218,98 +205,94 @@ class Phone
     }
 
     /**
-     * @param $number
-     * @return $this
+     * @param string $number
      */
-    public function setNumber($number)
+    public function setNumber(string $number): void
     {
-        WAssert::notEmpty($number);
-        $this->number = $number; return $this;
+        $this->number = $number;
     }
 
     /**
-     * @param $moscownumber
-     * @return $this
+     * @param string|null $moscownumber
      */
-    public function setMoscownumber($moscownumber)
+    public function setMoscownumber(?string $moscownumber): void
     {
-        $this->moscownumber = $moscownumber; return $this;
+        $this->moscownumber = $moscownumber;
     }
 
     /**
-     * @param $location
-     * @return $this
+     * @param string $location
      */
-    public function setLocation($location)
+    public function setLocation(string $location): void
     {
-        WAssert::notEmpty($location);
-        $this->location = $location; return $this;
+        $this->location = $location;
     }
 
     /**
-     * @param $name
-     * @return $this
+     * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
-        WAssert::notEmpty($name);
-        $this->name = $name; return $this;
+        $this->name = $name;
     }
 
     /**
-     * @param $contactnumber
-     * @return $this
+     * @param string|null $contactnumber
      */
-    public function setContactnumber($contactnumber)
+    public function setContactnumber(?string $contactnumber): void
     {
-        $this->contactnumber = $contactnumber; return $this;
+        $this->contactnumber = $contactnumber;
     }
 
     /**
-     * @param $ip
-     * @return $this
+     * @param string $ip
      */
-    public function setIp($ip)
+    public function setIp(string $ip): void
     {
-        WAssert::notEmpty($ip);
-        $this->ip = $ip; return $this;
+        $this->ip = $ip;
     }
 
     /**
-     * @param $login
-     * @return $this
+     * @param string $login
      */
-    public function setLogin($login)
+    public function setLogin(string $login): void
     {
-        $this->login = $login; return $this;
+        $this->login = $login;
     }
 
     /**
-     * @param $password
-     * @return $this
+     * @param string $password
      */
-    public function setPassword($password)
+    public function setPassword(string $password): void
     {
-        WAssert::notEmpty($password);
-        $this->password = $password; return $this;
+        $this->password = $password;
     }
 
     /**
-     * @param string $notes
-     * @return $this
+     * @param string|null $notes
      */
-    public function setNotes($notes)
+    public function setNotes(?string $notes): void
     {
-        $this->notes = $notes; return $this;
+        $this->notes = $notes;
     }
 
     /**
      * @param bool $deleted
-     * @return $this
      */
-    public function setDeleted($deleted)
+    public function setDeleted(bool $deleted): void
     {
-        WAssert::boolean($deleted);
-        $this->deleted = $deleted; return $this;
+        $this->deleted = $deleted;
+    }
+
+    /**
+     * Phone конструктор.
+     * При создании нового объекта генерируются
+     * логин и пароль.
+     */
+    public function __construct()
+    {
+        $this->setLogin('admin');
+        $this->setPassword(substr(md5(uniqid((string)rand(),true)),7,8));
+        $this->setDeleted(false);
     }
 }
