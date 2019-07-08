@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\EventListener\Intercom;
 
@@ -13,24 +14,10 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 class ConfigureMenuListener
 {
     /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
-
-    /**
-     * ConfigureMenuListener constructor.
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->authorizationChecker = $authorizationChecker;
-    }
-
-    /**
      * Добавление в меню пунктов для этого бандла
      * @param ConfigureMenuEvent $event
      */
-    public function onMenuConfigure(ConfigureMenuEvent $event)
+    public function onMenuConfigure(ConfigureMenuEvent $event): void
     {
         $menu = $event->getMenu();
         $menu->addChild('Intercoms', ['route' => 'intercom_index'])
@@ -43,9 +30,11 @@ class ConfigureMenuListener
         ;
         $menu['Intercoms']->addChild('List', ['route' => 'intercom_index'])
             ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link');
+            ->setLinkAttribute('class', 'nav-link')
+        ;
         $menu['Intercoms']->addChild('Add', ['route' => 'intercom_add'])
             ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link');
+            ->setLinkAttribute('class', 'nav-link')
+        ;
     }
 }

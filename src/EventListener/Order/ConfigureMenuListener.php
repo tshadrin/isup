@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\EventListener\Order;
 
 use App\Event\ConfigureMenuEvent;
@@ -28,7 +30,7 @@ class ConfigureMenuListener
      * Добавление в меню пунктов для этого бандла
      * @param ConfigureMenuEvent $event
      */
-    public function onMenuConfigure(ConfigureMenuEvent $event)
+    public function onMenuConfigure(ConfigureMenuEvent $event): void
     {
         if($this->authorizationChecker->isGranted('ROLE_SUPPORT')) {
             $menu = $event->getMenu();
@@ -42,10 +44,12 @@ class ConfigureMenuListener
             ;
             $menu['Orders']->addChild('List', ['route' => 'orders_index'])
                 ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('class', 'nav-link')
+            ;
             $menu['Orders']->addChild('Add', ['route' => 'order_add'])
                 ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('class', 'nav-link')
+            ;
         }
     }
 }

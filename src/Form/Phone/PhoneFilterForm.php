@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Form\Phone;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SearchType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\{ SearchType, SubmitType };
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
@@ -18,7 +18,7 @@ class PhoneFilterForm extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('search', SearchType::class, [
             'label' => 'phone_filter_form.search_data',
@@ -42,7 +42,7 @@ class PhoneFilterForm extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'phone_bundle_phone_filter_form';
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\EventListener\SberbankReport;
 
@@ -30,7 +31,7 @@ class KNPPagerItemsListener
      * При обработке событий устанавливаем для платежей количество записей в логе.
      * @param ItemsEvent $event
      */
-    public function onKNPPagerItems(ItemsEvent $event)
+    public function onKNPPagerItems(ItemsEvent $event): void
     {
         $options = $event->options;
         if (array_key_exists('entity', $options) && $options['entity'] == Payment::class) {

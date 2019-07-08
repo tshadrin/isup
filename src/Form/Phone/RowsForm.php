@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Form\Phone;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\{ ChoiceType, SubmitType };
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Форма для ввода количества
@@ -19,7 +19,7 @@ class RowsForm extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add(
             'rows',

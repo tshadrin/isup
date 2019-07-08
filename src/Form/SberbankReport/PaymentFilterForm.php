@@ -1,13 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Form\SberbankReport;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\{ AbstractType, CallbackTransformer, FormBuilderInterface };
+use Symfony\Component\Form\Extension\Core\Type\{ NumberType, TextType, SubmitType };
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -21,7 +18,7 @@ class PaymentFilterForm extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('account_id', NumberType::class, [
             'label' => 'sber_form.account_id',
@@ -88,7 +85,7 @@ class PaymentFilterForm extends AbstractType
      * Стандартные параметры формы
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => 'App\SberbankEntity\Payment',
@@ -99,7 +96,7 @@ class PaymentFilterForm extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'sberbank_report_bundle_payment_filter_form';
     }

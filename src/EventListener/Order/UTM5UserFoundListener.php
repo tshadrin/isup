@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\EventListener\Order;
 
@@ -20,25 +21,27 @@ class UTM5UserFoundListener
     /**
      * @var OrderService
      */
-    private $order_service;
+    private $orderService;
 
     /**
      * UTM5UserFoundListener constructor.
      * @param Environment $templating
      */
-    public function __construct(Environment $templating, OrderService $order_service)
+    public function __construct(Environment $templating, OrderService $orderService)
     {
         $this->templating = $templating;
-        $this->order_service = $order_service;
+        $this->orderService = $orderService;
     }
 
     /**
-     * Обработчик рендерит шаблон для диагностики
      * @param UTM5UserFoundEvent $event
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
-    public function onUTM5UserFound(UTM5UserFoundEvent $event)
+    public function onUTM5UserFound(UTM5UserFoundEvent $event): void
     {
-        $orders = $this->order_service->getLastOrders($event->getUser());
+        $orders = $this->orderService->getLastOrders($event->getUser());
         $last_orders = $this->templating->render('Order/last-orders.html.twig', ['orders' => $orders]);
         $event->addResult('last_orders', $last_orders);
     }

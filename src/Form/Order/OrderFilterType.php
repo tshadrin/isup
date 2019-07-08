@@ -1,14 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Form\Order;
 
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\{ AbstractType, FormBuilderInterface };
+use Symfony\Component\Form\Extension\Core\Type\{ TextType, SubmitType };
 
 class OrderFilterType  extends AbstractType
 {
@@ -16,7 +14,7 @@ class OrderFilterType  extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->setMethod('GET')
             ->add('utmId',

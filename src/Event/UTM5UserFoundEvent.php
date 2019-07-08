@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Event;
 
-use Symfony\Component\EventDispatcher\GenericEvent;
-use Symfony\Component\Templating\DelegatingEngine;
 use App\Entity\UTM5\UTM5User;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Class UTM5UserEvent
@@ -17,10 +18,10 @@ class UTM5UserFoundEvent extends GenericEvent
      * @var UTM5User
      */
     private $user;
-
-    private $templating;
-
-    private $result = array();
+    /**
+     * @var array
+     */
+    private $result;
 
     /**
      * UTM5UserFoundEvent constructor.
@@ -28,40 +29,32 @@ class UTM5UserFoundEvent extends GenericEvent
      */
     public function __construct(UTM5User $user)
     {
+        parent::__construct();
         $this->user = $user;
+        $result = [];
     }
 
     /**
      * @return UTM5User
      */
-    public function getUser()
+    public function getUser(): UTM5User
     {
         return $this->user;
     }
 
     /**
-     * @return DelegatingEngine
-     */
-    public function getTemplating()
-    {
-        return $this->templating;
-    }
-
-    /**
-     *
      * @return array
      */
-    public function getResult()
+    public function getResult(): array
     {
         return $this->result;
     }
 
     /**
-     * Добавить значение к результату события
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      */
-    public function addResult($key, $value)
+    public function addResult(string $key, string $value): void
     {
         $this->result[$key] = $value;
     }

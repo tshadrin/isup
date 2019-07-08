@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\EventSubscriber\Commutator;
 
@@ -8,16 +9,21 @@ use Sonata\AdminBundle\Event\PersistenceEvent;
 
 class SonataPreUpdatePersistSubscriber implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             'sonata.admin.event.persistence.pre_persist' => 'onPreUpdatePersist',
             'sonata.admin.event.persistence.pre_update'=> 'onPreUpdatePersist',
             ];
-
     }
 
-    public function onPreUpdatePersist(PersistenceEvent $event)
+    /**
+     * @param PersistenceEvent $event
+     */
+    public function onPreUpdatePersist(PersistenceEvent $event): void
     {
         $object = $event->getObject();
         if($object instanceof Commutator)

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\EventListener\Intercom;
 
@@ -40,18 +41,20 @@ class SecurityListener
      * @param TokenStorageInterface $tokenStorage
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(UrlMatcherInterface $router, TokenStorageInterface $tokenStorage, EventDispatcherInterface $dispatcher)
+    public function __construct(UrlMatcherInterface $router,
+                                TokenStorageInterface $tokenStorage,
+                                EventDispatcherInterface $dispatcher)
     {
-        $this->router       = $router;
-        $this->tokenStorage        = $tokenStorage;
-        $this->dispatcher   = $dispatcher;
+        $this->router = $router;
+        $this->tokenStorage = $tokenStorage;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
      * При событии авторизации метод добавляет обработчик события KernelEvents::RESPONSE
      * @param InteractiveLoginEvent $event
      */
-    public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
+    public function onSecurityInteractiveLogin(InteractiveLoginEvent $event): void
     {
         $this->dispatcher->addListener(KernelEvents::RESPONSE, [$this, 'onKernelResponse']);
     }
@@ -61,9 +64,8 @@ class SecurityListener
      * перенаправляет на маршрут intercom_index
      * @param ResponseEvent $event
      */
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event): void
     {
-
         $roles = $this->tokenStorage->getToken()->getRoleNames();
 
         if (in_array('ROLE_INTERCOMS', $roles)) {

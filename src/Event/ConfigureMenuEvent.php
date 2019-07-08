@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Event;
 
-use Knp\Menu\FactoryInterface;
-use Knp\Menu\ItemInterface;
+use Knp\Menu\{ FactoryInterface, ItemInterface };
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -17,7 +18,14 @@ class ConfigureMenuEvent extends GenericEvent
      */
     const CONFIGURE = 'menu.menu_configure';
 
+    /**
+     * @var FactoryInterface
+     */
     private $factory;
+
+    /**
+     * @var ItemInterface
+     */
     private $menu;
 
     /**

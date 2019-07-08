@@ -41,7 +41,7 @@ class VlanFilterForm extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'vlan_bundle_vlan_filter_form';
     }

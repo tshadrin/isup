@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\EventListener\SberbankReport;
 
 use App\Event\ConfigureMenuEvent;
@@ -12,24 +14,10 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 class ConfigureMenuListener
 {
     /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
-
-    /**
-     * ConfigureMenuListener constructor.
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->authorizationChecker = $authorizationChecker;
-    }
-
-    /**
      * Добавление в меню пунктов для этого бандла
      * @param ConfigureMenuEvent $event
      */
-    public function onMenuConfigure(ConfigureMenuEvent $event)
+    public function onMenuConfigure(ConfigureMenuEvent $event): void
     {
         $menu = $event->getMenu();
         $menu['Tools']->addChild('sberbank', ['route' => 'sberbank_report_index'])

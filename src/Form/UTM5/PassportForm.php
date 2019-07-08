@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Form\UTM5;
 
@@ -8,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PassportForm extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('userId', HiddenType::class);
         $builder->add('number', TextType::class, [ 'required' => false,]);
@@ -34,7 +35,7 @@ class PassportForm extends AbstractType
             ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => PassportFormData::class,

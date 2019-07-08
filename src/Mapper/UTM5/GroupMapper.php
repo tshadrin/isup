@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Mapper\UTM5;
 
 use App\Collection\UTM5\GroupCollection;

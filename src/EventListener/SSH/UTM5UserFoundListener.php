@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\EventListener\SSH;
 
 use App\Event\UTM5UserFoundEvent;
@@ -25,10 +27,12 @@ class UTM5UserFoundListener
     }
 
     /**
-     * Обработчик рендерит шаблон для диагностики
      * @param UTM5UserFoundEvent $event
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
-    public function onUTM5UserFound(UTM5UserFoundEvent $event)
+    public function onUTM5UserFound(UTM5UserFoundEvent $event): void
     {
         $user = $event->getUser();
         if(count($user->getIps()) > 0) {

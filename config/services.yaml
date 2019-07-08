@@ -151,7 +151,7 @@ services:
         tags: #что за priority?
             - { name: kernel.event_listener, event: 'menu.menu_configure', method: onMenuConfigure, priority: -1 }
     App\EventListener\UTM5\ConfigureMenuListener:
-        tags: #что за priority?
+        tags:
             - { name: kernel.event_listener, event: 'menu.menu_configure', method: onMenuConfigure, priority: -2 }
     App\EventListener\SSH\UTM5UserFoundListener:
         tags:
