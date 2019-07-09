@@ -41,6 +41,9 @@ isup-test:
 isup-test-unit:
 	docker-compose run --rm isup-php-cli php bin/phpunit --testsuite=unit
 
+isup-test-functional:
+	docker-compose run --rm isup-php-cli php bin/phpunit --testsuite=functional
+
 isup-assets-dev:
 	docker-compose run --rm isup-node yarn encore dev
 

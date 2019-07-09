@@ -31,6 +31,15 @@ class UTM5UserRepository
     }
 
     /**
+     * @param int $account
+     * @return UTM5User
+     */
+    public function findByAccount(int $account): UTM5User
+    {
+        return $this->userMapper->getUserByAccount($account);
+    }
+
+    /**
      * @param string $login
      * @return UTM5User
      */

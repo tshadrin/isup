@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class BitrixcalTest extends WebTestCase
 {
-    public function GetGitrixCal(): void
+    public function testGetGitrixCal(): void
     {
         $client = static::createClient();
         $client->request('GET', '/api/getbitrixcal');

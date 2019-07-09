@@ -104,6 +104,26 @@ class UserMapper
     }
 
     /**
+     * Поиск по account
+     * @param int $account
+     * @return Entity\UTM5User
+     */
+    public function getUserByAccount(int $account): Entity\UTM5User
+    {
+        try {
+            $stmt = $this->userPreparer->getUserDataByAccountStmt();
+            $stmt->execute([':account' => $account]);
+            if(1 === $stmt->rowCount()) {
+                $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+                return $this->UTM5UserInit($data);
+            }
+        } catch (\Exception $e) {
+            throw new \DomainException($this->translator->trans("User search error: %message%", ['%message%' => $e->getMessage()]));
+        }
+        throw new \DomainException($this->translator->trans("User with account %account% is not found", ['%account%' => $account]));
+    }
+
+    /**
      * Поиск по логину
      * @param string $login
      * @return Entity\UTM5User

@@ -65,6 +65,22 @@ class UserPreparer
      * @return Statement
      * @throws DBALException
      */
+    public function getUserDataByAccountStmt(): Statement
+    {
+        $cols = self::DATA_COLUMNS;
+        $sql = "SELECT {$cols} 
+                FROM users u
+                    INNER JOIN accounts a
+                        ON a.id = u.basic_account
+                WHERE u.is_deleted=0
+                  AND u.basic_account=:account";
+        return $this->connection->prepare($sql);
+    }
+
+    /**
+     * @return Statement
+     * @throws DBALException
+     */
     public function getUserDataByLoginStmt(): Statement
     {
         $cols = self::DATA_COLUMNS;

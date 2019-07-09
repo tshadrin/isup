@@ -79,6 +79,7 @@ class SSHController extends AbstractController
     public function checkTurbo(int $account, SSHService $SSHService, URFAService $URFAService): JsonResponse
     {
         $user = $URFAService->getUserByAccount($account);
+
         foreach ($user->getRouters() as $router) {
             foreach ($user->getIps() as $ip) {
                 if (!is_null($result = $SSHService->checkTurboForUser($ip, $router->getIp()))) {

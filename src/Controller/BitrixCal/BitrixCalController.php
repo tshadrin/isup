@@ -21,6 +21,6 @@ class BitrixCalController extends AbstractController
      */
     public function index(BitirixCalService $bitirixCalService): JsonResponse
     {
-        return $this->json($bitirixCalService->getActualCallEvents());
+         return $this->json($bitirixCalService->getActualCallEvents());
     }
 }
