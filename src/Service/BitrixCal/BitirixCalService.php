@@ -17,14 +17,19 @@ class BitirixCalService
      * @var array
      */
     private $parameters;
+    /**
+     * @var \Redis
+     */
+    private $redis;
 
     /**
      * BitrixCalService constructor.
      * @param $parameters
      */
-    public function __construct(array $parameters)
+    public function __construct(array $parameters, \Redis $redis)
     {
         $this->parameters = $parameters;
+        $this->redis = $redis;
     }
 
     /**
@@ -32,6 +37,29 @@ class BitirixCalService
      * @return array
      */
     public function getActualCallEvents(): array
+    {
+        if($this->redis->exists('events_count')) {
+            if(0 === (int)$this->redis->get('events_count')) {
+                $events = [];
+            } else {
+                $events = json_decode($this->redis->get('events'), true);
+            }
+        } else {
+            $events = $this->getEvents();
+            $this->redis->set('events_count', count($events), 100);
+            $this->redis->set('events', json_encode($events),100);
+        }
+        if (0 === count($events)) {
+            return $data = ['events' => ['events_count' => count($events),],];
+        }
+        return ['events' => ['events_count' => count($events), $events,],];
+    }
+
+    /**
+     * Выборка событий календаря из iCall битрикса
+     * @return array
+     */
+    private function getEvents(): array
     {
         $events = [];
         $cal = new IcalParser();
@@ -44,11 +72,8 @@ class BitirixCalService
                 }
             }
         } catch (\Exception $e) {
-            return ['error' => 'Error retrieving calendar. '. $e->getMessage()];
+            return ['error' => 'Error retrieving calendar. ' . $e->getMessage()];
         }
-        if (0 === count($events)) {
-            return ['events' => ['events_count' => count($events),],];
-        }
-        return ['events' => ['events_count' => count($events), $events,],];
+        return $events;
     }
 }
