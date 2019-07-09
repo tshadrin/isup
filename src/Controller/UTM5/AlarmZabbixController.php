@@ -52,6 +52,7 @@ class AlarmZabbixController extends AbstractController
             if(isset($message) && isset($letter)){
                 $message = trim($message);
                 $letter = trim($letter);
+                $logger->error("fdfghhd");
                 list($message_start, $utm5_id, $message_end) = explode('$', $message);
                 if(isset($message_start) && isset($utm5_id) && isset($message_end)) {
                     $url = $this->generateUrl('search',
