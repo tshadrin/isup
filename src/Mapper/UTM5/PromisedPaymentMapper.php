@@ -3,8 +3,7 @@
 namespace App\Mapper\UTM5;
 
 use App\Entity\UTM5\PromisedPayment;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

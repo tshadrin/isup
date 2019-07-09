@@ -33,8 +33,8 @@ class BitirixCalService
      */
     public function getActualCallEvents(): array
     {
-        $cal = new IcalParser();
         $events = [];
+        $cal = new IcalParser();
         try {
             $cal->parseFile($this->parameters['path']);
             $current_date = new \DateTimeImmutable();

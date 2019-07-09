@@ -4,8 +4,7 @@ namespace App\Mapper\UTM5;
 
 use App\Collection\UTM5\RouterCollection;
 use App\Entity\UTM5\Router;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

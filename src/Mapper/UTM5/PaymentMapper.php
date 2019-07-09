@@ -4,8 +4,7 @@ namespace App\Mapper\UTM5;
 
 use App\Collection\UTM5\PaymentCollection;
 use App\Entity\UTM5\Payment;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

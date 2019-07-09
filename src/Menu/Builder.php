@@ -1,11 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Menu;
 
-use Knp\Menu\FactoryInterface;
-use Knp\Menu\ItemInterface;
 use App\Event\ConfigureMenuEvent;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Knp\Menu\{ FactoryInterface, ItemInterface };
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -14,17 +13,17 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  * Class Builder
  * @package MenuBundle\Menu
  */
-class Builder implements ContainerAwareInterface
+class Builder
 {
-    use ContainerAwareTrait;
-
     /**
      * Построение начального варианта меню и
      * добавление события создания меню
      * @param FactoryInterface $factory
      * @return ItemInterface
      */
-    public function build(FactoryInterface $factory, AuthorizationCheckerInterface $authorizationChecker, EventDispatcherInterface $eventDispatcher)
+    public function build(FactoryInterface $factory,
+                          AuthorizationCheckerInterface $authorizationChecker,
+                          EventDispatcherInterface $eventDispatcher): ItemInterface
     {
         $menu = $factory->createItem('root', ['childrenAttributes' => ['class' => 'navbar-nav'],]);
 
@@ -34,8 +33,7 @@ class Builder implements ContainerAwareInterface
             ->setLinkAttribute('class', 'dropdown-toggle nav-link')
             ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
             ->setChildrenAttribute('role', 'menu')
-            ->setExtra('orderNumber', 4)
-        ;
+            ->setExtra('orderNumber', 4);
         $menu['Phones']->addChild('List', ['route' => 'phone_default'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
@@ -48,8 +46,7 @@ class Builder implements ContainerAwareInterface
             ->setLinkAttribute('class', 'dropdown-toggle nav-link')
             ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
             ->setChildrenAttribute('role', 'menu')
-            ->setExtra('orderNumber', 5)
-        ;
+            ->setExtra('orderNumber', 5);
         $menu['vlans']->addChild('List', ['route' => 'vlan_default'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
@@ -57,14 +54,12 @@ class Builder implements ContainerAwareInterface
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
         if ($authorizationChecker->isGranted('ROLE_SUPPORT')) {
-
             $menu->addChild('Tools', ['uri' => '#'])
                 ->setAttribute('class', 'dropdown')
                 ->setLinkAttribute('data-toggle', 'dropdown')
                 ->setLinkAttribute('class', 'dropdown-toggle nav-link')
                 ->setChildrenAttribute('class', 'dropdown-menu dropdown-menu-right bg-nav-dropdown m-1')
                 ->setChildrenAttribute('role', 'menu');
-
             $menu->addChild('Channels', ['uri' => '/files/Kanaly_v_arendu.html'])
                 ->setAttribute('class', 'nav-item')
                 ->setLinkAttribute('class', 'nav-link');
@@ -72,7 +67,6 @@ class Builder implements ContainerAwareInterface
                 ->setAttribute('class', 'nav-item')
                 ->setLinkAttribute('class', 'nav-link');
             //$menu->addChild('Profile', ['route' => 'fos_user_profile_show']);
-
             $menu['Tools']->addChild('profit_for_townships', ['route' => 'find_money'])
                 ->setAttribute('class', 'nav-item pl-3')
                 ->setLinkAttribute('class', 'nav-link')
@@ -98,7 +92,6 @@ class Builder implements ContainerAwareInterface
             $menu['Tools']->addChild('UTM5 Admin', ['uri' => '/files/utm5_admin.zip'])
                 ->setAttribute('class', 'nav-item pl-3')
                 ->setLinkAttribute('class', 'nav-link');
-
         }
         $menu->addChild('Control', ['uri' => '#'])
             ->setAttribute('class', 'dropdown')
@@ -106,10 +99,11 @@ class Builder implements ContainerAwareInterface
             ->setLinkAttribute('class', 'dropdown-toggle nav-link')
             ->setChildrenAttribute('class', 'dropdown-menu dropdown-menu-right bg-nav-dropdown  m-1')
             ->setChildrenAttribute('role', 'menu');
-        if ($authorizationChecker->isGranted('ROLE_ADMIN'))
+        if ($authorizationChecker->isGranted('ROLE_ADMIN')) {
             $menu['Control']->addChild('admin', ['route' => 'sonata_admin_redirect'])
                 ->setAttribute('class', 'nav-item pl-3')
                 ->setLinkAttribute('class', 'nav-link');
+        }
         $menu['Control']->addChild('Exit', ['route' => 'fos_user_security_logout'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
@@ -122,7 +116,10 @@ class Builder implements ContainerAwareInterface
         return $menu;
     }
 
-    public function reorderMenuItems($menu)
+    /**
+     * @param $menu
+     */
+    public function reorderMenuItems(ItemInterface $menu): void
     {
         $menuOrderArray = array();
         $addLast = array();

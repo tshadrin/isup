@@ -1,22 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Mapper\UTM5;
 
-use App\Collection\UTM5\PaymentCollection;
-use App\Collection\UTM5\ServiceCollection;
-use App\Collection\UTM5\TariffCollection;
-use App\Collection\UTM5\UTM5UserCollection;
+use App\Collection\UTM5\{ PaymentCollection, ServiceCollection, TariffCollection, UTM5UserCollection };
 use App\Entity\UTM5 as Entity;
 use App\Entity\UTM5\PromisedPayment;
-use App\Repository\UTM5\PassportRepository;
+use App\Repository\UTM5\{ HouseRepository, GroupRepository, PassportRepository, PaymentRepository,
+    PromisedPaymentRepository, RouterRepository, ServiceRepository, TariffRepository };
 use Symfony\Contracts\Translation\TranslatorInterface;
-use App\Repository\UTM5\HouseRepository;
-use App\Repository\UTM5\GroupRepository;
-use App\Repository\UTM5\RouterRepository;
-use App\Repository\UTM5\ServiceRepository;
-use App\Repository\UTM5\TariffRepository;
-use App\Repository\UTM5\PromisedPaymentRepository;
-use App\Repository\UTM5\PaymentRepository;
 
 class UserMapper
 {
@@ -274,7 +266,7 @@ class UserMapper
             $stmt = $this->userPreparer->getRemindMeStmt();
             $stmt->execute([':user_id' => $user_id]);
             if(1 === $stmt->rowCount()) {
-                return $stmt->fetch(\PDO::FETCH_COLUMN);
+                return (bool)$stmt->fetch(\PDO::FETCH_COLUMN);
             }
             if($stmt->rowCount() > 1) {
                 throw new \DomainException($this->translator->trans("Too many results on remind me query"));
@@ -353,13 +345,13 @@ class UserMapper
     public function UTM5UserInit(array $data): Entity\UTM5User
     {
         $user = new Entity\UTM5User();
-        $user->setId($data['id']);
+        $user->setId((int)$data['id']);
         $user->setLogin($data['login']);
         if(!empty($data['email'])) {
             $user->setEmail($data['email']);
         }
         $user->setPassword($data['password']);
-        $user->setAccount($data['account']);
+        $user->setAccount((int)$data['account']);
         $user->setFullName($data['full_name']);
         $user->setPassport($data['passport']);
         $user->setFlatNumber($data['flat_number']);
@@ -369,8 +361,8 @@ class UserMapper
         if(!empty($data['juridical_address'])) {
             $user->setJuridicalAddress($data['juridical_address']);
         }
-        $user->setBalance($data['balance']);
-        $user->setInternetStatus($data['int_status']);
+        $user->setBalance((float)$data['balance']);
+        $user->setInternetStatus((bool)$data['int_status']);
         if(!empty($data['mobile_telephone'])) {
             $user->setMobilePhone($data['mobile_telephone']);
         }
@@ -383,7 +375,7 @@ class UserMapper
         if(!empty($data['utm5_comments'])) {
             $user->setUTM5Comments($data['utm5_comments']);
         }
-        $user->setCredit($data['credit']);
+        $user->setCredit((float)$data['credit']);
         $user->setCreated(\DateTimeImmutable::createFromFormat('U', $data['created']));
         if(!is_null($ips =$this->getIPSettings($user->getId()))) {
             $user->setIps($ips);
@@ -398,7 +390,7 @@ class UserMapper
         $user->setBlock($this->getBlock($user->getAccount()));
         $user->setGroups($this->groupRepository->findByUserId($user->getId()));
         if(0 !== (int)$data['house_id']) {
-            $user->setHouse($this->houseRepository->findOneById($data['house_id']));
+            $user->setHouse($this->houseRepository->findOneById((int)$data['house_id']));
         }
         if(!is_null($routers = $this->routerRepository->findByUserId($user->getId()))) {
             $user->setRouters($routers);

@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository\Intercom;
 
-use App\Entity\Intercom\Status;
-use App\Entity\Intercom\Task;
-use App\Entity\Intercom\Type;
+use App\Entity\Intercom\{ Status, Task, Type };
 use App\Entity\User\User;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -25,7 +25,7 @@ class TaskRepository extends EntityRepository
     /**
      * @param TranslatorInterface $translator
      */
-    public function setTranslator(TranslatorInterface $translator)
+    public function setTranslator(TranslatorInterface $translator): void
     {
         $this->translator = $translator;
     }
@@ -33,7 +33,7 @@ class TaskRepository extends EntityRepository
     /**
      * @return \Doctrine\ORM\Query
      */
-    public function findAllNotDeleted()
+    public function findAllNotDeleted(): Query
     {
         $query = $this->createQueryBuilder('p')
             ->where('p.deleted = 0')
@@ -54,7 +54,7 @@ class TaskRepository extends EntityRepository
     /**
      * @param Task $task
      */
-    public function delete(Task $task)
+    public function delete(Task $task): void
     {
         $task->setDeleted(true);
         $this->save($task);
@@ -63,7 +63,7 @@ class TaskRepository extends EntityRepository
     /**
      * @param Task $task
      */
-    public function save(Task $task)
+    public function save(Task $task): void
     {
         try {
             $this->getEntityManager()->persist($task);
@@ -73,7 +73,7 @@ class TaskRepository extends EntityRepository
         $this->flush();
     }
 
-    public function flush()
+    public function flush(): void
     {
         try {
             $this->getEntityManager()->flush();

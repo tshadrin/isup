@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Mapper\UTM5;
 
 use App\Entity\UTM5\House;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -20,6 +20,11 @@ class HouseMapper
      */
     private $translator;
 
+    /**
+     * HouseMapper constructor.
+     * @param Connection $connection
+     * @param TranslatorInterface $translator
+     */
     public function __construct(Connection $connection, TranslatorInterface $translator)
     {
         $this->connection = $connection;
@@ -38,6 +43,7 @@ class HouseMapper
                 WHERE h.id=:id";
         return $this->connection->prepare($sql);
     }
+
     /**
      * Поиск дома по id дома
      * @param int $house_id
@@ -50,7 +56,7 @@ class HouseMapper
             $stmt->execute([':id' => $house_id]);
             if (1 === $stmt->rowCount()) {
                 $data = $stmt->fetch(\PDO::FETCH_ASSOC);
-                $house = new House($data['id'], $data['region'], $data['city'], $data['street'], $data['number']);
+                $house = new House((int)$data['id'], $data['region'], $data['city'], $data['street'], $data['number']);
                 return $house;
             }
         } catch (\Exception $e) {

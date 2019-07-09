@@ -3,16 +3,13 @@
 
 namespace App\Mapper\UTM5;
 
-
-use App\Collection\UTM5\ServiceCollection;
-use App\Collection\UTM5\TariffCollection;
-use App\Entity\UTM5\DiscountPeriod;
-use App\Entity\UTM5\Tariff;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use App\Collection\UTM5\{ ServiceCollection, TariffCollection };
+use App\Entity\UTM5\{ DiscountPeriod, Tariff };
+use App\Repository\UTM5\ServiceRepository;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use App\Repository\UTM5\ServiceRepository;
+
 
 class TariffMapper
 {

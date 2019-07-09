@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Mapper\UTM5;
 
 use App\Collection\UTM5\GroupCollection;
 use App\Entity\UTM5\Group;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -21,6 +21,11 @@ class GroupMapper
      */
     private $translator;
 
+    /**
+     * GroupMapper constructor.
+     * @param Connection $connection
+     * @param TranslatorInterface $translator
+     */
     public function __construct(Connection $connection, TranslatorInterface $translator)
     {
         $this->connection = $connection;
@@ -56,7 +61,7 @@ class GroupMapper
                 $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                 $groups = new GroupCollection();
                 foreach ($data as $item) {
-                    $groups->add(new Group($item['id'], $item['name']));
+                    $groups->add(new Group((int)$item['id'], $item['name']));
                 }
                 return $groups;
             }

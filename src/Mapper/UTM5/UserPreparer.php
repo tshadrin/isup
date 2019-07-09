@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Mapper\UTM5;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
-use Doctrine\DBAL\DBALException;
 
 class UserPreparer
 {
@@ -36,6 +36,10 @@ class UserPreparer
      */
     private $connection;
 
+    /**
+     * UserPreparer constructor.
+     * @param Connection $connection
+     */
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;

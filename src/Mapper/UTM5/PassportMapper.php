@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Mapper\UTM5;
 
 use App\Entity\UTM5\Passport;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

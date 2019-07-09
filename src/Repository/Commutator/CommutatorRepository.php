@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository\Commutator;
+
+use App\Entity\Commutator\Commutator;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -14,12 +17,16 @@ class CommutatorRepository extends EntityRepository
     /**
      * @param TranslatorInterface $translator
      */
-    public function setTranslator(TranslatorInterface $translator)
+    public function setTranslator(TranslatorInterface $translator): void
     {
         $this->translator = $translator;
     }
 
-    public function getByIP(string $ip)
+    /**
+     * @param string $ip
+     * @return Commutator|null
+     */
+    public function getByIP(string $ip): ?Commutator
     {
         if($commutator = $this->findOneBy(['ip' => $ip])) {
             return $commutator;
