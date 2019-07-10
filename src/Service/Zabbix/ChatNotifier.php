@@ -8,6 +8,10 @@ namespace App\Service\Zabbix;
 use App\Entity\Zabbix\Message;
 use App\Service\UTM5\BitrixRestService;
 
+/**
+ * Class ChatNotifier
+ * @package App\Service\Zabbix
+ */
 class ChatNotifier implements NotifierInterface
 {
     /**
@@ -15,11 +19,18 @@ class ChatNotifier implements NotifierInterface
      */
     private $bitrixRestService;
 
+    /**
+     * ChatNotifier constructor.
+     * @param BitrixRestService $bitrixRestService
+     */
     public function __construct(BitrixRestService $bitrixRestService)
     {
         $this->bitrixRestService = $bitrixRestService;
     }
 
+    /**
+     * @param Message $message
+     */
     public function notify(Message $message): void
     {
         $this->bitrixRestService->sendToChat($message->getText());

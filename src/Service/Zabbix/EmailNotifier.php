@@ -28,6 +28,11 @@ class EmailNotifier implements NotifierInterface
         $this->mailer = $mailer;
     }
 
+    /**
+     * @param string $mailTo
+     * @param string $text
+     * @return \Swift_Message
+     */
     public function createMessage(string $mailTo, string $text): \Swift_Message
     {
         $message = (new \Swift_Message())

@@ -46,6 +46,9 @@ class Message
         $this->letter = $letter;
         $this->subject = $subject;
         $this->emails = $emails;
+        if(count($emails) > 0 ) {
+            $this->text .= "\nКлиент получит уведомление по почте.";
+        }
     }
 
     /**

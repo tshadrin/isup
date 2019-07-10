@@ -11,6 +11,10 @@ use App\Service\UTM5\UTM5DbService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * Class ZabbixService
+ * @package App\Service\Zabbix
+ */
 class ZabbixService
 {
     /**
