@@ -3,7 +3,6 @@
 namespace App\Service\UTM5;
 
 
-
 use Psr\Log\LoggerInterface;
 
 class BitrixRestService
@@ -11,12 +10,14 @@ class BitrixRestService
     private $rest_url;
     private $logger;
     private $chat_id;
+    private $channels_chat_id;
 
     public function __construct($parameters, LoggerInterface $logger)
     {
         $this->logger = $logger;
         $this->rest_url = "{$parameters['path']}/{$parameters['user_id']}/{$parameters['key']}";
         $this->chat_id = $parameters['chat_id'];
+        $this->channels_chat_id = $parameters['channels_chat_id'];
     }
 
     /**
@@ -80,9 +81,9 @@ class BitrixRestService
     }
 
     /**
-     * Обновление полей сделки.
      * @param $id
      * @param $fields
+     * @return bool|mixed|string
      */
     public function updateDeal($id, $fields)
     {
@@ -92,12 +93,24 @@ class BitrixRestService
     }
 
     /**
-     * Отправка сообщения в чат битрикс
      * @param $message
+     * @return bool|mixed|string
      */
-    function sendToChat($message) {
+    function sendToChat(string $message)
+    {
         $result = $this->getBitrixData('im.message.add.json',
             ["CHAT_ID" => $this->chat_id, "MESSAGE" => $message,]);
+        return $result;
+    }
+
+    /**
+     * @param $message
+     * @return bool|mixed|string
+     */
+    function sentToChannelsChat(string $message)
+    {
+        $result = $this->getBitrixData('im.message.add.json',
+            ["CHAT_ID" => $this->channels_chat_id, "MESSAGE" => $message,]);
         return $result;
     }
 }

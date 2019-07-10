@@ -28,11 +28,20 @@ class ChatNotifier implements NotifierInterface
         $this->bitrixRestService = $bitrixRestService;
     }
 
+    public function createMessage(Message $message): string
+    {
+        return $text = "{$message->getSubject()}\n{$message->getText()}";
+    }
     /**
      * @param Message $message
      */
     public function notify(Message $message): void
     {
-        $this->bitrixRestService->sendToChat($message->getText());
+        $text = $this->createMessage($message);
+        if(count($message->getVariables()) > 0) {
+            $this->bitrixRestService->sendToChat($text);
+        } else {
+            $this->bitrixRestService->sentToChannelsChat($text);
+        }
     }
 }

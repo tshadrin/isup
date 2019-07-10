@@ -18,6 +18,7 @@ parameters:
         user_id: '%env(BITRIX_API_USER_ID)%'
         key: '%env(BITRIX_API_KEY)%'
         chat_id: '%env(BITRIX_API_CHAT_ID)%'
+        channels_chat_id: '%env(BITRIX_CHANNELS_CHAT_ID)%'
     bitrix_cal:
         path: '%env(BITRIX_CALENDAR_PATH)%'
     bot:
