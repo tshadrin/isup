@@ -331,7 +331,7 @@ class UserMapper
                 return 0;
             }
             if (1 === $stmt->rowCount()) {
-                return $stmt->fetch(\PDO::FETCH_COLUMN);
+                return (int)$stmt->fetch(\PDO::FETCH_COLUMN);
             }
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("Check user passport query error: %message%", ['%message%' => $e->getMessage()]));

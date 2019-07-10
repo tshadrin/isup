@@ -33,22 +33,22 @@ services:
             - isup-redis
     isup-redis:
         image: redis:5.0-alpine
-    isup-phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "8090:80"
-        environment:
-            PMA_HOST: 10.3.7.18
-            PMA_PORT: 3306
-            PMA_ABSOLUTE_URI: /pmasup/
-    isup-phpmyadmin-sber-utm5:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "8091:80"
-        environment:
-            PMA_HOST: 10.3.7.42
-            PMA_PORT: 3306
-            PMA_PASSWORD: /pmasutm5/
+    #isup-phpmyadmin:
+    #    image: phpmyadmin/phpmyadmin
+    #    ports:
+    #        - "8090:80"
+    #    environment:
+    #        PMA_HOST: 10.3.7.18
+    #        PMA_PORT: 3306
+    #        PMA_ABSOLUTE_URI: /pmasup/
+    #isup-phpmyadmin-sber-utm5:
+    #    image: phpmyadmin/phpmyadmin
+    #    ports:
+    #        - "8091:80"
+    #    environment:
+    #        PMA_HOST: 10.3.7.42
+    #        PMA_PORT: 3306
+    #        PMA_PASSWORD: /pmasutm5/
     isup-node-watch:
         image: node:12.6-alpine
         volumes:
@@ -62,17 +62,17 @@ services:
         volumes:
             - ./:/app
         working_dir: /app
-    isup-mysql:
-        build:
-            context: ./docker/development
-            dockerfile: mysql.docker
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: test
-            MYSQL_USER: test
-            MYSQL_PASSWORD: 123
-        volumes:
-            - mysql:/var/lib/mysql
+    #isup-mysql:
+    #    build:
+    #        context: ./docker/development
+    #        dockerfile: mysql.docker
+    #    environment:
+    #        MYSQL_ROOT_PASSWORD: root
+    #        MYSQL_DATABASE: test
+    #        MYSQL_USER: test
+    #        MYSQL_PASSWORD: 123
+    #    volumes:
+    #        - mysql:/var/lib/mysql
     isup-mailer:
         image: mailhog/mailhog
         ports:

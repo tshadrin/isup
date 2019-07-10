@@ -29,7 +29,6 @@ class BitrixRestService
     {
         $queryUrl = "{$this->rest_url}/{$method}";
         $queryData = http_build_query($data);
-
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_SSL_VERIFYPEER => 0,

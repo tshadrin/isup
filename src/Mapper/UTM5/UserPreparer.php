@@ -68,7 +68,7 @@ class UserPreparer
     public function getUserDataByAccountStmt(): Statement
     {
         $cols = self::DATA_COLUMNS;
-        $sql = "SELECT {$cols} 
+        $sql = "SELECT {$cols}
                 FROM users u
                     INNER JOIN accounts a
                         ON a.id = u.basic_account
