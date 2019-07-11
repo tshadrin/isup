@@ -3,6 +3,8 @@
 namespace App\Service\UTM5;
 
 
+use App\Entity\Zabbix\Statement;
+use App\Service\Zabbix\MessagePreparer\MessagePreparerInterface;
 use Psr\Log\LoggerInterface;
 
 class BitrixRestService
@@ -93,24 +95,15 @@ class BitrixRestService
     }
 
     /**
-     * @param $message
+     * @param Statement $statement
      * @return bool|mixed|string
      */
-    function sendToChat(string $message)
+    function sendToChat(Statement $statement)
     {
+        $message = $statement->getMessage();
+        $params = $statement->getParams();
         $result = $this->getBitrixData('im.message.add.json',
-            ["CHAT_ID" => $this->chat_id, "MESSAGE" => $message,]);
-        return $result;
-    }
-
-    /**
-     * @param $message
-     * @return bool|mixed|string
-     */
-    function sentToChannelsChat(string $message)
-    {
-        $result = $this->getBitrixData('im.message.add.json',
-            ["CHAT_ID" => $this->channels_chat_id, "MESSAGE" => $message,]);
+            ["CHAT_ID" => $params['chat_id'], "MESSAGE" => $message,]);
         return $result;
     }
 }

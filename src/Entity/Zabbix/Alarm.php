@@ -8,7 +8,7 @@ namespace App\Entity\Zabbix;
  * Class Message
  * @package App\Entity\Zabbix
  */
-class Message
+class Alarm
 {
 
     /**
@@ -86,7 +86,7 @@ class Message
     /**
      * @return string
      */
-    public function getLetter(): string
+    public function getLetter(): ?string
     {
         return $this->letter;
     }

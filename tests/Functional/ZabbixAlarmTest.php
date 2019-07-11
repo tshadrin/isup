@@ -19,7 +19,7 @@ class ZabbixAlarmTest extends WebTestCase
         $client = static::createClient();
         $client->request('POST', '/zabbix/alarm/', [
             'subject' => 'Header',
-            'message' => 'test$419$Это тееест! Дополнительный id $927$   $$Letter body here',
+            'message' => 'test$419$Это тееест!  Дополнительный id $3706$ $$Letter body here',
             ]);
         $this->assertEquals('200', $client->getResponse()->getStatusCode());
         $this->assertTrue(

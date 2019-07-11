@@ -2,20 +2,17 @@
 declare(strict_types = 1);
 
 
-namespace App\Service\Zabbix;
+namespace App\Service\Zabbix\Handler;
 
 
 use App\Entity\UTM5\UTM5User;
-use App\Entity\Zabbix\Message;
+use App\Entity\Zabbix\Alarm;
 use App\Service\UTM5\UTM5DbService;
+use App\Service\Zabbix\Command\AlarmCommand;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-/**
- * Class ZabbixService
- * @package App\Service\Zabbix
- */
-class ZabbixService
+class AlarmHandler
 {
     /**
      * @var RouterInterface
@@ -37,12 +34,15 @@ class ZabbixService
     }
 
     /**
+     * Обработка данных из контроллера
      * @param string $subject
      * @param string $text
-     * @return Message
+     * @return Alarm
      */
-    public function handle(string $subject, string $text): Message
+    public function handle(AlarmCommand $command): Alarm
     {
+        $text = $command->getMessage();
+        $subject = $command->getSubject();
         $letter = null;
         if (false !== mb_strpos($text, "$$")) {
             [$text, $letter] = explode('$$', $text);
@@ -52,12 +52,12 @@ class ZabbixService
         $text = html_entity_decode($text);
         $text = trim($text);
         $emails = $this->getEmailsFromIds($ids);
-        $message = new Message($subject, $text, $ids, $emails, $letter);
-
+        $message = new Alarm($subject, $text, $ids, $emails, $letter);
         return $message;
     }
 
     /**
+     * Замена id на ссылки в тексте
      * @param array $ids
      * @param string $message
      * @return string
@@ -67,13 +67,14 @@ class ZabbixService
         foreach ($ids as $id) {
             $url = $this->router->generate('search', ['type' => 'id', 'value' => $id], UrlGeneratorInterface::ABSOLUTE_URL);
             $link = "[url={$url}]ID пользователя: {$id}[/url]";
-            $message = preg_replace('/'.$id.'/', $link, $message);
+            $message = preg_replace('/' . $id . '/', $link, $message);
         }
 
         return $message;
     }
 
     /**
+     * Получение id клиентов из текста
      * @param string $text
      * @return array
      */
@@ -91,6 +92,7 @@ class ZabbixService
     }
 
     /**
+     * Получение email адресов по id
      * @param array $ids
      * @return array
      */
@@ -99,10 +101,11 @@ class ZabbixService
         $emails = [];
         foreach ($ids as $id) {
             $user = $this->UTM5DbService->search((string)$id, 'id');
-            if ($user instanceof UTM5User && (!is_null($email = $user->getEmail()))){
+            if ($user instanceof UTM5User && (!is_null($email = $user->getEmail()))) {
                 $emails[] = $user->getEmail();
             }
         }
+
         return $emails;
     }
 }

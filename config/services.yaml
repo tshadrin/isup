@@ -88,7 +88,7 @@ services:
     App\Controller\UTM5\ApiController:
         bind:
             $logger: '@monolog.logger.bitrix_create'
-    App\Controller\UTM5\AlarmZabbixController:
+    App\Controller\Zabbix\AlarmController:
         bind:
             $logger: '@monolog.logger.alarm_zabbix'
     App\Controller\SMS\SMSController:
@@ -141,6 +141,9 @@ services:
     App\Service\SMS\smscSender:
         bind:
             $parameters: '%smsc%'
+    App\Service\Zabbix\MessagePreparer\ChatPreparer:
+      bind:
+        $parameters: '%bitrix%'
     ### Обработчики событий ###
     App\EventListener\SberbankReport\ConfigureMenuListener:
         tags:
