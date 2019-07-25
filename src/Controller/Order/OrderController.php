@@ -7,6 +7,7 @@ use App\Form\Order\OrderForm;
 use App\Repository\UTM5\UTM5UserRepository;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\Order\OrderService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -17,6 +18,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * Class OrderController
  * @package App\Controller\Order
+ * @IsGranted("ROLE_SUPPORT")
  */
 class OrderController extends AbstractController
 {

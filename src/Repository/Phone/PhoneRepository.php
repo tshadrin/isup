@@ -2,8 +2,10 @@
 
 namespace App\Repository\Phone;
 
+use App\Form\Phone\Filter;
 use Doctrine\ORM\EntityRepository;
 use App\Entity\Phone\Phone;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class PhoneRepository
@@ -12,42 +14,35 @@ use App\Entity\Phone\Phone;
 class PhoneRepository extends EntityRepository
 {
     /**
-     * @return array
+     * @var TranslatorInterface
      */
-    public function getAll(): array
+    private $translator;
+
+    public function setTranslator(TranslatorInterface $translator)
     {
-        $query =  $this->createQueryBuilder('p')
-            ->where('p.deleted = 0')
-            ->orderBy('p.number', 'ASC')
-            ->getQuery();
-        if(!$phones = $query->getResult()){
-            throw new \DomainException("Phones not found.");
-        }
-        return $phones;
+        $this->translator = $translator;
     }
 
-    /**
-     * @param $data
-     * @return array
-     */
-    public function getFromAllFields($data): array
+    public function getFilteredPhones(Filter $filter): array
     {
-        $query =  $this->createQueryBuilder('p')
-            ->where('p.deleted = 0')
-            ->andWhere('p.number = :data')
-            ->orWhere('p.moscownumber = :data')
-            ->orWhere('p.contactnumber = :data')
-            ->orWhere('p.ip = :data')
-            ->orWhere('LOWER(p.location) LIKE LOWER(:data1)')
-            ->orWhere('LOWER(p.notes) LIKE LOWER(:data2)')
-            ->orWhere('LOWER(p.name) LIKE LOWER(:data2)')
+        $queryBuilder =  $this->createQueryBuilder('p');
+        if($filter->isNotEmpty()) {
+            $queryBuilder->orWhere('p.number = :data')
+                ->orWhere('p.moscownumber = :data')
+                ->orWhere('p.contactnumber = :data')
+                ->orWhere('p.ip = :data')
+                ->orWhere('LOWER(p.location) LIKE LOWER(:data1)')
+                ->orWhere('LOWER(p.notes) LIKE LOWER(:data2)')
+                ->orWhere('LOWER(p.name) LIKE LOWER(:data2)')
+                ->setParameter('data', $filter->search)
+                ->setParameter('data1', "%{$filter->search}%")
+                ->setParameter('data2', "%{$filter->search}%");
+        }
+        $query = $queryBuilder->andwhere('p.deleted = 0')
             ->orderBy('p.number', 'ASC')
-            ->setParameter('data', $data)
-            ->setParameter('data1',"%{$data}%")
-            ->setParameter('data2', "%{$data}%")
             ->getQuery();
         if(!$phones = $query->getResult()){
-            throw new \DomainException("Phones not found.");
+            throw new \DomainException($this->translator->trans("Phones not found"));
         }
         return $phones;
     }

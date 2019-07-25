@@ -3,79 +3,91 @@ declare(strict_types=1);
 
 namespace App\Controller\Phone;
 
-use App\Form\Phone\{ PhoneForm, PhoneFilterForm, RowsForm };
+use App\Form\Phone\{Filter, PhoneForm, PhoneFilterForm, RowsForm};
 use App\Repository\Phone\PhoneRepository;
-use Knp\Component\Pager\PaginatorInterface;
+use App\Service\Phone\PagedPhones\Command;
+use App\Service\Phone\PagedPhones\Handler;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse };
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class PhoneController
- * @package MainBundle\Controller\Phone
+ * @IsGranted("ROLE_SUPPORT")
+ * @Route("/phone", name="phone")
  */
 class PhoneController extends AbstractController
 {
+    const DEFAULT_ROWS_PER_PAGE = 20;
+    const DEFAULT_PAGE = 1;
+
     /**
-     * Вывод списка телефонов постранично
-     * @param string $filter
-     * @param Request $request
-     * @param Session $session
-     * @param PhoneRepository $phone_repository
-     * @param PaginatorInterface $paginator
      * @return RedirectResponse|Response
-     * @Route("/phone/{filter}/list/", name="phone_default", defaults={"filter": "_all"}, methods={"GET"})
+     * @Route("", name="", methods={"GET"})
      */
-    public function getAll(
-        string $filter,
-        Request $request,
-        Session $session,
-        PhoneRepository $phone_repository,
-        PaginatorInterface $paginator
-    )
+    public function index(Request $request, Session $session, Handler $handler)
     {
-        $phone_filter_form = $this->createForm(PhoneFilterForm::class);
 
-        $rows_form = $this->createForm(RowsForm::class);
-        $rows = $session->get('rows', 20);
+        $filter = new Filter();
+        $phoneFilterForm = $this->createForm(PhoneFilterForm::class, $filter);
+        $phoneFilterForm->handleRequest($request);
 
-        $rows_form->setData(['rows' => $rows]);
+        $rowsPerPageForm = $this->createForm(RowsForm::class);
+        $rowsPerPage = $session->get('rows', self::DEFAULT_ROWS_PER_PAGE);
+        $rowsPerPageForm->setData(['rows' => $rowsPerPage]);
 
-        $page = $request->query->getInt('page', 1);
+        $command = new Command(
+            $filter,
+            $request->query->getInt('page', self::DEFAULT_PAGE),
+            $rowsPerPage
+        );
+
         try {
-            if ("_all" === $filter) {
-                $phones = $phone_repository->getAll();
-            } else {
-                $phone_filter_form->handleRequest($request);
-                $phone_filter_form->setData(['search' => $filter]);
-                $phones = $phone_repository->getFromAllFields($filter);
-            }
+            $pagedPhones = $handler->handle($command);
         } catch (\DomainException $e) {
             $this->addFlash("error", $e->getMessage());
-            return $this->redirectToRoute("phone_default");
+            return $this->redirectToRoute("phone");
         }
 
-        $paged_phones =  $paginator->paginate($phones, $page, $rows);
-        $paged_phones->setCustomParameters(['align' => 'center', 'size' => 'small',]);
-
         return $this->render('Phone/phones.html.twig', [
-            'phone_filter_form' => $phone_filter_form->createView(),
-            'form' => $rows_form->createView(),
-            'rows_on_page' => $rows,
-            'phones' => $paged_phones,
+            'phoneFilterForm' => $phoneFilterForm->createView(),
+            'rowsPerPageForm' => $rowsPerPageForm->createView(),
+            'phones' => $pagedPhones,
         ]);
     }
 
     /**
-     * Редактирование телефона
+     * @param Request $request
+     * @param PhoneRepository $phone_repository
+     * @return RedirectResponse|Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @Route("/add/", name=".add", methods={"GET", "POST"})
+     */
+    public function add(Request $request, PhoneRepository $phone_repository)
+    {
+        $phone = $phone_repository->getNew();
+        $form = $this->createForm(PhoneForm::class, $phone);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $phone_repository->save($form->getData());
+            $phone_repository->flush();
+            $this->addFlash('notice', 'Phone added.');
+            return $this->redirectToRoute('phone');
+        } else {
+            return $this->render('Phone/form.html.twig', ['form' => $form->createView(),]);
+        }
+    }
+
+    /**
      * @param int $id
      * @param Request $request
      * @param PhoneRepository $phone_repository
      * @return RedirectResponse|Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/phone/{id}/edit/", name="phone_edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
+     * @Route("/{id}/edit/", name=".edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
     public function edit(int $id, Request $request, PhoneRepository $phone_repository)
     {
@@ -93,40 +105,17 @@ class PhoneController extends AbstractController
         } catch (\DomainException $e) {
             $this->addFlash("error", $e->getMessage());
         }
-        return $this->redirectToRoute("phone_default");
+        return $this->redirectToRoute("phone");
     }
 
     /**
-     * Добавление телефона
-     * @param Request $request
-     * @param PhoneRepository $phone_repository
-     * @return RedirectResponse|Response
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/phone/add/", name="phone_add", methods={"GET", "POST"})
-     */
-    public function add(Request $request, PhoneRepository $phone_repository)
-    {
-        $phone = $phone_repository->getNew();
-        $form = $this->createForm(PhoneForm::class, $phone);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $phone_repository->save($form->getData());
-            $phone_repository->flush();
-            $this->addFlash('notice', 'Phone added.');
-            return $this->redirectToRoute('phone_default');
-        } else {
-            return $this->render('Phone/form.html.twig', ['form' => $form->createView(),]);
-        }
-    }
-
-    /**
-     * Удаление телефона
      * @param int $id
      * @param PhoneRepository $phone_repository
      * @return RedirectResponse
      * @throws \Doctrine\ORM\NonUniqueResultException
-     * @Route("/phone/{id}/delete", name="phone_delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @Route("/{id}/delete", name=".delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
     public function delete(int $id, PhoneRepository $phone_repository): RedirectResponse
     {
@@ -137,17 +126,15 @@ class PhoneController extends AbstractController
             $this->addFlash('notice', 'phone.deleted');
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
         }
-        return $this->redirectToRoute('phone_default');
+        return $this->redirectToRoute('phone');
     }
 
     /**
      * Обработка формы поиска телефонов
      * @param Request $request
      * @return RedirectResponse
-     * @Route("/phone/find/", name="phone_find_process", methods={"POST"})
+     * @Route("/find/", name=".find_process", methods={"POST"})
      */
     public function findProcess(Request $request): RedirectResponse
     {
@@ -155,26 +142,22 @@ class PhoneController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            return $this->redirectToRoute('phone_default', ['filter' => $data['search']]);
+            return $this->redirectToRoute('phone', ['filter' => $data['search']]);
         }
-        return $this->redirectToRoute('phone_default');
+        return $this->redirectToRoute('phone');
     }
 
     /**
-     * Изменение количества выводимых записей на странице
-     * @param Request $request
-     * @param Session $session
-     * @return RedirectResponse
-     * @Route("/phone/{filter}/list/", name="phone_rows", defaults={"filter": "_all"}, methods={"POST"})
+     * @Route("", name=".rows", methods={"POST"})
      */
-    public function setRowsOnPage(Request $request, Session $session)
+    public function rowsPerPage(Request $request, Session $session): RedirectResponse
     {
-        $form = $this->createForm(RowsForm::class);
-        $form->handleRequest($request);
-        if ($form->isSubmitted()) {
-            $data = $form->getData();
+        $rowsPerPageForm = $this->createForm(RowsForm::class);
+        $rowsPerPageForm->handleRequest($request);
+        if ($rowsPerPageForm->isSubmitted()) {
+            $data = $rowsPerPageForm->getData();
             $session->set('rows', $data['rows']);
         }
-        return $this->redirectToRoute('phone_default');
+        return $this->redirect($request->getUri());
     }
 }

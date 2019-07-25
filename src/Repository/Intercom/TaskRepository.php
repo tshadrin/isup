@@ -31,9 +31,9 @@ class TaskRepository extends EntityRepository
     }
 
     /**
-     * @return \Doctrine\ORM\Query
+     * @return array
      */
-    public function findAllNotDeleted(): Query
+    public function findAllNotDeleted(): array
     {
         $query = $this->createQueryBuilder('p')
             ->where('p.deleted = 0')
@@ -42,12 +42,8 @@ class TaskRepository extends EntityRepository
             ->leftJoin(Type::class, 't', 'with', 't.id = p.type')
             ->orderBy("p.id", "DESC")
             ->getQuery();
-        try {
             if(!$tasks = $query->getResult())
                 throw new \DomainException($this->translator->trans("Tasks not found"));
-        } catch (QueryException $e) {
-            throw new \DomainException($this->translator->trans("Task query error: %error%", ['%error%' => $e->getMessage()]));
-        }
         return $tasks;
     }
 

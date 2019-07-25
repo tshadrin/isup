@@ -3,21 +3,12 @@ declare(strict_types=1);
 
 namespace App\Form\Phone;
 
-use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\{ AbstractType, FormBuilderInterface };
 use Symfony\Component\Form\Extension\Core\Type\{ SearchType, SubmitType };
-use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Class PhoneFilterForm
- * @package App\Form\Phone
- */
 class PhoneFilterForm extends AbstractType
 {
-    /**
-     * Создание формы для поиска платежей
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('search', SearchType::class, [
@@ -25,25 +16,22 @@ class PhoneFilterForm extends AbstractType
             'required' => true,
             'attr' => [
                 'placeholder' => 'phone_filter_form.search_placeholder',
-                'class' => 'form-control form-control-sm m-1',
-            ],
-            'label_attr' => [
-                'class' => 'col-auto col-form-label col-form-label-sm text-light m-1 pr-1',
             ],
         ]);
         $builder->add('submit_button', SubmitType::class, [
             'label' => 'phone_filter_form.search_button',
             'attr' => [
-                'class' => 'btn btn-primary btn-sm btn-primary-sham m-1',
+                'class' => 'btn btn-primary btn-sm btn-primary-sham',
             ],
         ]);
     }
 
-    /**
-     * @return string
-     */
-    public function getName(): string
+    public function configureOptions(OptionsResolver $resolver)
     {
-        return 'phone_bundle_phone_filter_form';
+        $resolver->setDefaults([
+            'data_class' => Filter::class,
+            'method' => 'GET',
+            'csrf_protection' => false,
+        ]);
     }
 }

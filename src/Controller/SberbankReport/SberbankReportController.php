@@ -6,6 +6,7 @@ namespace App\Controller\SberbankReport;
 use App\SberbankEntity\Payment;
 use App\Form\SberbankReport\PaymentFilterForm;
 use App\Service\SberbankReport\SberbankReportService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response };
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -14,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class SberbankReportController
  * @package MainBundle\Controller\SberbankReport
+ * @IsGranted("ROLE_SUPPORT")
  */
 class SberbankReportController extends AbstractController
 {

@@ -3,13 +3,13 @@ App_phone:
   path: /phone/
   controller: FrameworkBundle:Redirect:redirect
   defaults:
-    route: phone_default
+    route: phone
     permanent: true
 App_phones:
   path: /phones/
   controller: FrameworkBundle:Redirect:redirect
   defaults:
-    route: phone_default
+    route: phone
     permanent: true
 App_vlan:
   path: /vlan/
@@ -27,5 +27,5 @@ default:
   path: /
   controller: FrameworkBundle:Redirect:redirect
   defaults:
-    route: search_default
+    route: search
     permanent: true

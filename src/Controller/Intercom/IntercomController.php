@@ -5,6 +5,7 @@ namespace App\Controller\Intercom;
 
 use App\Form\Intercom\TaskForm;
 use App\Service\Intercom\IntercomService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, RedirectResponse, Response};
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class IntercomController
  * @package App\Controller\Intercom
+ * @IsGranted("ROLE_INTERCOMS")
  */
 class IntercomController extends AbstractController
 {

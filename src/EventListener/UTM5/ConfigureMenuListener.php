@@ -20,9 +20,14 @@ class ConfigureMenuListener
     public function onMenuConfigure(ConfigureMenuEvent $event): void
     {
         $menu = $event->getMenu();
-        $menu->addChild('Search in UTM5', ['route' => 'search_default'])
+        $menu->addChild('Search in UTM5', ['route' => 'search'])
             ->setAttribute('class', 'nav-item col-xs-1')
             ->setLinkAttribute('class', 'nav-link')
-            ->setExtra('orderNumber', 1);
+            ->setExtra('orderNumber', 1)
+            ->setExtra('routes', [
+                ['route' =>'search'],
+                ['pattern' => '/^search\..+/'],
+            ])
+        ;
     }
 }

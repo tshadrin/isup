@@ -41,6 +41,10 @@ class ConfigureMenuListener
                 ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
                 ->setChildrenAttribute('role', 'menu')
                 ->setExtra('orderNumber', 2)
+                ->setExtra('routes', [
+                    ['route' =>'order_'],
+                    ['pattern' => '/^order.+/'],
+                ])
             ;
             $menu['Orders']->addChild('List', ['route' => 'orders_index'])
                 ->setAttribute('class', 'nav-item pl-3')

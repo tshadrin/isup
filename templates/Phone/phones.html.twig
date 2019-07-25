@@ -9,11 +9,20 @@
 
 {% block header %}
     <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
-        {{ form_start(phone_filter_form, {'action': path('phone_find_process'), 'attr': {'class': 'form-inline'} }) }}
-                {{ form_label(phone_filter_form.search) }}
-                {{ form_widget(phone_filter_form.search) }}
-                {{ form_widget(phone_filter_form.submit_button) }}
-        {{ form_end(phone_filter_form) }}
+        {{ form_start(phoneFilterForm, {'action': path('phone'), 'attr': {'class': 'form-inline'} }) }}
+        <div class="form-row align-items-center m-1">
+            <div class="col-auto">
+                <label class="sr-only" for="inlineFormInputGroup">{{ form_label(phoneFilterForm.search) }}</label>
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text "><i class="fa fa-search"></i></div>
+                    </div>
+                    {{ form_widget(phoneFilterForm.search) }}
+                </div>
+            </div>
+            {{ form_widget(phoneFilterForm.submit_button) }}
+        </div>
+        {{ form_end(phoneFilterForm) }}
     </nav>
 {% endblock %}
 
@@ -36,7 +45,7 @@
                 </tr>
                 {% for phone in phones %}
                     <tr>
-                        <td><a href="{{ path('phone_edit', {'id': phone.id }) }}">{{ phone.number }}</a></td>
+                        <td><a href="{{ path('phone.edit', {'id': phone.id }) }}">{{ phone.number }}</a></td>
                         <td>{{ phone.moscownumber }}</td>
                         <td>{{ phone.location }}</td>
                         <td>{{ phone.name }}</td>
@@ -47,13 +56,13 @@
                         <td>{{ phone.notes }}</td>
                         <td>
                             <div class="edit-button-link m-2 text-nowrap">
-                                <a href="{{ path('phone_edit', {'id': phone.id }) }}">
+                                <a href="{{ path('phone.edit', {'id': phone.id }) }}">
                                     <i class="fa fa-pencil-alt" aria-hidden="true"></i> Редактировать
                                 </a>
                             </div>
                             <div class="edit-button-link m-2 text-nowrap">
                                 {% if is_granted('ROLE_MODERATOR') %}
-                                    <a class="delete-order-button" href="{{ path('phone_delete', {'id': phone.id }) }}" data-toggle="confirmation">
+                                    <a class="delete-order-button" href="{{ path('phone.delete', {'id': phone.id }) }}" data-toggle="confirmation">
                                         <i class="fa fa-trash" aria-hidden="true"></i> Удалить
                                     </a>
                                 {% endif %}
@@ -65,19 +74,17 @@
                 <tr>
                     <td colspan="10">
                         <div class="d-flex justify-content-end">
-                            {{ form_start(form, {'attr': {'class': 'form-inline'} }) }}
-                            {{ form_label(form.rows, null, { 'label_attr': {'class': 'col-auto col-form-label-sm col-form-label'} }) }}
-                            {{ form_widget(form.rows, {'attr': {'class': 'form-control form-control-sm'}}) }}
-                            {{ form_errors(form.rows) }}
-                            {{ form_widget(form.apply, {'attr': {'class': 'btn btn-sm pbn-rpimary btn-primary-sham m-1'}}) }}
-                            {{ form_end(form) }}
+                            {{ form_start(rowsPerPageForm, {'attr': {'class': 'form-inline'} }) }}
+                            {{ form_label(rowsPerPageForm.rows, null, { 'label_attr': {'class': 'col-auto col-form-label-sm col-form-label'} }) }}
+                            {{ form_widget(rowsPerPageForm.rows, {'attr': {'class': 'form-control form-control-sm'}}) }}
+                            {{ form_end(rowsPerPageForm) }}
                         </div>
                     </td>
                 </tr>
                 </tfoot>
             </table>
             <div class="mt-2">
-                {{ knp_pagination_render(phones) }}
+                {{ knp_pagination_render(phones, null, {}, {'align': 'center', 'size': 'small'}) }}
             </div>
         </div>
     </div>

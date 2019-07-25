@@ -99,6 +99,8 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
             $entityName: 'App\Entity\Phone\Phone'
+        calls:
+            - method: setTranslator
     App\Repository\Vlan\VlanRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:

@@ -11,13 +11,18 @@ use App\Form\UTM5\{ PassportForm, PassportFormData, UTM5UserCommentForm };
 use App\Service\BitrixCal\BitirixCalService;
 use App\Service\UTM5\{ URFAService, UTM5DbService, UTM5UserCommentService };
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\{ JsonResponse, Request, Response, RedirectResponse };
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Class UTM5Controller
+ * @package App\Controller\UTM5
+ * @IsGranted("ROLE_SUPPORT")
+ */
 class UTM5Controller extends AbstractController
 {
     /**
@@ -83,7 +88,7 @@ class UTM5Controller extends AbstractController
      * @param EventDispatcherInterface $event_dispatcher
      * @param PaginatorInterface $paginator
      * @return Response
-     * @Route("/search/{type}/{value}/", name="search", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login"})
+     * @Route("/search/{type}/{value}/", name="search.by.data", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login"})
      */
     public function search(string $type,
                                  $value,
@@ -143,7 +148,7 @@ class UTM5Controller extends AbstractController
      * Шаблон поиска по-умолчанию
      * @param BitirixCalService $bitirix_cal_service
      * @return Response
-     * @Route("/search/", name="search_default", methods={"GET"})
+     * @Route("/search/", name="search", methods={"GET"})
      */
     public function searchDefault(BitirixCalService $bitirix_cal_service): Response
     {
@@ -164,9 +169,9 @@ class UTM5Controller extends AbstractController
         if ($request->request->has('type') && $request->request->has('value')) {
             $type = $request->request->getAlpha('type');
             $value = $request->request->get('value');
-            return $this->redirectToRoute('search',['type' => $type, 'value' => $value,]);
+            return $this->redirectToRoute('search.by.data',['type' => $type, 'value' => $value,]);
         }
-        return $this->redirectToRoute("search_default");
+        return $this->redirectToRoute("search");
     }
 
     /**
@@ -185,7 +190,7 @@ class UTM5Controller extends AbstractController
             return $this->redirectToRoute('search', ['type' => 'id', 'value' => $id]);
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('search_default');
+            return $this->redirectToRoute('search');
         }
     }
 
@@ -249,7 +254,7 @@ class UTM5Controller extends AbstractController
             $user = $UTM5DbService->search((string)$id, 'id');
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('search_default');
+            return $this->redirectToRoute('search');
         }
 
         $form = $this->createForm(PassportForm::class);

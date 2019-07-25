@@ -6,6 +6,7 @@ namespace App\Controller\Vlan;
 use App\Form\Vlan\{ VlanFilterForm, VlanForm };
 use App\Repository\Vlan\VlanRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse};
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -14,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class VlanController
  * @package Mainbundle\Controller\Vlan
+ * @IsGranted("ROLE_SUPPORT")
  */
 class VlanController extends AbstractController
 {

@@ -27,17 +27,22 @@ class Builder
     {
         $menu = $factory->createItem('root', ['childrenAttributes' => ['class' => 'navbar-nav'],]);
 
-        $menu->addChild('Phones', ['route' => 'phone_default'])
+        $menu->addChild('Phones', ['route' => 'phone'])
             ->setAttribute('class', 'dropdown')
             ->setLinkAttribute('data-toggle', 'dropdown')
             ->setLinkAttribute('class', 'dropdown-toggle nav-link')
             ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
             ->setChildrenAttribute('role', 'menu')
-            ->setExtra('orderNumber', 4);
-        $menu['Phones']->addChild('List', ['route' => 'phone_default'])
+            ->setExtra('orderNumber', 4)
+            ->setExtra('routes', [
+                ['route' =>'phone'],
+                ['pattern' => '/^phone\..+/'],
+            ])
+        ;
+        $menu['Phones']->addChild('List', ['route' => 'phone'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
-        $menu['Phones']->addChild('Add', ['route' => 'phone_add'])
+        $menu['Phones']->addChild('Add', ['route' => 'phone.add'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
         $menu->addChild('vlans', ['route' => 'vlan_default'])
@@ -46,7 +51,12 @@ class Builder
             ->setLinkAttribute('class', 'dropdown-toggle nav-link')
             ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
             ->setChildrenAttribute('role', 'menu')
-            ->setExtra('orderNumber', 5);
+            ->setExtra('orderNumber', 5)
+            ->setExtra('routes', [
+                ['route' =>'vlan_'],
+                ['pattern' => '/^vlan.+/'],
+            ])
+        ;
         $menu['vlans']->addChild('List', ['route' => 'vlan_default'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller\FindMoney;
 
 use App\Service\FindMoney\FindMoneyService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response };
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Поиск всех платежей по населенному пункту
  * Class FindMoneyController
  * @package App\Controller\FindMoney
+ * @IsGranted("ROLE_SUPPORT")
  */
 class FindMoneyController extends AbstractController
 {
