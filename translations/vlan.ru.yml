@@ -1,0 +1,8 @@
+filter_form:
+  label_value: 'Поиск'
+  placeholder_value: 'например Агрогородок'
+vlan_list:
+  title: 'Список Vlan'
+  name: 'Имя'
+  number: 'Номер'
+  points: 'Конечные точки'

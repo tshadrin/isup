@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Phone;
 
-use App\Form\Phone\{Filter, PhoneForm, PhoneFilterForm, RowsForm};
+use App\Form\Phone\DTO\{ Filter, Rows };
+use App\Form\Phone\{ PhoneForm, FilterForm, RowsForm};
 use App\Repository\Phone\PhoneRepository;
-use App\Service\Phone\PagedPhones\Command;
-use App\Service\Phone\PagedPhones\Handler;
+use App\Service\Phone\PagedPhones\{ Command, Handler };
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse };
@@ -19,60 +19,57 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PhoneController extends AbstractController
 {
-    const DEFAULT_ROWS_PER_PAGE = 20;
+    const DEFAULT_ROWS_ON_PAGE = 20;
     const DEFAULT_PAGE = 1;
 
     /**
-     * @return RedirectResponse|Response
+     * @return Response
      * @Route("", name="", methods={"GET"})
      */
-    public function index(Request $request, Session $session, Handler $handler)
+    public function index(Request $request, Session $session, Handler $handler): Response
     {
-
         $filter = new Filter();
-        $phoneFilterForm = $this->createForm(PhoneFilterForm::class, $filter);
-        $phoneFilterForm->handleRequest($request);
+        $filterForm = $this->createForm(FilterForm::class, $filter);
+        $filterForm->handleRequest($request);
 
-        $rowsPerPageForm = $this->createForm(RowsForm::class);
-        $rowsPerPage = $session->get('rows', self::DEFAULT_ROWS_PER_PAGE);
-        $rowsPerPageForm->setData(['rows' => $rowsPerPage]);
+        $rowsOnPage = $session->get('rowsOnPage', self::DEFAULT_ROWS_ON_PAGE);
+        $rows = new Rows();
+        $rows->value = $rowsOnPage;
+        $rowsPerPageForm = $this->createForm(RowsForm::class, $rows);
 
         $command = new Command(
             $filter,
             $request->query->getInt('page', self::DEFAULT_PAGE),
-            $rowsPerPage
+            $rowsOnPage
         );
 
         try {
             $pagedPhones = $handler->handle($command);
         } catch (\DomainException $e) {
             $this->addFlash("error", $e->getMessage());
-            return $this->redirectToRoute("phone");
         }
 
         return $this->render('Phone/phones.html.twig', [
-            'phoneFilterForm' => $phoneFilterForm->createView(),
+            'filterForm' => $filterForm->createView(),
             'rowsPerPageForm' => $rowsPerPageForm->createView(),
-            'phones' => $pagedPhones,
+            'phones' => isset($pagedPhones)?$pagedPhones:null,
         ]);
     }
 
     /**
-     * @param Request $request
-     * @param PhoneRepository $phone_repository
      * @return RedirectResponse|Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/add/", name=".add", methods={"GET", "POST"})
      */
-    public function add(Request $request, PhoneRepository $phone_repository)
+    public function add(Request $request, PhoneRepository $phoneRepository)
     {
-        $phone = $phone_repository->getNew();
+        $phone = $phoneRepository->getNew();
         $form = $this->createForm(PhoneForm::class, $phone);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $phone_repository->save($form->getData());
-            $phone_repository->flush();
+            $phoneRepository->save($form->getData());
+            $phoneRepository->flush();
             $this->addFlash('notice', 'Phone added.');
             return $this->redirectToRoute('phone');
         } else {
@@ -81,23 +78,20 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @param int $id
-     * @param Request $request
-     * @param PhoneRepository $phone_repository
      * @return RedirectResponse|Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/{id}/edit/", name=".edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function edit(int $id, Request $request, PhoneRepository $phone_repository)
+    public function edit(int $id, Request $request, PhoneRepository $phoneRepository)
     {
         try {
-            $phone = $phone_repository->getById($id);
+            $phone = $phoneRepository->getById($id);
             $form = $this->createForm(PhoneForm::class, $phone);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                $phone_repository->save($form->getData());
-                $phone_repository->flush();
+                $phoneRepository->save($form->getData());
+                $phoneRepository->flush();
                 $this->addFlash('notice', 'Phone changes are saved.');
             } else {
                 return $this->render('Phone/form.html.twig', ['form' => $form->createView(), 'edit' => true]);
@@ -109,40 +103,20 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @param int $id
-     * @param PhoneRepository $phone_repository
-     * @return RedirectResponse
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/{id}/delete", name=".delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
      */
-    public function delete(int $id, PhoneRepository $phone_repository): RedirectResponse
+    public function delete(int $id, PhoneRepository $phoneRepository): RedirectResponse
     {
         try{
-            $phone = $phone_repository->getById($id);
-            $phone_repository->delete($phone);
-            $phone_repository->flush();
+            $phone = $phoneRepository->getById($id);
+            $phoneRepository->delete($phone);
+            $phoneRepository->flush();
             $this->addFlash('notice', 'phone.deleted');
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
-        }
-        return $this->redirectToRoute('phone');
-    }
-
-    /**
-     * Обработка формы поиска телефонов
-     * @param Request $request
-     * @return RedirectResponse
-     * @Route("/find/", name=".find_process", methods={"POST"})
-     */
-    public function findProcess(Request $request): RedirectResponse
-    {
-        $form = $this->createForm(PhoneFilterForm::class);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            return $this->redirectToRoute('phone', ['filter' => $data['search']]);
         }
         return $this->redirectToRoute('phone');
     }
@@ -152,11 +126,13 @@ class PhoneController extends AbstractController
      */
     public function rowsPerPage(Request $request, Session $session): RedirectResponse
     {
-        $rowsPerPageForm = $this->createForm(RowsForm::class);
+        $rows = new Rows();
+        $rowsPerPageForm = $this->createForm(RowsForm::class, $rows);
         $rowsPerPageForm->handleRequest($request);
-        if ($rowsPerPageForm->isSubmitted()) {
-            $data = $rowsPerPageForm->getData();
-            $session->set('rows', $data['rows']);
+        if ($rowsPerPageForm->isSubmitted() && $rowsPerPageForm->isValid()) {
+            $session->set('rowsOnPage', $rows->value);
+        } else {
+            $this->addFlash("error", "Incorrect filter value");
         }
         return $this->redirect($request->getUri());
     }

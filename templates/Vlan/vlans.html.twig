@@ -1,36 +1,70 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} {{ parent() }} | {{ 'vlan.title_list'|trans }}{% endblock %}
+{% block title %}
+    {% trans_default_domain 'vlan' %}
+    {{ parent() }} | {{ 'vlan_list.title'|trans }}
+{% endblock %}
 
 {% block context %}
-    {{ 'vlan.title_list'|trans }}
+    {% trans_default_domain 'vlan' %}
+    {{ 'vlan_list.title'|trans }}
 {% endblock %}
 
 {% block header %}
     <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
-        {{ form_start(vlan_filter_form, {'action': path('vlan_find_process'), 'attr': {'class': 'form-inline'} }) }}
-        {{ form_label(vlan_filter_form.search) }}
-        {{ form_widget(vlan_filter_form.search) }}
-        {{ form_widget(vlan_filter_form.submit_button) }}
-        {{ form_end(vlan_filter_form) }}
+        {{ form_start(filterForm, {'attr': {'class': 'form-inline'} }) }}
+        <div class="form-row align-items-center m-1">
+        <div class="form-row align-items-center m-1">
+            <div class="col-auto">
+                <label class="sr-only" for="inlineFormInputGroup">{{ form_label(filterForm.value) }}</label>
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text "><i class="fa fa-search"></i></div>
+                    </div>
+                    {{ form_widget(filterForm.value) }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm btn-primary-sham">{{ 'Search'|trans }}</button>
+            <a href="{{ path('vlan') }}" class="btn btn-sm btn-secondary ml-1">{{ 'Reset'|trans }}</a>
+        </div>
+        {{ form_end(filterForm) }}
     </nav>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block body %}
+    {% trans_default_domain 'vlan' %}
+    {% if vlans is not null %}
     <div class="row justify-content-center ml-0 mr-0 mt-1">
         <div class="col-xl-10 col-lg-12 p-2">
             <table class="isup-table isup-table-bordered isup-table-zebra isup-table-wide  isup-table-center isup-table-header-nowrap">
-                <caption>{{ 'vlan.title_list'|trans }}</caption>
+                <caption>{{ 'vlan_list.title'|trans }}</caption>
                 <tbody>
                 <tr>
-                    <th>{{ knp_pagination_sortable(vlans, 'vlan.number'|trans, 'number') }}</th>
-                    <th>{{ knp_pagination_sortable(vlans, 'vlan.name'|trans, 'name') }}</th>
-                    <th>{{ knp_pagination_sortable(vlans, 'vlan.points'|trans, 'points') }}</th>
+                    <th>{{ knp_pagination_sortable(vlans, 'vlan_list.number'|trans, 'number') }}</th>
+                    <th>{{ knp_pagination_sortable(vlans, 'vlan_list.name'|trans, 'name') }}</th>
+                    <th>{{ knp_pagination_sortable(vlans, 'vlan_list.points'|trans, 'points') }}</th>
                     <th></th>
                 </tr>
                 {% for vlan in vlans %}
                     <tr {% if loop.index is odd %}class="color"{% endif %}>
-                        <td><a href="{{ path('vlan_edit', {'id': vlan.id }) }}">{{ vlan.number }}</a></td>
+                        <td><a href="{{ path('vlan.edit', {'id': vlan.id }) }}">{{ vlan.number }}</a></td>
                         <td>{{ vlan.name }}</td>
                         <td>
                             {% for point in vlan.points %}
@@ -39,13 +73,13 @@
                         </td>
                         <td>
                             <div class="edit-button-link m-2 text-nowrap">
-                                <a href="{{ path('vlan_edit', {'id': vlan.id }) }}">
+                                <a href="{{ path('vlan.edit', {'id': vlan.id }) }}">
                                     <i class="fa fa-pencil-alt" aria-hidden="true"></i> Редактировать
                                 </a>
                             </div>
                             <div class="edit-button-link m-2 text-nowrap">
                                 {% if is_granted('ROLE_MODERATOR') %}
-                                    <a class="delete-order-button" href="{{ path('vlan_delete', {'id': vlan.id }) }}" data-toggle="confirmation">
+                                    <a class="delete-order-button" href="{{ path('vlan.delete', {'id': vlan.id }) }}" data-toggle="confirmation">
                                         <i class="fa fa-trash" aria-hidden="true"></i> Удалить
                                     </a>
                                 {% endif %}
@@ -56,8 +90,9 @@
                 </tbody>
             </table>
             <div class="mt-2">
-                {{ knp_pagination_render(vlans) }}
+                {{ knp_pagination_render(vlans, null, {}, {'align': 'center', 'size': 'small'}) }}
             </div>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

@@ -6,7 +6,6 @@ namespace App\Controller\Zabbix;
 use App\Service\Zabbix\Command\AlarmCommand;
 use App\Service\Zabbix\Handler\AlarmHandler;
 use App\Service\Zabbix\Notifier\{ ChatNotifier, EmailNotifier };
-use App\Service\Zabbix\ZabbixService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
@@ -40,7 +39,6 @@ class AlarmController extends AbstractController
         if($request->request->has('subject') && $request->request->has('message')) {
             $command = new AlarmCommand($request->request->get('subject'), $request->request->get('message'));
             $alarm = $alarmHandler->handle($command);
-            var_dump($alarm);
             $emailNotifier->notify($alarm);
             $chatNotifier->notify($alarm);
             $logger->info('Message successfully notified');

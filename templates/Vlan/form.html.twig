@@ -1,4 +1,5 @@
 {% set context = edit is defined ? 'vlan.form.edit_header'|trans : 'vlan.form.add_header'|trans %}
+{% set context =  context ~ ' ' ~ (form.vars.value.number is defined?form.vars.value.number:'') %}
 {% extends 'base.html.twig' %}
 
 {% block title %} {{ parent() }} | {{ context }}{% endblock %}
@@ -7,9 +8,23 @@
     {{ context }}
 {% endblock %}
 
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                {% endfor %}
+                <li class="breadcrumb-item active" aria-current="page">{{ context }}</li>
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block body %}
     {{ form_start(form) }}
-    <div class="row m-2 block-shadow-10 form-wrapper">
+    <div class="row m-0 block-shadow-10 form-wrapper">
         <div class="col-12 ml-2">
             <h4>
                 {{ context }}

@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository\Phone;
 
-use App\Form\Phone\Filter;
-use Doctrine\ORM\EntityRepository;
+use App\Form\Phone\DTO\Filter;
 use App\Entity\Phone\Phone;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -18,15 +19,22 @@ class PhoneRepository extends EntityRepository
      */
     private $translator;
 
+    /**
+     * @param TranslatorInterface $translator
+     */
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
 
+    /**
+     * @param Filter $filter
+     * @return array
+     */
     public function getFilteredPhones(Filter $filter): array
     {
-        $queryBuilder =  $this->createQueryBuilder('p');
-        if($filter->isNotEmpty()) {
+        $queryBuilder = $this->createQueryBuilder('p');
+        if ($filter->isNotEmpty()) {
             $queryBuilder->orWhere('p.number = :data')
                 ->orWhere('p.moscownumber = :data')
                 ->orWhere('p.contactnumber = :data')
@@ -34,14 +42,15 @@ class PhoneRepository extends EntityRepository
                 ->orWhere('LOWER(p.location) LIKE LOWER(:data1)')
                 ->orWhere('LOWER(p.notes) LIKE LOWER(:data2)')
                 ->orWhere('LOWER(p.name) LIKE LOWER(:data2)')
-                ->setParameter('data', $filter->search)
-                ->setParameter('data1', "%{$filter->search}%")
-                ->setParameter('data2', "%{$filter->search}%");
+                ->setParameter('data', $filter->value)
+                ->setParameter('data1', "%{$filter->value}%")
+                ->setParameter('data2', "%{$filter->value}%");
         }
-        $query = $queryBuilder->andwhere('p.deleted = 0')
-            ->orderBy('p.number', 'ASC')
-            ->getQuery();
-        if(!$phones = $query->getResult()){
+        $queryBuilder->andwhere('p.deleted = 0')
+            ->orderBy('p.number', 'ASC');
+
+        $query = $queryBuilder->getQuery();
+        if (!$phones = $query->getResult()){
             throw new \DomainException($this->translator->trans("Phones not found"));
         }
         return $phones;

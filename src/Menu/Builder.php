@@ -25,7 +25,7 @@ class Builder
                           AuthorizationCheckerInterface $authorizationChecker,
                           EventDispatcherInterface $eventDispatcher): ItemInterface
     {
-        $menu = $factory->createItem('root', ['childrenAttributes' => ['class' => 'navbar-nav'],]);
+        $menu = $factory->createItem('Home', ['route' => 'default', 'childrenAttributes' => ['class' => 'navbar-nav'],]);
 
         $menu->addChild('Phones', ['route' => 'phone'])
             ->setAttribute('class', 'dropdown')
@@ -35,8 +35,8 @@ class Builder
             ->setChildrenAttribute('role', 'menu')
             ->setExtra('orderNumber', 4)
             ->setExtra('routes', [
-                ['route' =>'phone'],
-                ['pattern' => '/^phone\..+/'],
+                ['route' => 'phone'],
+                ['pattern' => '/^phone\..*/'],
             ])
         ;
         $menu['Phones']->addChild('List', ['route' => 'phone'])
@@ -45,7 +45,7 @@ class Builder
         $menu['Phones']->addChild('Add', ['route' => 'phone.add'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
-        $menu->addChild('vlans', ['route' => 'vlan_default'])
+        $menu->addChild('vlans', ['route' => 'vlan'])
             ->setAttribute('class', 'dropdown')
             ->setLinkAttribute('data-toggle', 'dropdown')
             ->setLinkAttribute('class', 'dropdown-toggle nav-link')
@@ -53,14 +53,14 @@ class Builder
             ->setChildrenAttribute('role', 'menu')
             ->setExtra('orderNumber', 5)
             ->setExtra('routes', [
-                ['route' =>'vlan_'],
-                ['pattern' => '/^vlan.+/'],
+                ['route' =>'vlan'],
+                ['pattern' => '/^vlan\..+/'],
             ])
         ;
-        $menu['vlans']->addChild('List', ['route' => 'vlan_default'])
+        $menu['vlans']->addChild('List', ['route' => 'vlan'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
-        $menu['vlans']->addChild('Add', ['route' => 'vlan_add'])
+        $menu['vlans']->addChild('Add', ['route' => 'vlan.add'])
             ->setAttribute('class', 'nav-item pl-3')
             ->setLinkAttribute('class', 'nav-link');
         if ($authorizationChecker->isGranted('ROLE_SUPPORT')) {

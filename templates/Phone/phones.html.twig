@@ -1,46 +1,69 @@
-{#{% trans_default_domain 'phone' %}#}
 {% extends 'base.html.twig' %}
 
-{% block title %} {{ parent() }} | {{ 'phone.list_title'|trans }} {% endblock %}
+{% block title %}
+    {% trans_default_domain 'phone' %}
+    {{ parent() }} | {{ 'phone_list.title'|trans }}
+{% endblock %}
 
 {% block context %}
-    {{ 'phone.list_title'|trans }}
+    {% trans_default_domain 'phone' %}
+    {{ 'phone_list.title'|trans }}
 {% endblock %}
 
 {% block header %}
     <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
-        {{ form_start(phoneFilterForm, {'action': path('phone'), 'attr': {'class': 'form-inline'} }) }}
+        {{ form_start(filterForm, {'attr': {'class': 'form-inline'} }) }}
         <div class="form-row align-items-center m-1">
             <div class="col-auto">
-                <label class="sr-only" for="inlineFormInputGroup">{{ form_label(phoneFilterForm.search) }}</label>
+                <label class="sr-only" for="inlineFormInputGroup">{{ form_label(filterForm.value) }}</label>
                 <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
                         <div class="input-group-text "><i class="fa fa-search"></i></div>
                     </div>
-                    {{ form_widget(phoneFilterForm.search) }}
+                    {{ form_widget(filterForm.value) }}
                 </div>
             </div>
-            {{ form_widget(phoneFilterForm.submit_button) }}
+            <button type="submit" class="btn btn-primary btn-sm btn-primary-sham">{{ 'Search'|trans }}</button>
+            <a href="{{ path('phone') }}" class="btn btn-sm btn-secondary ml-1">{{ 'Reset'|trans }}</a>
         </div>
-        {{ form_end(phoneFilterForm) }}
+        {{ form_end(filterForm) }}
     </nav>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                    <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <div class="row justify-content-center ml-0 mr-0 mt-1">
+    {% trans_default_domain 'phone' %}
+    {% if phones is not null %}
+    <div class="row justify-content-center ml-0 mr-0 mt-0">
         <div class="col-xl-10 col-lg-12 p-2">
             <table class="isup-table isup-table-bordered isup-table-zebra  isup-table-wide isup-table-header-nowrap isup-table-hovered table-phone">
-                <caption>{{ 'phone.list_title'|trans }}</caption>
+                <caption>{{ 'phone_list.title'|trans }}</caption>
                 <tr>
-                    <th>{{ knp_pagination_sortable(phones, 'phone.number'|trans, 'number') }}</th>
-                    <th>{{ knp_pagination_sortable(phones, 'phone.moscow_number'|trans, 'moscownumber') }}</th>
-                    <th>{{ knp_pagination_sortable(phones, 'phone.location'|trans, 'location') }}</th>
-                    <th>{{ 'phone.name'|trans }}</th>
-                    <th>{{ 'phone.contact_number'|trans }}</th>
-                    <th>{{ knp_pagination_sortable(phones, 'phone.ip'|trans, 'ip') }}</th>
-                    <th>{{ knp_pagination_sortable(phones, 'phone.login'|trans, 'login') }}</th>
-                    <th>{{ 'phone.password'|trans }}</th>
-                    <th>{{ 'phone.notes'|trans }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone_list.number'|trans, 'number') }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone_list.moscow_number'|trans, 'moscownumber') }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone_list.location'|trans, 'location') }}</th>
+                    <th>{{ 'phone_list.name'|trans }}</th>
+                    <th>{{ 'phone_list.contact_number'|trans }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone_list.ip'|trans, 'ip') }}</th>
+                    <th>{{ knp_pagination_sortable(phones, 'phone_list.login'|trans, 'login') }}</th>
+                    <th>{{ 'phone_list.password'|trans }}</th>
+                    <th>{{ 'phone_list.notes'|trans }}</th>
                     <th></th>
                 </tr>
                 {% for phone in phones %}
@@ -57,13 +80,13 @@
                         <td>
                             <div class="edit-button-link m-2 text-nowrap">
                                 <a href="{{ path('phone.edit', {'id': phone.id }) }}">
-                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i> Редактировать
+                                    <i class="fa fa-pencil-alt" aria-hidden="true"></i> {{ 'phone_list.label.edit'|trans }}
                                 </a>
                             </div>
                             <div class="edit-button-link m-2 text-nowrap">
                                 {% if is_granted('ROLE_MODERATOR') %}
                                     <a class="delete-order-button" href="{{ path('phone.delete', {'id': phone.id }) }}" data-toggle="confirmation">
-                                        <i class="fa fa-trash" aria-hidden="true"></i> Удалить
+                                        <i class="fa fa-trash" aria-hidden="true"></i> {{ 'phone_list.label.delete'|trans }}
                                     </a>
                                 {% endif %}
                             </div>
@@ -75,8 +98,8 @@
                     <td colspan="10">
                         <div class="d-flex justify-content-end">
                             {{ form_start(rowsPerPageForm, {'attr': {'class': 'form-inline'} }) }}
-                            {{ form_label(rowsPerPageForm.rows, null, { 'label_attr': {'class': 'col-auto col-form-label-sm col-form-label'} }) }}
-                            {{ form_widget(rowsPerPageForm.rows, {'attr': {'class': 'form-control form-control-sm'}}) }}
+                            {{ form_label(rowsPerPageForm.value, null, { 'label_attr': {'class': 'col-auto col-form-label-sm col-form-label'} }) }}
+                            {{ form_widget(rowsPerPageForm.value, {'attr': {'class': 'form-control form-control-sm'}}) }}
                             {{ form_end(rowsPerPageForm) }}
                         </div>
                     </td>
@@ -88,4 +111,5 @@
             </div>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

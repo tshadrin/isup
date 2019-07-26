@@ -1,19 +1,19 @@
 <?php
 declare(strict_types = 1);
 
-namespace App\Service\Phone\PagedPhones;
+namespace App\Service\Vlan\PagedVlans;
 
 use App\Form\Phone\RowsForm;
-use App\Repository\Phone\PhoneRepository;
+use App\Repository\Vlan\VlanRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
 class Handler
 {
     /**
-     * @var PhoneRepository
+     * @var VlanRepository
      */
-    private $phoneRepository;
+    private $vlanRepository;
     /**
      * @var PaginatorInterface
      */
@@ -21,12 +21,12 @@ class Handler
 
     /**
      * Handler constructor.
-     * @param PhoneRepository $phoneRepository
+     * @param VlanRepository $phoneRepository
      * @param PaginatorInterface $paginator
      */
-    public function __construct(PhoneRepository $phoneRepository, PaginatorInterface $paginator)
+    public function __construct(VlanRepository $vlanRepository, PaginatorInterface $paginator)
     {
-        $this->phoneRepository = $phoneRepository;
+        $this->vlanRepository = $vlanRepository;
         $this->paginator = $paginator;
     }
 
@@ -36,10 +36,10 @@ class Handler
      */
     public function handle(Command $command): PaginationInterface
     {
-        $phones = $this->phoneRepository->getFilteredPhones($command->filter);
+        $vlans = $this->vlanRepository->getFilteredVlans($command->filter);
         if($command->rowsOnPage === RowsForm::ALL_ROWS_ON_PAGE) {
-            $command->rowsOnPage = count($phones);
+            $command->rowsOnPage = count($vlans);
         }
-        return $this->paginator->paginate($phones, $command->page, $command->rowsOnPage);
+        return $this->paginator->paginate($vlans, $command->page, $command->rowsOnPage);
     }
 }

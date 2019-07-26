@@ -15,13 +15,13 @@ App_vlan:
   path: /vlan/
   controller: FrameworkBundle:Redirect:redirect
   defaults:
-    route: vlan_default
+    route: vlan
     permanent: true
 App_vlans:
   path: /vlans/
   controller: FrameworkBundle:Redirect:redirect
   defaults:
-    route: vlan_default
+    route: vlan
     permanent: true
 default:
   path: /

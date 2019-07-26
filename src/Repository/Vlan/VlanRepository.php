@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Repository\Vlan;
 
 use App\Entity\Vlan\Vlan;
+use App\Form\Vlan\DTO\Filter;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -13,38 +14,27 @@ use Doctrine\ORM\EntityRepository;
 class VlanRepository extends EntityRepository
 {
     /**
+     * @param Filter $filter
      * @return array
      */
-    public function findAll(): array
+    public function getFilteredVlans(Filter $filter): array
     {
-        $query = $this->createQueryBuilder('v')
-                ->where('v.deleted = 0')
-                ->orderBy('v.number', 'ASC')
+        $queryBuilder = $this->createQueryBuilder('v');
+        if ($filter->isNotEmpty()) {
+            $queryBuilder->orWhere('v.number = :data')
+                ->orWhere('LOWER(v.name) LIKE LOWER(:data1)')
+                ->orWhere('LOWER(v.points) LIKE LOWER(:data2)')
+                ->setParameter('data', $filter->value)
+                ->setParameter('data1', "%{$filter->value}%")
+                ->setParameter('data2', "%{$filter->value}%")
                 ->getQuery();
-        if(!$vlans = $query->getResult()){
-            throw new \DomainException("VLans not found.");
         }
-        return $vlans;
-    }
+        $queryBuilder->andWhere('v.deleted = 0')
+            ->orderBy('v.number', 'ASC');
 
-    /**
-     * @param string $data
-     * @return mixed
-     */
-    public function findByCriteria(string $data): array
-    {
-        $query = $this->createQueryBuilder('v')
-            ->where('v.deleted = 0')
-            ->andWhere('v.number = :data')
-            ->orWhere('LOWER(v.name) LIKE LOWER(:data1)')
-            ->orWhere('LOWER(v.points) LIKE LOWER(:data2)')
-            ->orderBy('v.number', 'ASC')
-            ->setParameter('data', $data)
-            ->setParameter('data1',"%{$data}%")
-            ->setParameter('data2', "%{$data}%")
-            ->getQuery();
+        $query = $queryBuilder->getQuery();
         if(!$vlans = $query->getResult()){
-            throw new \DomainException("VLans not found.");
+            throw new \DomainException("VLans not found");
         }
         return $vlans;
     }

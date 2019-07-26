@@ -2,10 +2,9 @@
 declare(strict_types = 1);
 
 
-namespace App\Service\Phone\PagedPhones;
+namespace App\Service\Vlan\PagedVlans;
 
-
-use App\Form\Phone\DTO\Filter;
+use App\Form\Vlan\DTO\Filter;
 
 class Command
 {

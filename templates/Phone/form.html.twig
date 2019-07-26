@@ -1,21 +1,38 @@
 {% set context = edit is defined ? 'phone.edit_title'|trans : 'phone.add_title'|trans  %}
+{% set context =  context ~ ' ' ~ (form.vars.value.number is defined?form.vars.value.number:'') %}
 {% extends 'base.html.twig' %}
 
 {% block title %} {{ parent() }} | {{ context }}{% endblock %}
 
 {% block context %} {{ context }} {% endblock %}
 
+{% block breadcrumbs %}
+<div class="mt-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+            {% for breadcrumb in breadcrumbs %}
+                <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+            {% endfor %}
+            <li class="breadcrumb-item active" aria-current="page">{{ context }}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
 {% block body %}
     {{ form_start(form) }}
-    <div class="row m-2 block-shadow-10 form-wrapper">
+    <div class="row m-0 block-shadow-10 form-wrapper">
         <div class="col-12 ml-2">
-            <h4>{{ context }}</h4>
+            <h4>
+                {{ context }}
+            </h4>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.number, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.number) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                        {{ form_widget(form.number, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.number) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.number) }}
@@ -24,11 +41,11 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.moscownumber, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.moscownumber) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                    {{ form_widget(form.moscownumber, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.moscownumber) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.moscownumber) }}
@@ -37,11 +54,11 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.location, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.location) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                    {{ form_widget(form.location, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.location) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.location) }}
@@ -50,24 +67,11 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.name, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.contactnumber) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                    {{ form_widget(form.name, { 'attr': {'class': 'form-control form-control-md'} }) }}
-                        </div>
-                        <div class="col-sm-12 form-text text-muted ml-4">
-                            {{ form_errors(form.name) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.contactnumber, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
-                <div class="col-sm-6">
-                    <div class="row">
-                        <div class="col-sm-12">
-                    {{ form_widget(form.contactnumber, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.contactnumber) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.contactnumber) }}
@@ -76,11 +80,24 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.ip, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.name) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                    {{ form_widget(form.ip, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.name) }}
+                        </div>
+                        <div class="col-sm-12 form-text text-muted ml-4">
+                            {{ form_errors(form.name) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row pl-3 pr-3">
+                {{ form_label(form.ip) }}
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {{ form_widget(form.ip) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.ip) }}
@@ -89,11 +106,11 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.login, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.login) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                    {{ form_widget(form.login, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.login) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.login) }}
@@ -102,11 +119,11 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.password, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.password) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                    {{ form_widget(form.password, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.password) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.password) }}
@@ -115,11 +132,11 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                {{ form_label(form.notes, null, { 'label_attr': {'class': 'col-sm-2 col-form-label font-weight-bold'} }) }}
+                {{ form_label(form.notes) }}
                 <div class="col-sm-6">
                     <div class="row">
                         <div class="col-sm-12">
-                    {{ form_widget(form.notes, { 'attr': {'class': 'form-control form-control-md'} }) }}
+                            {{ form_widget(form.notes) }}
                         </div>
                         <div class="col-sm-12 form-text text-muted ml-4">
                             {{ form_errors(form.notes) }}
@@ -128,16 +145,15 @@
                 </div>
             </div>
             <div class="form-group row pl-3 pr-3">
-                <div class="col-sm-12">
-                    {{ form_widget(form.save, { 'attr': {'class': 'btn btn-primary btn-primary-sham'} }) }}
-                    <div class="btn btn-primary btn-primary-sham m-1">
-                        <a href="{{ path('phone') }}">
-                            {{ 'phone_form.back'|trans }}
-                        </a>
-                    </div>
+                {{ form_widget(form.save) }}
+                <div class="btn btn-primary btn-primary-sham m-1">
+                    <a href="{{ app.request.server.get('HTTP_REFERER') }}">
+                        {{ 'Back'|trans }}
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     {{ form_end(form) }}
 {% endblock %}
+

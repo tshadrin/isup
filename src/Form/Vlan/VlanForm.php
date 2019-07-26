@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Form\Vlan;
 
+use App\Entity\Vlan\Vlan;
 use Symfony\Component\Form\{ AbstractType, FormBuilderInterface };
 use Symfony\Component\Form\Extension\Core\Type\{ TextType, SubmitType, IntegerType, CollectionType };
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -79,7 +80,7 @@ class VlanForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\App\Entity\Vlan\Vlan',
+            'data_class' => Vlan::class,
         ]);
     }
 }
