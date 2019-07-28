@@ -52,7 +52,7 @@
         <tbody>
         {% for payment in payments %}
             <tr {% if payment.logcount > 1 %}class="isup-table-critical-row"{% endif %}>
-                <td><a href="{{ path('search', {'type': 'id', 'value': payment.accountid }) }}">{{ payment.accountid }}</a></td>
+                <td><a href="{{ path('search.by.data', {'type': 'id', 'value': payment.accountid }) }}">{{ payment.accountid }}</a></td>
                 <td><a href="{{ path('sberbank_log', {'pay_num': payment.paynum}) }}">{{ payment.paynum }}</a></td>
                 <td>{{ payment.amount }}</td>
                 <td>{{ payment.regdate | date('Y-m-d') }} {{ payment.regdate | date('H:i:s') }}</td>

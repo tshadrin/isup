@@ -103,7 +103,7 @@ class OrderController extends AbstractController
             if ($form['saveandlist']->isCLicked())
                 return $this->redirectToRoute('orders_index');
             if ($form['saveandback']->isCLicked())
-                return $this->redirectToRoute('search',
+                return $this->redirectToRoute('search.by.data',
                     ['type' => 'id', 'value' => $order->getUtmId(),]);
         }
         return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
@@ -136,7 +136,7 @@ class OrderController extends AbstractController
             if ($form['saveandlist']->isCLicked())
                 return $this->redirectToRoute('orders_index');
             if ($form['saveandback']->isCLicked())
-                return $this->redirectToRoute('search',
+                return $this->redirectToRoute('search.by.data',
                     ['type' => 'id', 'value' => $order->getUtmId(),]);
         }
         return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
@@ -165,7 +165,7 @@ class OrderController extends AbstractController
         } catch (\Exception $e) {
             $this->addFlash('notice', $e->getMessage());
         }
-        return $this->redirectToRoute("search", ['type' => 'id', 'value' => $request->request->getInt("id"),]);
+        return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $request->request->getInt("id"),]);
     }
 
     /**

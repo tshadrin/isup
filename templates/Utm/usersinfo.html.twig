@@ -5,7 +5,7 @@
                   class="rows-on-page-form"
                   action="{{ path('utm5_rows_on_page') }}"
                   method="POST">
-                <select name="rows" id="rows-on-page-select">
+                <select name="rows" id="rows-on-page-select" onchange="this.form.submit()">
                     <option {{ rows == 25?'selected' }} value="25">25</option>
                     <option {{ rows == 50?'selected' }} value="50">50</option>
                     <option {{ rows == 100?'selected' }} value="100">100</option>
@@ -21,7 +21,7 @@
         {% for user in users %}
         <tr>
             <td>
-                <a class="content-link" href="{{ path('search', {'type': 'id', 'value': user.id }) }}">{{ user.id  }}</a>
+                <a class="content-link" href="{{ path('search.by.data', {'type': 'id', 'value': user.id }) }}">{{ user.id  }}</a>
             </td>
             <td>{{ user.login }}</td>
             <td>{{ user.fullname }}</td>

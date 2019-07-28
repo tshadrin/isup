@@ -76,7 +76,6 @@ class Builder
                 ->setLinkAttribute('target', '_blank')
             ;
             $menu['Tools']->addChild('Dedovsk', ['uri' => 'http://dedovsk.istranet.ru/dedovsk/'])
-                ->setAttribute('class', 'nav-item pl-3')
                 ->setLinkAttribute('target', '_blank')
             ;
             $menu['Tools']->addChild('Map', ['uri' => 'http://map.istranet.ru'])
@@ -90,7 +89,7 @@ class Builder
             ;
         }
         $menu->addChild('Control', ['uri' => '#'])
-            ->setAttribute('icon', 'fa fa-users')
+            ->setAttribute('icon', 'fa fa-user')
             ->setExtra('dropdown', true)
         ;
         if ($authorizationChecker->isGranted('ROLE_ADMIN')) {

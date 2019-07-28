@@ -47,7 +47,7 @@
                 </td>
                 <td>
                     {% if order.utmid is not empty %}
-                    <a class="content-link" href="{{ path('search', {'type':'id', 'value': order.utmid}) }}">
+                    <a class="content-link" href="{{ path('search.by.data', {'type':'id', 'value': order.utmid}) }}">
                         {{ order.utmid }}
                     </a>
                     {% endif %}

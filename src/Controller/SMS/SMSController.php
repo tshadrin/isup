@@ -82,7 +82,7 @@ class SMSController extends AbstractController
                 $this->addFlash('error', $error->getMessage());
             }
         }
-        return $this->redirectToRoute("search", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
+        return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
 
     }
 

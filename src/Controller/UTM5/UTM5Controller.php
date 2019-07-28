@@ -10,6 +10,7 @@ use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
 use App\Form\UTM5\{ PassportForm, PassportFormData, UTM5UserCommentForm };
 use App\Service\BitrixCal\BitirixCalService;
 use App\Service\UTM5\{ URFAService, UTM5DbService, UTM5UserCommentService };
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -187,7 +188,7 @@ class UTM5Controller extends AbstractController
         try {
             $id = $UTM5_user_comment_service->delete($id);
             $this->addFlash('notice', 'utm5_user_comment.deleted');
-            return $this->redirectToRoute('search', ['type' => 'id', 'value' => $id]);
+            return $this->redirectToRoute('search.by.data', ['type' => 'id', 'value' => $id]);
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('search');
@@ -216,26 +217,7 @@ class UTM5Controller extends AbstractController
         } else {
             $this->addFlash('error', 'utm5_user_comment.not_created');
         }
-        return $this->redirectToRoute('search', ['type' => 'id', 'value' => $comment->getUtmId(),]);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/search/rop/", name="utm5_rows_on_page", methods={"POST"})
-     */
-    public function rowsOnPage(Request $request): JsonResponse
-    {
-        $user = $this->getUser();
-        if($request->request->has('rows')) {
-            $user->setOption('utm5_search_rows', $request->request->get('rows'));
-            $em = $this->get('doctrine.orm.entity_manager');
-            $em->persist($user);
-            $em->flush();
-        }
-        return $this->json(['refresh' => true]);
+        return $this->redirectToRoute('search.by.data', ['type' => 'id', 'value' => $comment->getUtmId(),]);
     }
 
     /**
@@ -267,7 +249,7 @@ class UTM5Controller extends AbstractController
                     $URFAService->editPassport($passport, $user->getId());
                     $this->addFlash("notice", "Data updated");
                     if($form['saveandback']->isClicked()) {
-                        return $this->redirectToRoute('search', ['value' => $user->getId(), 'type' => 'id']);
+                        return $this->redirectToRoute('search.by.data', ['value' => $user->getId(), 'type' => 'id']);
                     }
                 } catch (\Exception $e) {
                     $this->addFlash('error', $e->getMessage());
@@ -281,5 +263,21 @@ class UTM5Controller extends AbstractController
             }
         }
         return $this->render('Utm/edit-passport.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @Route("/search/rop/", name="utm5_rows_on_page", methods={"GET","POST"})
+     */
+    public function rowsOnPage(Request $request, EntityManagerInterface $entityManager): RedirectResponse
+    {
+        $user = $this->getUser();
+        if($request->request->has('rows')) {
+            $user->setOption('utm5_search_rows', $request->request->get('rows'));
+            $entityManager->persist($user);
+            $entityManager->flush();
+        }
+        return $this->redirect($request->headers->get('referer'));
     }
 }

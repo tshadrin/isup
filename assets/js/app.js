@@ -16,14 +16,6 @@ jQuery(document).ready(function() {
     setTimeout(function() { jQuery('.alert-danger').fadeOut('slow')    },5000);
     setTimeout(function() { jQuery('.alert-success').fadeOut('slow')   },5000);
 
-    // Изменение количества отображаемых элементов на странице.
-    jQuery('#rows-on-page-select').change(function () {
-        var url  = jQuery(this).parent().attr('action');
-        var data = jQuery(this).serialize();
-        jQuery.post(url, data, location.reload());
-        return false;
-    });
-
     // Подтверждение удаления записи.
     jQuery('[data-toggle="confirmation"]').confirmation({
         rootSelector: '[data-toggle="confirmation"]',
