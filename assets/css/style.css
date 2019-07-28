@@ -320,8 +320,8 @@ table.generic-table tr:hover{
 /* utm/usersinfo utm/last-payments order/order-list order/last-orders sshbundle/diagnostic */
 table.generic-table caption,
 div.caption {
-    height:25px;
-    line-height:25px;
+/*    height:25px;
+    line-height:25px; */
     padding-left: 10px;
     font-size: 1.1em;
     text-align: left;

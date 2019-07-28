@@ -126,7 +126,6 @@ class UTM5Controller extends AbstractController
                 $template_data['form'] = $form->createView();
                 return $this->render('Utm/find.html.twig', $template_data);
             }
-            // @todo поправить количество строк на странице
             if($search_result instanceof UTM5UserCollection) {
                 $user = $this->getUser();
                 if ($user->hasOption('utm5_search_rows'))
@@ -268,7 +267,7 @@ class UTM5Controller extends AbstractController
     /**
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/search/rop/", name="utm5_rows_on_page", methods={"GET","POST"})
+     * @Route("/search/{type}/{value}/", name="search.by.data.rows", methods={"POST"}, requirements={"type": "id|fullname|address|ip|login"})
      */
     public function rowsOnPage(Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
@@ -278,6 +277,6 @@ class UTM5Controller extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
         }
-        return $this->redirect($request->headers->get('referer'));
+        return $this->redirect($request->getUri());
     }
 }

@@ -1,19 +1,22 @@
 <div class="orders-container">
     <table id="short-info" class="generic-table users-table isup-table-vert-margin">
-        <caption class="pt-0 pb-0"><span style="float:left">Найдено пользователей: {{ users.getTotalItemCount }}</span>
-            <form style="float:right;padding:0 10px 0 0;"
-                  class="rows-on-page-form"
-                  action="{{ path('utm5_rows_on_page') }}"
-                  method="POST">
-                <select name="rows" id="rows-on-page-select" onchange="this.form.submit()">
-                    <option {{ rows == 25?'selected' }} value="25">25</option>
-                    <option {{ rows == 50?'selected' }} value="50">50</option>
-                    <option {{ rows == 100?'selected' }} value="100">100</option>
-                    <option {{ rows == 500?'selected' }} value="500">500</option>
-                    <option {{ rows == 1000?'selected' }} value="1000">1000</option>
-                    <option {{ rows == 'all'?'selected' }} value="all">все</option>
-                </select>
-            </form>
+        <caption class="pt-0 pb-0">
+            <div class="row justify-content-between">
+                <span class="pl-4">Найдено пользователей: {{ users.getTotalItemCount }}</span>
+                <div class="col-auto pr-3">
+                    <form class="form-inline" method="POST">
+                        <label for="rows_form_value" class="col-form-label col-form-label-sm col-auto">Записей на странице </label>
+                        <select id="rows_form_value" name="rows" class="form-control form-control-sm" onchange="this.form.submit()">
+                            <option {{ rows == 25?'selected' }} value="25">25</option>
+                            <option {{ rows == 50?'selected' }} value="50">50</option>
+                            <option {{ rows == 100?'selected' }} value="100">100</option>
+                            <option {{ rows == 500?'selected' }} value="500">500</option>
+                            <option {{ rows == 1000?'selected' }} value="1000">1000</option>
+                            <option {{ rows == 'all'?'selected' }} value="all">все</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
         </caption>
         <tr>
             <th>Id</th><th>Логин</th><th>Ф.И.О.</th><th>Адрес проживания</th>

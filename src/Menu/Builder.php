@@ -58,7 +58,11 @@ class Builder
                 ->setAttribute('icon', 'fas fa-project-diagram')
                 ->setLinkAttribute('target', '_blank')
             ;
-            $menu->addChild('Wi-Fi', ['uri' => '/files/Wi-fi.html'])
+            $menu->addChild('Bitrix24', ['uri' => 'https://istranet.pro'])
+                ->setAttribute('icon', 'fas fa-cloud')
+                ->setLinkAttribute('target', '_blank')
+            ;
+            $menu['Tools']->addChild('Wi-Fi', ['uri' => '/files/Wi-fi.html'])
                 ->setAttribute('icon', 'fa fa-wifi')
                 ->setLinkAttribute('target', '_blank')
             ;
