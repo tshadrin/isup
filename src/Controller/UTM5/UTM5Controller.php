@@ -261,7 +261,7 @@ class UTM5Controller extends AbstractController
                 $form->setData($passportFormData);
             }
         }
-        return $this->render('Utm/edit-passport.html.twig', ['form' => $form->createView()]);
+        return $this->render('Utm/edit-passport.html.twig', ['user' => $user, 'form' => $form->createView()]);
     }
 
     /**

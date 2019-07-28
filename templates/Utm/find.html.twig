@@ -32,10 +32,34 @@
 </nav>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if user is defined %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        {% if not loop.last %}
+                            <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                        {% else %}
+                            <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% if user is defined %}
+                    <li class="breadcrumb-item active">{{ user.fullName }}</li>
+                {% endif %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <div class="row ml-0 mr-0 mt-1">
+    <div class="row m-0">
         {% if user is defined %}
-            {{ include('Utm/userinfo.html.twig', {'user': user}) }}
+        {{ include('Utm/userinfo.html.twig', {'user': user}) }}
         {% endif %}
         {% if users is defined %}
             {{ include('Utm/usersinfo.html.twig', {'users': users}) }}

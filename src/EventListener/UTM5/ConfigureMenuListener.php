@@ -26,6 +26,8 @@ class ConfigureMenuListener
             ->setExtra('orderNumber', 1)
             ->setExtra('routes', [
                 ['route' =>'search'],
+                ['route' =>'search.by.data'],
+                ['route' =>'utm5_passport_edit'],
                 ['pattern' => '/^search.+/'],
                 ['pattern' => '/^order_add_from_user/'],
             ])
