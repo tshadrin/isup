@@ -52,6 +52,6 @@ class SberbankReportController extends AbstractController
      */
     public function paymentLog(int $pay_num, SberbankReportService $sberbankReportService): Response
     {
-        return $this->render('SberbankReport/more.html.twig', ['info' => $sberbankReportService->getPaymentLog($pay_num)]);
+        return $this->render('SberbankReport/more.html.twig', ['pay_num' => $pay_num, 'info' => $sberbankReportService->getPaymentLog($pay_num)]);
     }
 }

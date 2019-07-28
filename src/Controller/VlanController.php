@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Vlan;
+namespace App\Controller;
 
+use App\Entity\Vlan\Vlan;
 use App\Form\Vlan\{DTO\Filter, FilterForm, VlanForm};
 use App\Repository\Vlan\VlanRepository;
-use App\Service\Vlan\PagedVlans\Command;
-use App\Service\Vlan\PagedVlans\Handler;
-use Knp\Component\Pager\PaginatorInterface;
+use App\Service\Vlan\PagedVlans\{ Command, Handler };
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse, Session\Session};
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,16 +25,13 @@ class VlanController extends AbstractController
     const DEFAULT_PAGE = 1;
 
     /**
-     * @param Request $request
-     * @param Session $session
-     * @param PaginatorInterface $paginator
-     * @param VlanRepository $vlan_repository
-     * @return RedirectResponse|Response
+     * @return Response
      * @Route("", name="", methods={"GET"})
      */
-    public function index(Request $request, Session $session, Handler $handler)
+    public function index(Request $request, Session $session, Handler $handler): Response
     {
         $filter = new Filter();
+
         $filterForm = $this->createForm(FilterForm::class, $filter);
         $filterForm->handleRequest($request);
 
@@ -59,54 +56,18 @@ class VlanController extends AbstractController
     }
 
     /**
-     * Редактирование vlan
-     * @param int $id
-     * @param Request $request
-     * @param VlanRepository $vlan_repository
-     * @return RedirectResponse|Response
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/{id}/edit", name=".edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
-     */
-    public function edit(int $id, Request $request, VlanRepository $vlan_repository)
-    {
-        try {
-            $vlan = $vlan_repository->findById($id);
-            $form = $this->createForm(VlanForm::class, $vlan);
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $vlan_repository->save($form->getData());
-                $vlan_repository->flush();
-                $this->addFlash('notice', 'Vlan changes are saved.');
-            } else {
-                return $this->render('Vlan/form.html.twig', ['form' => $form->createView(), 'edit' => true]);
-            }
-        } catch (\DomainException $e) {
-            $this->addFlash("error", $e->getMessage());
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
-        return $this->redirectToRoute("vlan");
-    }
-
-    /**
-     * Добавление телефона
-     * @param Request $request
-     * @param VlanRepository $vlan_repository
-     * @return RedirectResponse|Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/add", name=".add", methods={"GET", "POST"})
      */
-    public function add(Request $request, VlanRepository $vlan_repository)
+    public function add(Request $request, VlanRepository $vlanRepository): Response
     {
-        $vlan = $vlan_repository->getNew();
+        $vlan = $vlanRepository->getNew();
         $form = $this->createForm(VlanForm::class, $vlan);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $vlan_repository->save($form->getData());
-            $vlan_repository->flush();
+            $vlanRepository->save($form->getData());
+            $vlanRepository->flush();
             $this->addFlash('notice', 'Vlan added.');
             return $this->redirectToRoute('vlan');
         } else {
@@ -115,22 +76,49 @@ class VlanController extends AbstractController
     }
 
     /**
-     * Метод для удаления влана
-     * @param $id
-     * @param VlanRepository $vlan_repository
-     * @return RedirectResponse
-     * @Route("/{id}/delete", name=".delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @Route("/{vlan_id}/edit", name=".edit", methods={"GET", "POST"}, requirements={"vlan_id": "\d+"})
+     * @ParamConverter("vlan", options={"id" = "vlan_id"})
      */
-    public function delete(int $id, VlanRepository $vlan_repository): RedirectResponse
+    public function edit(Vlan $vlan, Request $request, VlanRepository $vlanRepository): Response
     {
+        try {
+            $form = $this->createForm(VlanForm::class, $vlan);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $vlanRepository->save($form->getData());
+                $vlanRepository->flush();
+                $this->addFlash('notice', 'Vlan changes are saved.');
+            } else {
+                return $this->render('Vlan/form.html.twig', ['form' => $form->createView(), 'edit' => true]);
+            }
+        } catch (\DomainException $e) {
+            $this->addFlash("error", $e->getMessage());
+        }
+        return $this->redirectToRoute("vlan");
+    }
+
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @Route("/{vlan_id}/delete", name=".delete", methods={"GET", "POST"}, requirements={"vlan_id": "\d+"})
+     * @ParamConverter("vlan", options={"id" = "vlan_id"})
+     * @IsGranted("ROLE_MODERATOR")
+     */
+    public function delete(Vlan $vlan, Request $request, VlanRepository $vlanRepository): RedirectResponse
+    {
+        if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
+            return $this->redirectToRoute('vlan');
+        }
+
         try{
-            $vlan = $vlan_repository->findById($id);
-            $vlan_repository->delete($vlan);
-            $vlan_repository->flush();
+            $vlanRepository->delete($vlan);
+            $vlanRepository->flush();
             $this->addFlash('notice', 'vlan.deleted');
         } catch (\DomainException $e) {
-            $this->addFlash('error', $e->getMessage());
-        } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
         }
         return $this->redirectToRoute('vlan');

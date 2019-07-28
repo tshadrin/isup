@@ -113,6 +113,39 @@ class OrderController extends AbstractController
      * @param Request $request
      * @param OrderService $orderService
      * @param UTM5DbService $UTM5DbService
+     * @return RedirectResponse|Response
+     * @Route("/order/add-from-user", name="order_add_from_user", methods={"GET", "POST"})
+     */
+    public function addFromUser(Request $request, OrderService $orderService, UTM5DbService $UTM5DbService)
+    {
+        if($request->request->has('create') && 'full' == $request->request->has('create')) {
+            $utm_user = $UTM5DbService->search((string)$request->request->getInt('id'));
+            $order = $orderService->createOrderByUTM5User($utm_user, $request->request->get('comment'));
+            $form = $this->createForm(OrderForm::class, $order);
+            $form->handleRequest($request);
+            return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
+        } else {
+            $order = $orderService->getNew();
+        }
+        $form = $this->createForm(OrderForm::class, $order);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $order =$form->getData();
+            $orderService->saveOrder($order);
+            $this->addFlash('notice', 'order.order_created');
+            if ($form['saveandlist']->isCLicked())
+                return $this->redirectToRoute('orders_index');
+            if ($form['saveandback']->isCLicked())
+                return $this->redirectToRoute('search',
+                    ['type' => 'id', 'value' => $order->getUtmId(),]);
+        }
+        return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
+    }
+
+    /**
+     * @param Request $request
+     * @param OrderService $orderService
+     * @param UTM5DbService $UTM5DbService
      * @param TranslatorInterface $translator
      * @return RedirectResponse
      * @Route("/order/create/", name="order_create", methods={"POST"})

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\BitrixCalendar;
+namespace App\Controller;
 
 use App\Service\BitrixCal\BitirixCalService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

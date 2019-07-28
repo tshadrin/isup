@@ -44,7 +44,7 @@ class Vlan
 
     /**
      * Адрес установки
-     * @var array
+     * @var string[]
      * @ORM\Column(type="array")
      */
     private $points;

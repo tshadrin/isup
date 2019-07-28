@@ -30,6 +30,10 @@ class Phone
      * @Assert\NotBlank()
      */
     public $contactnumber;
+    /**
+     * @var string
+     * @Assert\Ip(version="4")
+     */
     public $ip;
     /**
      * @var string
@@ -42,5 +46,8 @@ class Phone
      * @Assert\Length(min="8" max="12")
      */
     public $password;
+    /**
+     * @var string
+     */
     public $notes;
 }

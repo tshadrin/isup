@@ -1,8 +1,22 @@
 filter_form:
-  label_value: 'Поиск'
-  placeholder_value: 'например Агрогородок'
+    label_value: 'Поиск'
+    placeholder_value: 'например Агрогородок'
+vlan_form:
+    placeholder:
+        name: 'Бишкек'
+        number: '21'
+        points: 'г. Истра, ул.Адасько, дом 2, Дедовск СПМК'
+    label:
+        save: 'Сохранить'
+        name: 'Имя'
+        number: 'Номер'
+        points: 'Конечные точки'
+        add_point: 'Добавить точку'
+        back: 'Назад'
 vlan_list:
-  title: 'Список Vlan'
-  name: 'Имя'
-  number: 'Номер'
-  points: 'Конечные точки'
+    title: 'Список Vlan'
+    name: 'Имя'
+    number: 'Номер'
+    points: 'Конечные точки'
+    label:
+        delete: 'Удалить'

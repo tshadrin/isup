@@ -345,7 +345,7 @@ class UserMapper
     public function UTM5UserInitPartial(array $data): Entity\UTM5User
     {
         $user = new Entity\UTM5User();
-        $user->setId($data['id']);
+        $user->setId((int)$data['id']);
         $user->setLogin($data['login']);
         $user->setFullName($data['full_name']);
         if(!empty($data['actual_address'])) {
@@ -353,7 +353,7 @@ class UserMapper
         }
         $user->setFlatNumber($data['flat_number']);
         if(0 !== (int)$data['house_id']) {
-            $user->setHouse($this->houseRepository->findOneById($data['house_id']));
+            $user->setHouse($this->houseRepository->findOneById((int)$data['house_id']));
         }
         return $user;
     }

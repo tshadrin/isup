@@ -8,9 +8,27 @@
 {% block context %}
     {{ 'Поиск платежей по поселку' }}
 {% endblock %}
+
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block header %}
    <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
-        <form class="form-inline" method="GET" action="{{ path('find_money') }}">
+        <form class="form-inline" method="GET" action="{{ path('findmoney') }}">
             <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1">Введите название поселка в любом виде</label>
                 <input class="form-control form-control-sm m-1" type="text" name="address" required="required" {% if address is defined %} value="{{ address }}" {% endif %}>
             <input class="btn btn-sm btn-primary btn-primary-sham" type="submit" value="Посчитать" id="search-button">

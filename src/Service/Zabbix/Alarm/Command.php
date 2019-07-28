@@ -2,13 +2,13 @@
 declare(strict_types = 1);
 
 
-namespace App\Service\Zabbix\Command;
+namespace App\Service\Zabbix\Alarm;
 
 /**
- * Class AlarmCommand
- * @package App\Service\Zabbix\Command
+ * Class Command
+ * @package App\Service\Zabbix\Alarm\Command
  */
-class AlarmCommand
+class Command
 {
     /**
      * @var string

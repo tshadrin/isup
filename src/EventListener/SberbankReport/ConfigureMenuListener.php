@@ -21,8 +21,11 @@ class ConfigureMenuListener
     {
         $menu = $event->getMenu();
         $menu['Tools']->addChild('sberbank', ['route' => 'sberbank_report_index'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link')
-            ->setExtra('orderNumber', 2);
+            ->setExtra('orderNumber', 2)
+            ->setExtra('routes', [
+                ['route' =>'sberbank_report_index'],
+                ['route' =>'sberbank_log'],
+            ])
+        ;
     }
 }

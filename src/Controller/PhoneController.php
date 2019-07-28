@@ -1,13 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Phone;
+namespace App\Controller;
 
+use App\Entity\Phone\Phone;
 use App\Form\Phone\DTO\{ Filter, Rows };
 use App\Form\Phone\{ PhoneForm, FilterForm, RowsForm};
 use App\Repository\Phone\PhoneRepository;
 use App\Service\Phone\PagedPhones\{ Command, Handler };
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse };
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -57,12 +59,11 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @return RedirectResponse|Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/add/", name=".add", methods={"GET", "POST"})
+     * @Route("/add", name=".add", methods={"GET", "POST"})
      */
-    public function add(Request $request, PhoneRepository $phoneRepository)
+    public function add(Request $request, PhoneRepository $phoneRepository): Response
     {
         $phone = $phoneRepository->getNew();
         $form = $this->createForm(PhoneForm::class, $phone);
@@ -81,12 +82,12 @@ class PhoneController extends AbstractController
      * @return RedirectResponse|Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/{id}/edit/", name=".edit", methods={"GET", "POST"}, requirements={"id": "\d+"})
+     * @Route("/{phone_id}/edit/", name=".edit", methods={"GET", "POST"}, requirements={"phone_id": "\d+"})
+     * @ParamConverter("phone", options={"id" = "phone_id"})
      */
-    public function edit(int $id, Request $request, PhoneRepository $phoneRepository)
+    public function edit(Phone $phone, Request $request, PhoneRepository $phoneRepository)
     {
         try {
-            $phone = $phoneRepository->getById($id);
             $form = $this->createForm(PhoneForm::class, $phone);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
@@ -106,12 +107,17 @@ class PhoneController extends AbstractController
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/{id}/delete", name=".delete", methods={"GET", "POST"}, requirements={"id": "\d+"})
+     * @Route("/{phone_id}/delete", name=".delete", methods={"GET", "POST"}, requirements={"phone_id": "\d+"})
+     * @ParamConverter("phone", options={"id" = "phone_id"})
+     * @IsGranted("ROLE_MODERATOR")
      */
-    public function delete(int $id, PhoneRepository $phoneRepository): RedirectResponse
+    public function delete(Phone $phone, Request $request, PhoneRepository $phoneRepository): RedirectResponse
     {
+        if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
+            return $this->redirectToRoute('phone');
+        }
+
         try{
-            $phone = $phoneRepository->getById($id);
             $phoneRepository->delete($phone);
             $phoneRepository->flush();
             $this->addFlash('notice', 'phone.deleted');

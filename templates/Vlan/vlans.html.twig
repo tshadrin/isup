@@ -50,6 +50,7 @@
 
 {% block body %}
     {% trans_default_domain 'vlan' %}
+    {% set token = csrf_token('delete') %}
     {% if vlans is not null %}
     <div class="row justify-content-center ml-0 mr-0 mt-1">
         <div class="col-xl-10 col-lg-12 p-2">
@@ -64,24 +65,29 @@
                 </tr>
                 {% for vlan in vlans %}
                     <tr {% if loop.index is odd %}class="color"{% endif %}>
-                        <td><a href="{{ path('vlan.edit', {'id': vlan.id }) }}">{{ vlan.number }}</a></td>
+                        <td><a href="{{ path('vlan.edit', {'vlan_id': vlan.id }) }}">{{ vlan.number }}</a></td>
                         <td>{{ vlan.name }}</td>
                         <td>
                             {% for point in vlan.points %}
-                                {{ point }}
+                                {% if point is not empty %}
+                                    <i class="fa fa-angle-double-right"></i> {{ point }}<br>
+                                {% endif %}
                             {% endfor %}
                         </td>
                         <td>
                             <div class="edit-button-link m-2 text-nowrap">
-                                <a href="{{ path('vlan.edit', {'id': vlan.id }) }}">
+                                <a class="m-0" href="{{ path('vlan.edit', {'vlan_id': vlan.id }) }}">
                                     <i class="fa fa-pencil-alt" aria-hidden="true"></i> Редактировать
                                 </a>
                             </div>
                             <div class="edit-button-link m-2 text-nowrap">
                                 {% if is_granted('ROLE_MODERATOR') %}
-                                    <a class="delete-order-button" href="{{ path('vlan.delete', {'id': vlan.id }) }}" data-toggle="confirmation">
-                                        <i class="fa fa-trash" aria-hidden="true"></i> Удалить
-                                    </a>
+                                    <form action="{{ path('vlan.delete', {'vlan_id': vlan.id }) }}" method="post">
+                                        <input type="hidden" name="token" value="{{ token }}" />
+                                        <button type="submit" class="btn btn-sm btn-danger"  data-toggle="confirmation">
+                                            <i class="fa fa-trash" aria-hidden="true"></i> {{ 'vlan_list.label.delete'|trans }}
+                                        </button>
+                                    </form>
                                 {% endif %}
                             </div>
                         </td>

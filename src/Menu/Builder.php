@@ -28,101 +28,83 @@ class Builder
         $menu = $factory->createItem('Home', ['route' => 'default', 'childrenAttributes' => ['class' => 'navbar-nav'],]);
 
         $menu->addChild('Phones', ['route' => 'phone'])
-            ->setAttribute('class', 'dropdown')
-            ->setLinkAttribute('data-toggle', 'dropdown')
-            ->setLinkAttribute('class', 'dropdown-toggle nav-link')
-            ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
-            ->setChildrenAttribute('role', 'menu')
+            ->setAttribute('icon', 'fa fa-phone-alt')
+            ->setExtra('dropdown', true)
             ->setExtra('orderNumber', 4)
             ->setExtra('routes', [
                 ['route' => 'phone'],
                 ['pattern' => '/^phone\..*/'],
             ])
         ;
-        $menu['Phones']->addChild('List', ['route' => 'phone'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link');
-        $menu['Phones']->addChild('Add', ['route' => 'phone.add'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link');
+        $menu['Phones']->addChild('List', ['route' => 'phone']);
+        $menu['Phones']->addChild('Add', ['route' => 'phone.add']);
         $menu->addChild('vlans', ['route' => 'vlan'])
-            ->setAttribute('class', 'dropdown')
-            ->setLinkAttribute('data-toggle', 'dropdown')
-            ->setLinkAttribute('class', 'dropdown-toggle nav-link')
-            ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
-            ->setChildrenAttribute('role', 'menu')
+            ->setAttribute('icon', 'fas fa-network-wired')
+            ->setExtra('dropdown', true)
             ->setExtra('orderNumber', 5)
             ->setExtra('routes', [
                 ['route' =>'vlan'],
                 ['pattern' => '/^vlan\..+/'],
             ])
         ;
-        $menu['vlans']->addChild('List', ['route' => 'vlan'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link');
-        $menu['vlans']->addChild('Add', ['route' => 'vlan.add'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link');
+        $menu['vlans']->addChild('List', ['route' => 'vlan']);
+        $menu['vlans']->addChild('Add', ['route' => 'vlan.add']);
         if ($authorizationChecker->isGranted('ROLE_SUPPORT')) {
             $menu->addChild('Tools', ['uri' => '#'])
-                ->setAttribute('class', 'dropdown')
-                ->setLinkAttribute('data-toggle', 'dropdown')
-                ->setLinkAttribute('class', 'dropdown-toggle nav-link')
-                ->setChildrenAttribute('class', 'dropdown-menu dropdown-menu-right bg-nav-dropdown m-1')
-                ->setChildrenAttribute('role', 'menu');
+                ->setExtra('dropdown', true)
+                ->setAttribute('icon', 'fas fa-toolbox')
+            ;
             $menu->addChild('Channels', ['uri' => '/files/Kanaly_v_arendu.html'])
-                ->setAttribute('class', 'nav-item')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setAttribute('icon', 'fas fa-project-diagram')
+                ->setLinkAttribute('target', '_blank')
+            ;
             $menu->addChild('Wi-Fi', ['uri' => '/files/Wi-fi.html'])
-                ->setAttribute('class', 'nav-item')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setAttribute('icon', 'fa fa-wifi')
+                ->setLinkAttribute('target', '_blank')
+            ;
             //$menu->addChild('Profile', ['route' => 'fos_user_profile_show']);
-            $menu['Tools']->addChild('profit_for_townships', ['route' => 'find_money'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link')
-                ->setExtra('orderNumber', 1);
+            $menu['Tools']->addChild('profit_for_townships', ['route' => 'findmoney'])
+                ->setExtra('orderNumber', 1)
+            ;
             $menu['Tools']->addChild('Bot', ['uri' => 'http://bot.istra.news'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('target', '_blank')
+            ;
             $menu['Tools']->addChild('FreePBX', ['uri' => 'https://inphone.istranet.ru'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('target', '_blank')
+            ;
             $menu['Tools']->addChild('know_base', ['uri' => 'https://bz.istranet.ru'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('target', '_blank')
+            ;
             $menu['Tools']->addChild('Dedovsk', ['uri' => 'http://dedovsk.istranet.ru/dedovsk/'])
                 ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('target', '_blank')
+            ;
             $menu['Tools']->addChild('Map', ['uri' => 'http://map.istranet.ru'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('target', '_blank')
+            ;
             $menu['Tools']->addChild('Nagios', ['uri' => '/nagios/'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
-            $menu['Tools']->addChild('UTM5 Admin', ['uri' => '/files/utm5_admin.zip'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+                ->setLinkAttribute('target', '_blank')
+            ;
+            $menu['Tools']->addChild('UTM5 Admin', ['uri' => 'https://istranet.pro/~SUQNg'])
+                ->setLinkAttribute('target', '_blank')
+            ;
         }
         $menu->addChild('Control', ['uri' => '#'])
-            ->setAttribute('class', 'dropdown')
-            ->setLinkAttribute('data-toggle', 'dropdown')
-            ->setLinkAttribute('class', 'dropdown-toggle nav-link')
-            ->setChildrenAttribute('class', 'dropdown-menu dropdown-menu-right bg-nav-dropdown  m-1')
-            ->setChildrenAttribute('role', 'menu');
+            ->setAttribute('icon', 'fa fa-users')
+            ->setExtra('dropdown', true)
+        ;
         if ($authorizationChecker->isGranted('ROLE_ADMIN')) {
-            $menu['Control']->addChild('admin', ['route' => 'sonata_admin_redirect'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link');
+            $menu['Control']->addChild('admin', ['route' => 'sonata_admin_redirect']);
         }
-        $menu['Control']->addChild('Exit', ['route' => 'fos_user_security_logout'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link');
-        // Добавление события в диспетчер
+        $menu['Control']->addChild('Exit', ['route' => 'fos_user_security_logout']);
+
         $eventDispatcher->dispatch(
             new ConfigureMenuEvent($factory, $menu),
             ConfigureMenuEvent::CONFIGURE
         );
+
         $this->reorderMenuItems($menu);
+
         return $menu;
     }
 

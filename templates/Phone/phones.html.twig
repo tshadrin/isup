@@ -49,6 +49,7 @@
 
 {% block body %}
     {% trans_default_domain 'phone' %}
+    {% set token = csrf_token('delete') %}
     {% if phones is not null %}
     <div class="row justify-content-center ml-0 mr-0 mt-0">
         <div class="col-xl-10 col-lg-12 p-2">
@@ -68,7 +69,7 @@
                 </tr>
                 {% for phone in phones %}
                     <tr>
-                        <td><a href="{{ path('phone.edit', {'id': phone.id }) }}">{{ phone.number }}</a></td>
+                        <td><a href="{{ path('phone.edit', {'phone_id': phone.id }) }}">{{ phone.number }}</a></td>
                         <td>{{ phone.moscownumber }}</td>
                         <td>{{ phone.location }}</td>
                         <td>{{ phone.name }}</td>
@@ -79,15 +80,18 @@
                         <td>{{ phone.notes }}</td>
                         <td>
                             <div class="edit-button-link m-2 text-nowrap">
-                                <a href="{{ path('phone.edit', {'id': phone.id }) }}">
+                                <a class="m-0" href="{{ path('phone.edit', {'phone_id': phone.id }) }}">
                                     <i class="fa fa-pencil-alt" aria-hidden="true"></i> {{ 'phone_list.label.edit'|trans }}
                                 </a>
                             </div>
                             <div class="edit-button-link m-2 text-nowrap">
                                 {% if is_granted('ROLE_MODERATOR') %}
-                                    <a class="delete-order-button" href="{{ path('phone.delete', {'id': phone.id }) }}" data-toggle="confirmation">
-                                        <i class="fa fa-trash" aria-hidden="true"></i> {{ 'phone_list.label.delete'|trans }}
-                                    </a>
+                                    <form action="{{ path('phone.delete', {'phone_id': phone.id }) }}" method="post">
+                                        <input type="hidden" name="token" value="{{ token }}" />
+                                        <button type="submit" class="btn btn-sm btn-danger"  data-toggle="confirmation">
+                                            <i class="fa fa-trash" aria-hidden="true"></i> {{ 'phone_list.label.delete'|trans }}
+                                        </button>
+                                    </form>
                                 {% endif %}
                             </div>
                         </td>

@@ -23,8 +23,9 @@
 {% endblock %}
 
 {% block body %}
+    {% trans_default_domain 'vlan' %}
     {{ form_start(form) }}
-    <div class="row m-0 block-shadow-10 form-wrapper">
+    <div class="row m-0 mb-2 block-shadow-10 form-wrapper">
         <div class="col-12 ml-2">
             <h4>
                 {{ context }}
@@ -78,7 +79,7 @@
                             </div>
                             <button type="button"
                                     class="add-another-collection-widget btn btn-success mt-1"
-                                    data-list="#point-fields-list">{{ 'vlan.add_point'|trans }}</button>
+                                    data-list="#point-fields-list">{{ 'vlan_form.label.add_point'|trans }}</button>
                         </div>
                     </div>
                 </div>
@@ -87,7 +88,7 @@
                 {{ form_widget(form.save) }}
                 <div class="btn btn-primary btn-primary-sham m-1">
                     <a href="{{ app.request.server.get('HTTP_REFERER') }}">
-                        {{ 'Back'|trans }}
+                        {{ 'vlan_form.label.back'|trans }}
                     </a>
                 </div>
             </div>

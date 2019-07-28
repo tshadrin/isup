@@ -22,6 +22,7 @@ phone_form:
         login: 'Логин'
         password: 'Пароль'
         notes: 'Заметки'
+        back: 'Назад'
     placeholder:
         name: 'Иван Иванович Иванов'
         number: 'x-xx-xx'

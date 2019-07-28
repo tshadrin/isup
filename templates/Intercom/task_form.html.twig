@@ -8,9 +8,23 @@
     {{ context }}
 {% endblock %}
 
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                {% endfor %}
+                <li class="breadcrumb-item active" aria-current="page">{{ context }}</li>
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block body %}
     {{ form_start(form) }}
-    <div class="row m-2 block-shadow-10 form-wrapper">
+    <div class="row m-0 mb-2 block-shadow-10 form-wrapper">
         <div class="col-12 ml-2">
             <h3>
                 {{ context }}
@@ -62,13 +76,13 @@
                     {{ form_widget(form.save) }}
                     {{ form_widget(form.saveandlist) }}
                     {% if edit is defined and is_granted('ROLE_INTERCOMS_MODERATOR') %}
-                        <div class="btn btn-primary btn-lg btn-primary-sham m-1">
+                        <div class="btn btn-primary btn-primary-sham m-1">
                             <a data-toggle="confirmation" href="{{ path('intercom_delete', {'id': form.vars.value.id}) }}">
                                 {{ 'task_delete'|trans }}
                             </a>
                         </div>
                     {% endif %}
-                    <div class="btn btn-primary btn-lg btn-primary-sham m-1">
+                    <div class="btn btn-primary btn-primary-sham m-1">
                         <a href="{{ app.request.server.get('HTTP_REFERER') }}">{{ 'Back'|trans }}</a>
                     </div>
                 </div>

@@ -1,0 +1,29 @@
+{% extends 'KnpMenuBundle::menu.html.twig' %}
+
+{% block item %}
+    {{ item.setAttribute('class', [item.attribute('class'), 'nav-item']|join(' '))?'' }}
+    {{ item.setLinkAttribute('class', [item.linkAttribute('class'), 'nav-link']|join(' '))?'' }}
+    {% if item.extra('dropdown') is not empty %}
+        {% for child in item.getChildren %}
+            {%- if matcher.isCurrent(child) %}
+                {{ item.setAttribute('class', [item.attribute('class'), options.currentClass]|join(' '))?'' }}
+            {%- endif %}
+            {{ child.setAttribute('class', [child.attribute('class'), 'dropdown-item']|join(' '))?'' }}
+        {% endfor %}
+        {{ item.setAttribute('class', [item.attribute('class'), 'dropdown']|join(' '))?'' }}
+        {{ item.setLinkAttribute('class', [item.linkAttribute('class'), 'dropdown-toggle']|join(' '))?'' }}
+        {{ item.setLinkAttribute('data-toggle','dropdown')?'' }}
+        {{ item.setChildrenAttribute('role','menu')?'' }}
+        {% set children_classes = [item.childrenAttribute('class'), 'dropdown-menu', 'dropdown-menu-right', 'bg-nav-dropdown', 'm-1']|join(' ') %}
+        {{ item.setChildrenAttribute('class', children_classes)?'' }}
+    {% endif %}
+
+    {{ parent() }}
+{% endblock %}
+
+{% block label %}
+    {% if item.attribute('icon') is not empty  %}
+        <i class="{{ item.attribute('icon') }}"></i>
+    {% endif %}
+    {{ parent() }}
+{% endblock %}

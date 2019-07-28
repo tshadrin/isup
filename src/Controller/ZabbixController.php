@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Zabbix;
+namespace App\Controller;
 
-use App\Service\Zabbix\Command\AlarmCommand;
-use App\Service\Zabbix\Handler\AlarmHandler;
+use App\Service\Zabbix\Alarm\{ Command, Handler };
 use App\Service\Zabbix\Notifier\{ ChatNotifier, EmailNotifier };
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,10 +11,11 @@ use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class AlarmZabbixController
- * @package App\Controller\UTM5
+ * Class ZabbixController
+ * @package App\Controller
+ * @Route("/zabbix", name="zabbix")
  */
-class AlarmController extends AbstractController
+class ZabbixController extends AbstractController
 {
     /**
      * @var LoggerInterface
@@ -23,25 +23,27 @@ class AlarmController extends AbstractController
     protected $logger;
 
     /**
-     * @param Request $request
-     * @param LoggerInterface $logger
-     * @param EmailNotifier $emailNotifier
-     * @param ChatNotifier $chatNotifier
-     * @param AlarmHandler $alarmHandler
-     * @return JsonResponse
-     * @Route("/zabbix/alarm/", name="alarm_zabbix", methods={"POST"})
+     * @Route("/alarm/", name=".alarm", methods={"POST"})
      */
     public function alarm(Request $request, LoggerInterface $logger,
                           EmailNotifier $emailNotifier, ChatNotifier $chatNotifier,
-                          AlarmHandler $alarmHandler): JsonResponse
+                          Handler $alarmHandler): JsonResponse
     {
         $this->logger = $logger;
-        if($request->request->has('subject') && $request->request->has('message')) {
-            $command = new AlarmCommand($request->request->get('subject'), $request->request->get('message'));
+        if ($request->request->has('subject') &&
+            $request->request->has('message')) {
+            $command = new Command(
+                $request->request->get('subject'),
+                $request->request->get('message')
+            );
+
             $alarm = $alarmHandler->handle($command);
+
             $emailNotifier->notify($alarm);
             $chatNotifier->notify($alarm);
+
             $logger->info('Message successfully notified');
+
             return $this->json(['result' => 'success', ]);
         } else {
             $logger->error('Data not provides from request');

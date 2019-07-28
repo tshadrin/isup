@@ -35,25 +35,12 @@ class ConfigureMenuListener
         if($this->authorizationChecker->isGranted('ROLE_SUPPORT')) {
             $menu = $event->getMenu();
             $menu->addChild('Orders', ['route' => 'orders_index'])
-                ->setAttribute('class', 'dropdown')
-                ->setLinkAttribute('data-toggle', 'dropdown')
-                ->setLinkAttribute('class', 'dropdown-toggle nav-link')
-                ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
-                ->setChildrenAttribute('role', 'menu')
+                ->setAttribute('icon', 'fas fa-tasks')
+                ->setExtra('dropdown', true)
                 ->setExtra('orderNumber', 2)
-                ->setExtra('routes', [
-                    ['route' =>'order_'],
-                    ['pattern' => '/^order.+/'],
-                ])
             ;
-            $menu['Orders']->addChild('List', ['route' => 'orders_index'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link')
-            ;
-            $menu['Orders']->addChild('Add', ['route' => 'order_add'])
-                ->setAttribute('class', 'nav-item pl-3')
-                ->setLinkAttribute('class', 'nav-link')
-            ;
+            $menu['Orders']->addChild('List', ['route' => 'orders_index']);
+            $menu['Orders']->addChild('Add', ['route' => 'order_add']);
         }
     }
 }

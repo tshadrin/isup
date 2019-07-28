@@ -88,7 +88,7 @@ services:
     App\Controller\UTM5\ApiController:
         bind:
             $logger: '@monolog.logger.bitrix_create'
-    App\Controller\Zabbix\AlarmController:
+    App\Controller\ZabbixController:
         bind:
             $logger: '@monolog.logger.alarm_zabbix'
     App\Controller\SMS\SMSController:

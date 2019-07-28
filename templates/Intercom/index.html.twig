@@ -5,6 +5,24 @@
 {% block context %}
     {{ 'list_tasks.intercom_tasks'|trans }}
 {% endblock %}
+
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block body %}
     {% if tasks is defined and tasks|length %}
         <div class="table-wrapper">

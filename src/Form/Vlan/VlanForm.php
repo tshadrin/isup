@@ -24,10 +24,10 @@ class VlanForm extends AbstractType
         $builder->add('number',
             IntegerType::class,
             [
-                'label' => 'vlan.number',
+                'label' => 'vlan_form.label.number',
                 'attr' => [
-                    'placeholder' => 'vlan.placeholder.number',
-                    'class' => 'form-control form-control',
+                    'placeholder' => 'vlan_form.placeholder.number',
+                    'class' => 'form-control',
                 ],
                 'label_attr' => [
                     'class' => 'col-sm-2 col-form-label font-weight-bold',
@@ -36,9 +36,9 @@ class VlanForm extends AbstractType
             ->add('name',
                 TextType::class,
                 [
-                    'label' => 'vlan.name',
+                    'label' => 'vlan_form.label.name',
                     'attr' => [
-                        'placeholder' => 'vlan.placeholder.name',
+                        'placeholder' => 'vlan_form.placeholder.name',
                         'class' => 'form-control',
                     ],
                     'label_attr' => [
@@ -48,7 +48,7 @@ class VlanForm extends AbstractType
             ->add('points',
                 CollectionType::class,
                 [
-                    'label' => 'vlan.points',
+                    'label' => 'vlan_form.label.points',
                     'allow_add' => true,
                     'allow_delete' => true,
                     'prototype' => true,
@@ -57,7 +57,7 @@ class VlanForm extends AbstractType
                     ],
                     'entry_options'  => [
                         'attr' => [
-                            'placeholder' => 'vlan.placeholder.points',
+                            'placeholder' => 'vlan_form.placeholder.points',
                             'class' => 'form-control',
                         ],
                     ],
@@ -66,7 +66,7 @@ class VlanForm extends AbstractType
             ->add('save',
                 SubmitType::class,
                 [
-                    'label' => 'vlan.save',
+                    'label' => 'vlan_form.label.save',
                     'attr' => [
                         'class' => 'btn btn-primary btn-primary-sham m-1',
                     ],
@@ -81,6 +81,7 @@ class VlanForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Vlan::class,
+            'translation_domain' => 'vlan',
         ]);
     }
 }

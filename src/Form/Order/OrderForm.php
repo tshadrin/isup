@@ -24,10 +24,10 @@ class OrderForm  extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'order.placeholder.utm_id',
-                    'class' => 'form-control form-control-lg',
+                    'class' => 'form-control ',
                 ],
                 'label_attr' => [
-                    'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                    'class' => 'col-sm-2 col-form-label font-weight-bold',
                 ],
             ])
             ->add('fullname',
@@ -36,10 +36,10 @@ class OrderForm  extends AbstractType
                     'label' => 'order.form.full_name',
                     'attr' => [
                         'placeholder' => 'order.placeholder.full_name',
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control ',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('address',
@@ -48,10 +48,10 @@ class OrderForm  extends AbstractType
                     'label' => 'order.form.address',
                     'attr' => [
                         'placeholder' => 'order.placeholder.address',
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('servername',
@@ -61,10 +61,10 @@ class OrderForm  extends AbstractType
                     'required' => false,
                     'attr' => [
                         'placeholder' => 'order.placeholder.server_name',
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('ip',
@@ -74,10 +74,10 @@ class OrderForm  extends AbstractType
                     'required' => false,
                     'attr' => [
                         'placeholder' => 'order.placeholder.ip',
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('comment',
@@ -86,10 +86,10 @@ class OrderForm  extends AbstractType
                     'label' => 'order.form.comment',
                     'attr' => [
                         'placeholder' => 'order.placeholder.comment',
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('phone',
@@ -98,10 +98,10 @@ class OrderForm  extends AbstractType
                     'label' => 'order.form.phone',
                     'attr' => [
                         'placeholder' => 'order.placeholder.phone',
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('executed',
@@ -119,10 +119,10 @@ class OrderForm  extends AbstractType
                             ->orderBy('u.fullName', 'ASC');
                     },
                     'attr' => [
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('status',
@@ -131,10 +131,10 @@ class OrderForm  extends AbstractType
                     'label' => 'order.form.status',
                     'class' => "App\Entity\Intercom\Status",
                     'attr' => [
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                     ],
                     'label_attr' => [
-                        'class' => 'col-sm-2 col-form-label-lg font-weight-bold',
+                        'class' => 'col-sm-2 col-form-label font-weight-bold',
                     ],
                 ])
             ->add('saveandback',
@@ -142,7 +142,7 @@ class OrderForm  extends AbstractType
                 [
                     'label' => 'order.form.saveandback',
                     'attr' => [
-                        'class' => 'btn btn-primary btn-lg btn-primary-sham m-1',
+                        'class' => 'btn btn-primary btn-primary-sham m-1',
                     ],
                 ]
             )
@@ -151,7 +151,7 @@ class OrderForm  extends AbstractType
                 [
                     'label' => 'order.form.saveandlist',
                     'attr' => [
-                        'class' => 'btn btn-primary btn-lg btn-primary-sham m-1',
+                        'class' => 'btn btn-primary btn-primary-sham m-1',
                     ],
                 ]
             );

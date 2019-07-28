@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\FindMoney;
+namespace App\Controller;
 
 use App\Service\FindMoney\FindMoneyService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -18,14 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class FindMoneyController extends AbstractController
 {
     /**
-     * Поиск платежей по населенному пункту
-     * @param Request $request
-     * @param FindMoneyService $findMoneyService
-     * @return Response
-     * @Route("/findmoney/", name="find_money", methods={"GET"})
+     * @Route("/findmoney/", name="findmoney", methods={"GET"})
      */
     public function index(Request $request, FindMoneyService $findMoneyService): Response
     {
+        //@TODO дописать форму и её нормальную обработку
         $template_data = [];
         try {
             if ($address = $request->query->get('address')) {

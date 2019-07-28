@@ -21,12 +21,13 @@ class ConfigureMenuListener
     {
         $menu = $event->getMenu();
         $menu->addChild('Search in UTM5', ['route' => 'search'])
-            ->setAttribute('class', 'nav-item col-xs-1')
-            ->setLinkAttribute('class', 'nav-link')
+            ->setAttribute('class', 'col-xs-1')
+            ->setAttribute('icon', 'fa fa-search')
             ->setExtra('orderNumber', 1)
             ->setExtra('routes', [
                 ['route' =>'search'],
-                ['pattern' => '/^search\..+/'],
+                ['pattern' => '/^search.+/'],
+                ['pattern' => '/^order_add_from_user/'],
             ])
         ;
     }

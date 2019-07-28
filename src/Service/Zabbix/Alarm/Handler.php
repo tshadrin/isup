@@ -2,17 +2,16 @@
 declare(strict_types = 1);
 
 
-namespace App\Service\Zabbix\Handler;
+namespace App\Service\Zabbix\Alarm;
 
 
 use App\Entity\UTM5\UTM5User;
 use App\Entity\Zabbix\Alarm;
 use App\Service\UTM5\UTM5DbService;
-use App\Service\Zabbix\Command\AlarmCommand;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class AlarmHandler
+class Handler
 {
     /**
      * @var RouterInterface
@@ -39,7 +38,7 @@ class AlarmHandler
      * @param string $text
      * @return Alarm
      */
-    public function handle(AlarmCommand $command): Alarm
+    public function handle(Command $command): Alarm
     {
         $text = $command->getMessage();
         $subject = $command->getSubject();

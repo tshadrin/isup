@@ -21,24 +21,15 @@ class ConfigureMenuListener
     {
         $menu = $event->getMenu();
         $menu->addChild('Intercoms', ['route' => 'intercom_index'])
-            ->setAttribute('class', 'dropdown')
-            ->setLinkAttribute('data-toggle', 'dropdown')
-            ->setLinkAttribute('class', 'dropdown-toggle nav-link')
-            ->setChildrenAttribute('class', 'dropdown-menu bg-nav-dropdown m-1')
-            ->setChildrenAttribute('role', 'menu')
+            ->setAttribute('icon', 'fa fa-calculator')
+            ->setExtra('dropdown', true)
             ->setExtra('orderNumber', 3)
             ->setExtra('routes', [
                 ['route' =>'intercom_'],
                 ['pattern' => '/^intercom_.+/'],
             ])
         ;
-        $menu['Intercoms']->addChild('List', ['route' => 'intercom_index'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link')
-        ;
-        $menu['Intercoms']->addChild('Add', ['route' => 'intercom_add'])
-            ->setAttribute('class', 'nav-item pl-3')
-            ->setLinkAttribute('class', 'nav-link')
-        ;
+        $menu['Intercoms']->addChild('List', ['route' => 'intercom_index']);
+        $menu['Intercoms']->addChild('Add', ['route' => 'intercom_add']);
     }
 }

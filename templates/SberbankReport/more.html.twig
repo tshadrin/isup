@@ -7,18 +7,21 @@
     {{ 'log.detail_payment_title'|trans }}
 {% endblock %}
 
-{% block header %}
-    <nav class="info-finder">
-        <ul>
-            <li>
-                <a href="{{ app.request.server.get('HTTP_REFERER')}}">{{ 'log.back'|trans  }}</a>
-            </li>
-        </ul>
-    </nav>
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                {% endfor %}
+                <li class="breadcrumb-item active">{{ 'payments.pay_num'|trans }} {{ pay_num }}</li>
+            </ol>
+        </nav>
+    </div>
 {% endblock %}
 
 {% block body %}
-
     <table class="payments-log-table isup-table isup-table-bordered isup-table-zebra isup-table-vert-margin isup-table-center isup-table-header-nowrap">
         <caption>{{ 'log.found_items'|trans }}</caption>
         <thead>
