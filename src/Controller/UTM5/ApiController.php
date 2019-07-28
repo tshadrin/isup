@@ -178,7 +178,7 @@ class ApiController extends AbstractController
      * @param URFAService $URFAService
      * @param TranslatorInterface $translator
      * @return JsonResponse
-     * @Route("/urfa/change-editable-filed/", name="user_change_editable_field", methods={"POST"})
+     * @Route("/urfa/change-editable-filed/", name="user_change_editable_field", methods={"GET","POST"})
      */
     public function changeEditableField(Request $request,
                                         URFAService $URFAService,
@@ -192,7 +192,7 @@ class ApiController extends AbstractController
                 $field = $request->request->filter(
                     'name', [],
                     FILTER_VALIDATE_REGEXP,
-                    ['options' => ['regexp' => '/mobile_phone/',],]
+                    ['options' => ['regexp' => '/mobile_phone|email/',],]
                 );
                 switch ($field) {
                     case 'mobile_phone':
@@ -229,6 +229,21 @@ class ApiController extends AbstractController
                                 $request->request->getInt('pk')
                             );
                             return $this->json(['result' => 'success', 'message' => $translator->trans('Phone number is clear')]);
+                        }
+                        break;
+                    case 'email':
+                        $email = $request->request->filter(
+                            'value', [],
+                            FILTER_VALIDATE_EMAIL
+                        );
+                        if(false !== $email) {
+                            $URFAService->editEmailField(
+                                $email,
+                                $request->request->getInt('pk')
+                            );
+                            return $this->json(['result' => 'success', 'message' => $translator->trans('Email updated')]);
+                        } else {
+                            return $this->json(['result' => 'error', 'message' => $translator->trans("Incorrect email")]);
                         }
                         break;
                 }

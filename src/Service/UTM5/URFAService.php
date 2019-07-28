@@ -143,6 +143,18 @@ class URFAService
     }
 
     /**
+     * @param $email
+     * @param $id
+     */
+    public function editEmailField($email, $id)
+    {
+        $user = $this->getUserInfo($id);
+        $user['parameters_count'] = $user['parameters_size'];
+        $user['email'] = $email;
+        $this->urfa->rpcf_edit_user_new($user);
+    }
+
+    /**
      * Получить текущий статус
      * Возвращает 0 1 при нормальной работе или false при ошибке
      * @param $id

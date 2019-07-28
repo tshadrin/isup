@@ -27,6 +27,21 @@
                 ></div>
                 </div>
             </li>
+            <li>
+                <div class="row pl-3">
+                    <span>e-mail: &nbsp;</span>
+                    <div class="x-editable"
+                         data-mode="inline"
+                         data-inputclass="form-control form-control-sm pr-0"
+                         data-type="text"
+                         data-emptytext="нет данных"
+                         data-value="{{ user.email }}"
+                         data-pk="{{ user.id }}"
+                         data-name="email"
+                         data-url="{{ path('user_change_editable_field') }}"
+                    ></div>
+                </div>
+            </li>
             <li><span>Дата подключения</span>: {{ user.created|date("d-m-Y") }}</li>
         </ol>
             <h4>Дополнительная информация</h4>

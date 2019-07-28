@@ -230,6 +230,9 @@ profit_for_townships: 'Платежи в поселках'
 "Incorrect phone number": "Некорректный номер телефона"
 "Phone number is clear": "Номер телефона очищен"
 "Request data not found": "Данные запроса не найдены"
+'Email updated': 'e-mail обновлен'
+'Incorrect email': 'Некорректный e-mail'
+
 
 #utm5 db service
 "User with id %id% is not found": "Пользователь с id %id% не найден"
