@@ -37,6 +37,7 @@ class TurboTest extends WebTestCase
             'the "Content-Type" header is "application/json"' // optional message shown on failure
         );
         $this->assertContains('status', $client->getResponse()->getContent());
-        $this->assertContains('time_left', $client->getResponse()->getContent());
+        $this->assertContains("TURBO_ENABLED", $client->getResponse()->getContent());
     }
+
 }
