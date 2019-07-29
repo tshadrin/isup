@@ -96,12 +96,11 @@ class UTM5UrfaUser extends UTM5User
             'account_id' => $account,
         ]);
         foreach($servicesData['slink_id_count'] as $serviceData) {
-            if($serviceData['service_type_array'] === 3) {
+            if($serviceData['service_type_array'] <=> 1) {
                 $slinkData = $this->urfa->rpcf_get_periodic_service_link([
                     'slink_id' => $serviceData['slink_id_array'],
                 ]);
                 if ($tariff_link === $slinkData['tariff_link_id']) {
-
                     $service = new Service($serviceData['service_name_array'], $serviceData['service_cost_array']);
                     $service->setLink($serviceData['slink_id_array']);
                     $service->setType($serviceData['service_type_array']);
