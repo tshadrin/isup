@@ -90,6 +90,6 @@ class SSHService
             return true;
         }
         $connection->openTemporary($ip);
-        $connection->isOpenTemporary($ip)?true:false;
+        return $connection->isOpenTemporary($ip)?true:false;
     }
 }

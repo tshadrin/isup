@@ -127,7 +127,7 @@ class SSHController extends AbstractController
             // Проставляем услугу в биллинг
             $urfa = $URFAService->getUrfa();
             $urfa->rpcf_add_once_slink_ex(["user_id" => $user->getId(),
-                "account_id" => $id,
+                "account_id" => $account,
                 "service_id" => $sid]);
             return $this->json(['status' => "OK"]);
         }
