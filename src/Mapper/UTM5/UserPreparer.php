@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace App\Mapper\UTM5;
 
-use Doctrine\DBAL\{ Connection, DBALException };
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\{Connection, DBALException, Driver\Statement, ParameterType};
 
 class UserPreparer
 {
+    const MANAGER_NOTES_FIELD_NAME = 'manager_notes';
+    const LIFESTREAM_EMAIL_FIELD_NAME = 'lifestream_email';
+    const REMIND_ME_FIELD_NAME = 'remind_me';
     /**
      * Поля необходимые для выборки из бд
      */
@@ -217,9 +219,11 @@ class UserPreparer
                 FROM user_additional_params uap
                     JOIN uaddparams_desc up
                         ON up.paramid = uap.paramid
-                WHERE up.name = 'lifestream_email'
+                WHERE up.name = :field
                   AND uap.userid=:user_id";
-        return $this->connection->prepare($sql);
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':field', self::LIFESTREAM_EMAIL_FIELD_NAME, ParameterType::STRING);
+        return $stmt;
     }
 
     /**
@@ -232,9 +236,28 @@ class UserPreparer
                 FROM user_additional_params uap
                     JOIN uaddparams_desc up
                         ON up.paramid = uap.paramid
-                WHERE up.name = 'remind_me'
+                WHERE up.name = :field
                   AND uap.userid=:user_id";
-        return $this->connection->prepare($sql);
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':field', self::REMIND_ME_FIELD_NAME, ParameterType::STRING);
+        return $stmt;
+    }
+
+    /**
+     * @return Statement
+     * @throws DBALException
+     */
+    public function getManagerNotesStmt(): Statement
+    {
+        $sql = "SELECT uap.value
+                FROM user_additional_params uap
+                    JOIN uaddparams_desc up
+                        ON up.paramid = uap.paramid
+                WHERE up.name = :field
+                  AND uap.userid=:user_id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':field', self::MANAGER_NOTES_FIELD_NAME, ParameterType::STRING);
+        return $stmt;
     }
 
     /**

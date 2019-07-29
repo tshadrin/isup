@@ -46,9 +46,12 @@
         </ol>
             <h4>Дополнительная информация</h4>
         <ol>
-        {% if user.lifestreamLogin is not empty %}
-            <li><span>Lifestream login: </span> {{ user.lifestreamLogin }}</li>
-        {% endif %}
+            {% if user.lifestreamLogin is not empty %}
+                <li><span>Lifestream login: </span> {{ user.lifestreamLogin }}</li>
+            {% endif %}
+            {% if user.managerNotice is not empty %}
+                <li><span>Заметка менеджера : </span> {{ user.managerNotice }}</li>
+            {% endif %}
             <li>
                 <span>Напоминать об оплате:</span>
                 <a class="ajax-switch-field"

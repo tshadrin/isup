@@ -8,6 +8,8 @@ use App\Entity\UTM5 as Entity;
 use App\Entity\UTM5\PromisedPayment;
 use App\Repository\UTM5\{ HouseRepository, GroupRepository, PassportRepository, PaymentRepository,
     PromisedPaymentRepository, RouterRepository, ServiceRepository, TariffRepository };
+use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\ParameterType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserMapper
@@ -94,7 +96,7 @@ class UserMapper
             $stmt = $this->userPreparer->getUserDataByIdStmt();
             $stmt->execute([':id' => $id]);
             if(1 === $stmt->rowCount()) {
-                $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
                 return $this->UTM5UserInit($data);
             }
         } catch (\Exception $e) {
@@ -114,7 +116,7 @@ class UserMapper
             $stmt = $this->userPreparer->getUserDataByAccountStmt();
             $stmt->execute([':account' => $account]);
             if(1 === $stmt->rowCount()) {
-                $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
                 return $this->UTM5UserInit($data);
             }
         } catch (\Exception $e) {
@@ -134,7 +136,7 @@ class UserMapper
             $stmt = $this->userPreparer->getUserDataByLoginStmt();
             $stmt->execute([':login' => $login]);
             if(1 === $stmt->rowCount()) {
-                $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
                 return $this->UTM5UserInit($data);
             }
         } catch (\Exception $e) {
@@ -156,7 +158,7 @@ class UserMapper
             $stmt = $this->userPreparer->getUserDataByIPStmt();
             $stmt->execute([':ip' => $ip_long]);
             if(1 == $stmt->rowCount()) {
-                $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
                 return $this->UTM5UserInit($data);
             }
         } catch (\Exception $e) {
@@ -171,11 +173,11 @@ class UserMapper
             $stmt = $this->userPreparer->getUserDataByFullnameStmt();
             $stmt->execute([':full_name' => "%{$full_name}%"]);
             if(1 === ($count = $stmt->rowCount())) {
-                $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
                 return $this->UTM5UserInit($data);
             }
             if($count > 1) {
-                $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetchAll(FetchMode::ASSOCIATIVE);
                 $users = new UTM5UserCollection();
                 foreach($data as $row) {
                     $users->add($this->UTM5UserInitPartial($row));
@@ -196,11 +198,11 @@ class UserMapper
             $stmt = $this->userPreparer->getUserDataByAddressStmt();
             $stmt->execute([':address' => "%{$address}%"]);
             if(1 === ($count = $stmt->rowCount())) {
-                $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
                 return $this->UTM5UserInit($data);
             }
             if($count > 1) {
-                $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                $data = $stmt->fetchAll(FetchMode::ASSOCIATIVE);
                 $users = new UTM5UserCollection();
                 foreach($data as $row) {
                     $users->add($this->UTM5UserInitPartial($row));
@@ -228,7 +230,7 @@ class UserMapper
             $stmt = $this->userPreparer->getUserIpsStmt();
             $stmt->execute([':id' => $user_id]);
             if($stmt->rowCount() > 0)
-                return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                return $stmt->fetchAll(FetchMode::COLUMN);
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("User IPs search error: %message%", ['%message%' => $e->getMessage()]));
         }
@@ -247,7 +249,7 @@ class UserMapper
             $stmt = $this->userPreparer->getUserIps6Stmt();
             $stmt->execute([':id' => $user_id]);
             if($stmt->rowCount() > 0)
-                return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                return $stmt->fetchAll(FetchMode::COLUMN);
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("User IPs search error: %message%", ['%message%' => $e->getMessage()]));
         }
@@ -263,9 +265,10 @@ class UserMapper
     {
         try{
             $stmt = $this->userPreparer->getLifestreamLoginStmt();
-            $stmt->execute([':user_id' => $user_id]);
+            $stmt->bindValue(':user_id', $user_id, ParameterType::INTEGER);
+            $stmt->execute();
             if(1 === $stmt->rowCount()) {
-                return $stmt->fetch(\PDO::FETCH_COLUMN);
+                return $stmt->fetch(FetchMode::COLUMN);
             }
             if($stmt->rowCount() > 1) {
                 throw new \DomainException($this->translator->trans("Too many results on lifesteam query"));
@@ -284,9 +287,10 @@ class UserMapper
     {
         try {
             $stmt = $this->userPreparer->getRemindMeStmt();
-            $stmt->execute([':user_id' => $user_id]);
+            $stmt->bindValue(':user_id', $user_id, ParameterType::INTEGER);
+            $stmt->execute();
             if(1 === $stmt->rowCount()) {
-                return (bool)$stmt->fetch(\PDO::FETCH_COLUMN);
+                return (bool)$stmt->fetch(FetchMode::COLUMN);
             }
             if($stmt->rowCount() > 1) {
                 throw new \DomainException($this->translator->trans("Too many results on remind me query"));
@@ -294,6 +298,28 @@ class UserMapper
             return false;
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("Get remind me query error: %message%", ['%message%' => $e->getMessage()]));
+        }
+    }
+
+    /**
+     * @param $user_id
+     * @return bool
+     */
+    public function getManagerNotice(int $user_id): ?string
+    {
+        try {
+            $stmt = $this->userPreparer->getManagerNotesStmt();
+            $stmt->bindValue(':user_id', $user_id, ParameterType::INTEGER);
+            $stmt->execute();
+            if(1 === $stmt->rowCount()) {
+                return $stmt->fetch(FetchMode::COLUMN);
+            }
+            if($stmt->rowCount() > 1) {
+                throw new \DomainException($this->translator->trans("Too many results on manager notice query"));
+            }
+            return null;
+        } catch (\Exception $e) {
+            throw new \DomainException($this->translator->trans("Get manager notice query error: %message%", ['%message%' => $e->getMessage()]));
         }
     }
 
@@ -307,7 +333,7 @@ class UserMapper
             $stmt = $this->userPreparer->getUserPassportStmt();
             $stmt->execute([':id' => $user_id]);
             if(1 === $stmt->rowCount()) {
-                $result = $stmt->fetch(\PDO::FETCH_COLUMN);
+                $result = $stmt->fetch(FetchMode::COLUMN);
                 return empty($result);
             } else {
                 throw new \DomainException($this->translator->trans("User with id %id% is not found", ['%id%' => $user_id]));
@@ -331,7 +357,7 @@ class UserMapper
                 return 0;
             }
             if (1 === $stmt->rowCount()) {
-                return (int)$stmt->fetch(\PDO::FETCH_COLUMN);
+                return (int)$stmt->fetch(FetchMode::COLUMN);
             }
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("Check user passport query error: %message%", ['%message%' => $e->getMessage()]));
@@ -404,6 +430,9 @@ class UserMapper
             $user->setIps6($ips6);
         }
         $user->setRemindMe($this->getRemindMe($user->getId()));
+        if (!is_null($managerNotice = $this->getManagerNotice($user->getId()))) {
+            $user->setManagerNotice($managerNotice);
+        }
         if(!is_null($lifestreamLogin = $this->getLifestreamLogin($user->getId()))) {
             $user->setLifestreamLogin($lifestreamLogin);
         }

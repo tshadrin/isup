@@ -119,6 +119,11 @@ class UTM5User
      * @var bool
      */
     protected $remindMe;
+
+    /**
+     * @var string
+     */
+    protected $managerNotice;
     /**
      * @var string
      */
@@ -410,6 +415,14 @@ class UTM5User
     }
 
     /**
+     * @return string
+     */
+    public function getManagerNotice(): ?string
+    {
+        return $this->managerNotice;
+    }
+
+    /**
      * @return bool
      */
     public function isPromisedPayment(): bool
@@ -669,6 +682,14 @@ class UTM5User
     public function setRemindMe($remindMe): void
     {
         $this->remindMe = $remindMe;
+    }
+
+    /**
+     * @param string $managerNotice
+     */
+    public function setManagerNotice(string $managerNotice): void
+    {
+        $this->managerNotice = $managerNotice;
     }
 
     /**

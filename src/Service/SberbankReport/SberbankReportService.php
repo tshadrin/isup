@@ -17,7 +17,7 @@ class SberbankReportService
     /**
      * Количество вывдимых последних платежей
      */
-    const LAST_ITEMS_COUNT = 300;
+    const LAST_ITEMS_COUNT = 1000;
 
     /**
      * @var EntityManagerInterface

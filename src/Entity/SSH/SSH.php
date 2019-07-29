@@ -211,7 +211,7 @@ class SSH
     public function isOpenTemporary(string $ip): bool
     {
         $data = $this->exec("ipset -L USER_TMP | grep {$ip}");
-        empty($data)?false:true;
+        return empty($data)?false:true;
     }
 
     /**
@@ -248,7 +248,7 @@ class SSH
     public function isTurbo(string $ip): bool
     {
         $data = $this->exec("ipset -L TURBO | grep {$ip}");
-        empty($data)?false:true;
+        return empty($data)?false:true;
     }
 
     /**
