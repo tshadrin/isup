@@ -83,12 +83,13 @@
     {% endif %}
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('netpay') }}
-{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
-    {{ encore_entry_link_tags('netpay') }}
+    {{ encore_entry_link_tags('daterangepicker') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('daterangepicker') }}
 {% endblock %}
 
