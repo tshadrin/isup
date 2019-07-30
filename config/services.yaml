@@ -108,6 +108,12 @@ services:
     App\ReadModel\Payments\NetPay\PaymentsFetcher:
         bind:
             $connection: '@doctrine.dbal.newlk_connection'
+    App\ReadModel\Payments\Sberbank\PaymentsFetcher:
+        bind:
+            $connection: '@doctrine.dbal.sberbank_connection'
+    App\ReadModel\Payments\Sberbank\PaymentsLogFetcher:
+        bind:
+            $connection: '@doctrine.dbal.sberbank_connection'
     App\Repository\Order\OrderRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
@@ -131,9 +137,6 @@ services:
     App\Service\Commutator\BotService:
         bind:
             $parameters: '%bot%'
-    App\Service\SberbankReport\SberbankReportService:
-        bind:
-            $entityManager: '@doctrine.orm.sberbank_entity_manager'
     App\Service\UTM5\URFAService:
         bind:
             $parameters: '%urfa%'
@@ -168,9 +171,6 @@ services:
     App\EventListener\Order\UTM5UserFoundListener:
         tags:
             - { name: kernel.event_listener, event: 'utm5.user_found', method: onUTM5UserFound }
-    App\EventListener\SberbankReport\KNPPagerItemsListener:
-        tags:
-            - { name: kernel.event_listener, event: knp_pager.items, method: onKNPPagerItems}
     App\EventListener\Intercom\SecurityListener:
         tags:
             - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
@@ -198,6 +198,11 @@ services:
             $parameters: '%add_firm%'
         tags:
             - { name: 'console.command', command: 'commutator:add-nagios-link' }
+    App\Command\UTM5\GetUsersByIPList:
+        bind:
+            $parameters: '%add_firm%'
+        tags:
+            - { name: 'console.command', command: 'commutator:get-users-by-ip' }
     #меню
     app.menu_builder: #сделан алиас чтоб не орал type-hint
         alias: App\Menu\Builder

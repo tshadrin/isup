@@ -25,6 +25,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class NetPayController extends AbstractController
 {
     const ROWS_ON_PAGE = 30;
+    const DEFAULT_PAGE = 1;
     /**
      * @param Request $request
      * @param SberbankReportService $sberbankReportService
@@ -37,9 +38,10 @@ class NetPayController extends AbstractController
         $filter = new Filter();
         $form = $this->createForm(Form::class, $filter);
         $form->handleRequest($request);
+
         $command = new ListPayments\Command(
             $filter,
-            $request->query->getInt('page',1),
+            $request->query->getInt('page',self::DEFAULT_PAGE),
             self::ROWS_ON_PAGE
         );
 
@@ -49,6 +51,7 @@ class NetPayController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
 
-        return $this->render('PaymentsReports\NetPay\index.html.twig', ['payments' => isset($payments)?$payments:null, 'filterForm' => $form->createView()]);
+        return $this->render('PaymentsReports\NetPay\index.html.twig',
+            ['payments' => isset($payments)?$payments:null, 'filterForm' => $form->createView()]);
     }
 }

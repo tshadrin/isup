@@ -25,3 +25,5 @@ payments:
 Home: 'Главная'
 Tools: 'Инструменты'
 sberbank: 'Платежи Сбербанк Онлайн'
+Search: 'Поиск'
+Reset: 'Сброс'

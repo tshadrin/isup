@@ -46,15 +46,6 @@ doctrine:
                         dir: '%kernel.project_dir%/src/Entity'
                         prefix: 'App\Entity'
                         alias: App
-            sberbank:
-                connection: sberbank
-                mappings:
-                    SberbankEntity:
-                        is_bundle: false
-                        type: annotation
-                        dir: '%kernel.project_dir%/src/SberbankEntity'
-                        prefix: 'App\SberbankEntity'
-                        alias: AppSberbank
         #auto_generate_proxy_classes: true
         #naming_strategy: doctrine.orm.naming_strategy.underscore
         #auto_mapping: true

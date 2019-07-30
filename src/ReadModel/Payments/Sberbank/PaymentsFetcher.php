@@ -2,19 +2,16 @@
 declare(strict_types = 1);
 
 
-namespace App\ReadModel\Payments\NetPay;
+namespace App\ReadModel\Payments\Sberbank;
 
 
-use App\ReadModel\Payments\NetPay\Filter\Filter;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
+use App\ReadModel\Payments\Sberbank\Filter\Filter;
+use Doctrine\DBAL\{ Connection, FetchMode };
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentsFetcher
 {
-
-    const RECORDS_LIMIT = 5000;
-
+    const RECORDS_LIMIT = 2000;
     /**
      * @var Connection
      */
@@ -24,10 +21,6 @@ class PaymentsFetcher
      */
     private $translator;
 
-    /**
-     * PaymentsFetcher constructor.
-     * @param Connection $connection
-     */
     public function __construct(Connection $connection, TranslatorInterface $translator)
     {
         $this->connection = $connection;
@@ -41,33 +34,27 @@ class PaymentsFetcher
     public function getFilteredPayments(Filter $filter): array
     {
         $query = $this->connection->createQueryBuilder()
-            ->select('p.user_id', 'p.created', 'p.status', 'p.sum', 'p.updated', 'n.error')
-            ->from('netpay', 'p')
-            ->leftJoin('p', 'nperrors', 'n', 'p.id = n.id');
-
+            ->select('p.account_id as user_id', 'p.amount', 'p.pay_num as transaction', 'p.reg_date as created')
+            ->from('payments', 'p');
         if ($filter->userId) {
-            $query->andWhere("p.user_id = :user_id")
+            $query->andWhere("p.account_id = :user_id")
                 ->setParameter(':user_id', $filter->userId);
         }
 
-        if (!is_null($filter->status)) {
-            if ($filter->status === Payment::STATUS_ERROR) {
-                $query->andWhere("n.error is not NULL");
-            } else {
-                $query->andWhere("p.status = :status")
-                    ->setParameter(':status', $filter->status);
-            }
+        if ($filter->transaction) {
+            $query->andWhere("p.pay_num = :transaction")
+                ->setParameter(':transaction', $filter->transaction);
         }
 
         if ($filter->interval) {
             [$from, $to] = $filter->interval;
-            $query->where("p.created > :created_from")
-                ->andWhere("p.created < :created_to")
+            $query->where("p.reg_date > :created_from")
+                ->andWhere("p.reg_date < :created_to")
                 ->setParameter("created_from", $from->format('Y-m-d H:i:s'))
                 ->setParameter("created_to", $to->format('Y-m-d H:i:s'));
         }
 
-        $result = $query->orderBy('p.created', 'DESC')
+        $result = $query->orderBy('created', 'DESC')
             ->setMaxResults(self::RECORDS_LIMIT)
             ->execute();
 
@@ -75,7 +62,9 @@ class PaymentsFetcher
             throw new \DomainException($this->translator->trans('Records not found'));
         }
 
+
         $payments = $result->fetchAll(FetchMode::CUSTOM_OBJECT, Payment::class);
+
         return $payments;
     }
 }

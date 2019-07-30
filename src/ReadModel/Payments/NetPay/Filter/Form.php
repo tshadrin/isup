@@ -6,7 +6,7 @@ namespace App\ReadModel\Payments\NetPay\Filter;
 
 
 use App\ReadModel\Payments\NetPay\Payment;
-use \DateTimeImmutable;
+use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -53,17 +53,17 @@ class Form extends AbstractType
         ]);
 
         $builder->get('interval')->addModelTransformer(new CallbackTransformer(
-            static function(?array $intervalAsArray): ?string
+            static function(?array $interval): ?string
             {
-                if (!is_null($intervalAsArray)) {
-                    return "{$intervalAsArray[0]->format('d-m-Y')} - {$intervalAsArray[1]->format('d-m-Y')}";
+                if (!is_null($interval)) {
+                    return "{$interval[0]->format('d-m-Y')} - {$interval[1]->format('d-m-Y')}";
                 }
                 return null;
             },
-            static function(?string $intervalAsString): ?array
+            static function(?string $interval): ?array
             {
-                if (!is_null($intervalAsString)) {
-                    [$from, $to] = explode(' - ', $intervalAsString);
+                if (!is_null($interval)) {
+                    [$from, $to] = explode(' - ', $interval);
                     return [
                         DateTimeImmutable::createFromFormat("!d-m-Y", $from),
                         DateTimeImmutable::createFromFormat("!d-m-Y", $to)

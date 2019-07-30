@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Bitrix24 app tutorial</title>
+    <!-- подключаем библиотеку BX24 -->
+    {{ encore_entry_link_tags('bitrix') }}
+    <script src="https://api.bitrix24.com/api/v1/"></script>
+</head>
+<body style="background: #1e232b;">
+<div class="info text-light" id="userinfo">
+
+</div>
+<script>
+    /**
+     * передаем методу  `init` в качестве параметра callback-функцию
+     * - наше приложение
+     */
+    BX24.init(app);
+
+    function app() {
+        const initDate = BX24.getAuth();
+        console.log("ititDate: ", initDate);
+    }
+
+    function callInfo(info) {
+        jQuery.getJSON('https://testmon.istranet.ru/api/bitrix-user-get', info.PHONE_NUMBER, function(result){
+            var userdata = '';
+            for(var k in result) {
+                userdata += "<div>" + result[k] + "</div>";
+                jQuery("#userinfo").html(userdata);
+            }
+        });
+    }
+    BX24.placement.call('getStatus', {}, callInfo);
+
+    BX24.placement.bindEvent("CallCard::CallStateChanged", function (callState) {
+        console.log(callState);
+    });
+</script>
+{{ encore_entry_script_tags('bitrix') }}
+</body>
+</html>

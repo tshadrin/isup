@@ -15,13 +15,14 @@
                 {% for breadcrumb in breadcrumbs %}
                         <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
                 {% endfor %}
-                <li class="breadcrumb-item active">{{ 'payments.pay_num'|trans }} {{ pay_num }}</li>
+                <li class="breadcrumb-item active">{{ 'payments.pay_num'|trans }} {{ transaction }}</li>
             </ol>
         </nav>
     </div>
 {% endblock %}
 
 {% block body %}
+    {% if logRows is not null %}
     <table class="payments-log-table isup-table isup-table-bordered isup-table-zebra isup-table-vert-margin isup-table-center isup-table-header-nowrap">
         <caption>{{ 'log.found_items'|trans }}</caption>
         <thead>
@@ -35,17 +36,18 @@
         </tr>
         </thead>
         <tbody>
-        {% for row in info %}
+        {% for row in logRows %}
         <tr>
             <td>{{ row.date  | date('d-m-Y H:i:s')}}</td>
             <td>{{ row.ip }}</td>
-            <td><code>{{ row.indata }}</code></td>
-            <td><code>{{ row.outdata }}</code></td>
-            <td>{{ row.errcode }}</td>
-            <td>{{ row.errtext }}</td>
+            <td><code>{{ row.in_data }}</code></td>
+            <td><code>{{ row.out_data }}</code></td>
+            <td>{{ row.err_code }}</td>
+            <td>{{ row.err_text }}</td>
         </tr>
         {% endfor %}
         </tbody>
-        <tfoot><tr><td colspan="7">{{ 'log.items_found'|trans }}: {{ info | length }}</td></tr></tfoot>
+        <tfoot><tr><td colspan="7">{{ 'log.items_found'|trans }}: {{ logRows | length }}</td></tr></tfoot>
     </table>
+    {% endif %}
 {% endblock %}

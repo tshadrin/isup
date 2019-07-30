@@ -20,11 +20,11 @@ class ConfigureMenuListener
     public function onMenuConfigure(ConfigureMenuEvent $event): void
     {
         $menu = $event->getMenu();
-        $menu['Tools']->addChild('sberbank', ['route' => 'sberbank_report_index'])
+        $menu['Tools']->addChild('sberbank', ['route' => 'sberbank'])
             ->setExtra('orderNumber', 2)
             ->setExtra('routes', [
-                ['route' =>'sberbank_report_index'],
-                ['route' =>'sberbank_log'],
+                ['route' =>'sberbank'],
+                ['route' =>'sberbank.log'],
             ])
         ;
     }
