@@ -13,6 +13,9 @@ use Symfony\Component\Routing\RouterInterface;
 
 class Handler
 {
+    const MESSAGE_DELIMITER = '$$';
+    const IDS_PATTERN = '/\$[a-zA-z0-9]+\$/u';
+
     /**
      * @var RouterInterface
      */
@@ -40,47 +43,50 @@ class Handler
      */
     public function handle(Command $command): Alarm
     {
-        $text = $command->getMessage();
         $subject = $command->getSubject();
-        $letter = null;
-        if (false !== mb_strpos($text, "$$")) {
-            [$text, $letter] = explode('$$', $text);
+        $message = $command->getMessage();
+
+
+        if ($this->isMessageContainsLetter($message)) {
+            [$text, $letter] = $this->separateMessage($message);
         }
+
         $ids = $this->getIdsFromText($text);
-        $text = $this->replaceIdsToLinks($ids, $text);
-        $text = html_entity_decode($text);
-        $text = trim($text);
         $emails = $this->getEmailsFromIds($ids);
-        $message = new Alarm($subject, $text, $ids, $emails, $letter);
-        return $message;
+
+        $text = $this->prepareText($ids, $text);
+
+        $alarm = new Alarm($subject, $text, $ids, $emails, isset($letter)?$letter:null);
+        return $alarm;
     }
 
     /**
-     * Замена id на ссылки в тексте
-     * @param array $ids
-     * @param string $message
-     * @return string
+     * @param string $text
+     * @return bool
      */
-    private function replaceIdsToLinks(array $ids, string $message): string
+    private function isMessageContainsLetter(string $text): bool
     {
-        foreach ($ids as $id) {
-            $url = $this->router->generate('search.by.data', ['type' => 'id', 'value' => $id], UrlGeneratorInterface::ABSOLUTE_URL);
-            $link = "[url={$url}]ID пользователя: {$id}[/url]";
-            $message = preg_replace('/' . $id . '/', $link, $message);
-        }
+        return false !== mb_strpos($text, self::MESSAGE_DELIMITER);
+    }
 
-        return $message;
+    /**
+     * @param string $message
+     * @return array
+     */
+    private function separateMessage(string $message): array
+    {
+        return explode(self::MESSAGE_DELIMITER, $message);
     }
 
     /**
      * Получение id клиентов из текста
      * @param string $text
-     * @return array
+     * @return int[]
      */
     private function getIdsFromText(string $text): array
     {
         $matches = $ids = [];
-        preg_match_all('/\$[a-zA-z0-9]+\$/u', $text, $matches);
+        preg_match_all(self::IDS_PATTERN, $text, $matches);
         if (count($matches) > 0) {
             foreach ($matches[0] as $match) {
                 $ids[] = (int)trim($match, '$');
@@ -89,6 +95,7 @@ class Handler
 
         return $ids;
     }
+
 
     /**
      * Получение email адресов по id
@@ -106,5 +113,36 @@ class Handler
         }
 
         return $emails;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    private function prepareText(array $ids, string $text): string
+    {
+        $text = $this->replaceIdsToLinks($ids, $text);
+        $text = html_entity_decode($text);
+        $text = trim($text);
+
+        return $text;
+    }
+
+    /**
+     * Замена id на ссылки в тексте
+     * @param array $ids
+     * @param string $message
+     * @return string
+     */
+    private function replaceIdsToLinks(array $ids, string $message): string
+    {
+        foreach ($ids as $id) {
+            $url = $this->router->generate('search.by.data',
+                ['type' => 'id', 'value' => $id], UrlGeneratorInterface::ABSOLUTE_URL);
+            $link = "[url={$url}]ID пользователя: {$id}[/url]";
+            $message = preg_replace('/' . $id . '/', $link, $message);
+        }
+
+        return $message;
     }
 }
