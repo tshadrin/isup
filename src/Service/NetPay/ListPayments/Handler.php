@@ -7,7 +7,6 @@ namespace App\Service\NetPay\ListPayments;
 
 use App\ReadModel\Payments\NetPay\Payment;
 use App\ReadModel\Payments\NetPay\PaymentsFetcher;
-use App\ReadModel\Payments\NetPay\UserFetcher;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Form\Phone\RowsForm;
@@ -23,16 +22,11 @@ class Handler
      * @var PaginatorInterface
      */
     private $paginator;
-    /**
-     * @var UserFetcher
-     */
-    private $userFetcher;
 
-    public function __construct(PaymentsFetcher $paymentsFetcher, PaginatorInterface $paginator, UserFetcher $userFetcher)
+    public function __construct(PaymentsFetcher $paymentsFetcher, PaginatorInterface $paginator)
     {
         $this->paymentsFetcher = $paymentsFetcher;
         $this->paginator = $paginator;
-        $this->userFetcher = $userFetcher;
     }
 
     /**
