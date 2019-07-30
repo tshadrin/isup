@@ -56,7 +56,7 @@ class Handler
 
         $text = $this->prepareText($ids, $text);
 
-        $alarm = new Alarm($subject, $text, $ids, $emails, isset($letter)?$letter:null);
+        $alarm = new Alarm($subject, $text, $ids, $emails, $letter ?? null);
         return $alarm;
     }
 

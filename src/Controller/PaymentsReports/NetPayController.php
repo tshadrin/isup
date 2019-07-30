@@ -52,6 +52,6 @@ class NetPayController extends AbstractController
         }
 
         return $this->render('PaymentsReports\NetPay\index.html.twig',
-            ['payments' => isset($payments)?$payments:null, 'filterForm' => $form->createView()]);
+            ['payments' => $payments ?? null, 'filterForm' => $form->createView()]);
     }
 }

@@ -54,7 +54,7 @@ class PhoneController extends AbstractController
         return $this->render('Phone/phones.html.twig', [
             'filterForm' => $filterForm->createView(),
             'rowsPerPageForm' => $rowsPerPageForm->createView(),
-            'phones' => isset($pagedPhones)?$pagedPhones:null,
+            'phones' => $pagedPhones ?? null,
         ]);
     }
 

@@ -51,7 +51,7 @@ class VlanController extends AbstractController
 
         return $this->render('Vlan/vlans.html.twig', [
             'filterForm' => $filterForm->createView(),
-            'vlans' => isset($pagedVlans)?$pagedVlans:null,
+            'vlans' => $pagedVlans ?? null,
         ]);
     }
 

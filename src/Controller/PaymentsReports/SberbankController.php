@@ -45,7 +45,7 @@ class SberbankController extends AbstractController
         }
 
         return $this->render('PaymentsReports/Sberbank/index.html.twig',
-            ['payments' => isset($payments)?$payments:null, 'filterForm' => $form->createView(),]);
+            ['payments' => $payments ?? null, 'filterForm' => $form->createView(),]);
     }
 
 
@@ -66,6 +66,6 @@ class SberbankController extends AbstractController
         }
 
         return $this->render('PaymentsReports/Sberbank/logs.html.twig',
-            ['transaction' => $transaction, 'logRows' => isset($logRows)?$logRows:null]);
+            ['transaction' => $transaction, 'logRows' => $logRows ?? null]);
     }
 }

@@ -214,24 +214,19 @@ class URFAService
             $user['parameters_count'] = $user['parameters_size'];
             foreach ($user['parameters_count'] as $num => $param) {
                 if($param['parameter_id'] === self::PARAM_NUMBER) {
-                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getNumber()))?
-                        $passport->getNumber():'';
+                    $user['parameters_count'][$num]['parameter_value'] = $passport->getNumber() ?? '';
                 }
                 if($param['parameter_id'] === self::PARAM_ISSUED) {
-                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getIssued()))?
-                        $passport->getIssued():'';
+                    $user['parameters_count'][$num]['parameter_value'] = $passport->getIssued() ?? '';
                 }
                 if($param['parameter_id'] === self::PARAM_REGISTRATION) {
-                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getRegistrationAddress()))?
-                        $passport->getRegistrationAddress():'';
+                    $user['parameters_count'][$num]['parameter_value'] = $passport->getRegistrationAddress() ?? '';
                 }
                 if($param['parameter_id'] === self::PARAM_AUTHORITYCODE) {
-                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getAuthorityCode()))?
-                        $passport->getAuthorityCode():'';
+                    $user['parameters_count'][$num]['parameter_value'] = $passport->getAuthorityCode() ?? '';
                 }
                 if($param['parameter_id'] === self::PARAM_BIRTHDAY) {
-                    $user['parameters_count'][$num]['parameter_value'] = (!is_null($passport->getBirthday()))?
-                        $passport->getBirthday():'';
+                    $user['parameters_count'][$num]['parameter_value'] = $passport->getBirthday() ?? '';
                 }
             }
         }

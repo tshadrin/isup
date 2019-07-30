@@ -66,7 +66,7 @@ class FindMoneyService
         }
         if ($stmt->rowCount() == 1) {
             $result = $stmt->fetch(\PDO::FETCH_COLUMN);
-            return !is_null($result)?(int)$result:0;
+            return (int)$result ?? 0;
         }
         throw new \DomainException($this->translator->trans("payments not found with params %table%, %accounts",
             ['%table%' => $table, '%accounts% => $accounts']));

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\ReadModel\Payments\Sberbank\Filter;
 
-use DateTimeImmutable;
-use Symfony\Component\Form\{ AbstractType, CallbackTransformer, FormBuilderInterface };
+use App\ReadModel\DateIntervalTransformer;
+use Symfony\Component\Form\{ AbstractType, FormBuilderInterface };
 use Symfony\Component\Form\Extension\Core\Type\{ NumberType, TextType };
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -59,26 +59,7 @@ class Form extends AbstractType
             ],
         ]);
 
-        $builder->get('interval')->addModelTransformer(new CallbackTransformer(
-            static function(?array $interval): ?string
-            {
-                if (!is_null($interval)) {
-                    return "{$interval[0]->format('d-m-Y')} - {$interval[1]->format('d-m-Y')}";
-                }
-                return null;
-            },
-            static function(?string $interval): ?array
-            {
-                if (!is_null($interval)) {
-                    [$from, $to] = explode(' - ', $interval);
-                    return [
-                        DateTimeImmutable::createFromFormat("!d-m-Y", $from),
-                        DateTimeImmutable::createFromFormat("!d-m-Y", $to)
-                    ];
-                }
-                return null;
-            }
-        ));
+        $builder->get('interval')->addModelTransformer(DateIntervalTransformer::factory());
     }
 
     /**

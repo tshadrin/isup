@@ -50,7 +50,7 @@ class PaymentsFetcher
                 ->setParameter(':user_id', $filter->userId);
         }
 
-        if (!is_null($filter->status)) {
+        if (isset($filter->status)) {
             if ($filter->status === Payment::STATUS_ERROR) {
                 $query->andWhere("n.error is not NULL");
             } else {
