@@ -12,8 +12,6 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class UTM5UserFoundEvent extends GenericEvent
 {
-    const EVENT_NAME = 'utm5.user_found';
-
     /**
      * @var UTM5User
      */

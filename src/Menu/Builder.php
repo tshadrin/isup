@@ -105,8 +105,7 @@ class Builder
         $menu['Control']->addChild('Exit', ['route' => 'fos_user_security_logout']);
 
         $eventDispatcher->dispatch(
-            new ConfigureMenuEvent($factory, $menu),
-            ConfigureMenuEvent::CONFIGURE
+            new ConfigureMenuEvent($factory, $menu)
         );
 
         $this->reorderMenuItems($menu);

@@ -14,11 +14,6 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 class ConfigureMenuEvent extends GenericEvent
 {
     /**
-     * Имя события построения меню
-     */
-    const CONFIGURE = 'menu.menu_configure';
-
-    /**
      * @var FactoryInterface
      */
     private $factory;

@@ -108,8 +108,7 @@ class UTM5Controller extends AbstractController
             if($search_result instanceof UTM5User) {
                 $this->setChain($search_result);
                 $template_data = $event_dispatcher->dispatch(
-                    new UTM5UserFoundEvent($search_result),
-                    UTM5UserFoundEvent::EVENT_NAME
+                    new UTM5UserFoundEvent($search_result)
                 )->getResult();
                 $search_result->setRequirementPayment($URFA_service->getRequirementPaymentForUser($search_result->getAccount()));
                 $template_data['user'] = $search_result;
