@@ -1,0 +1,8 @@
+{% trans_default_domain 'netpay' %}
+{% if payment.processed %}
+    <span class="badge badge-success">{{ 'Processed'|trans }}</span>
+{% elseif payment.error %}
+    <span class="badge badge-danger">{{ 'Error'|trans }} {{ payment.error }}</span>
+{% elseif payment.incomplete %}
+    <span class="badge badge-secondary">{{ 'Incomplete'|trans }}</span>
+{% endif %}

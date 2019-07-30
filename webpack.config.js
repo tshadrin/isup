@@ -7,6 +7,7 @@ Encore
 
     .addEntry('app', './assets/js/app.js')
     .addEntry('sberbank', './assets/js/sberbank.js')
+    .addEntry('netpay', './assets/js/netpay.js')
     .addEntry('orders', './assets/js/orders.js')
     .addEntry('order-print', './assets/js/print-order.js')
     .addEntry('userinfo', './assets/js/userinfo.js')

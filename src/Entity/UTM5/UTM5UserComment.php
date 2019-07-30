@@ -24,7 +24,7 @@ class UTM5UserComment extends Comment
     /**
      * @return int
      */
-    public function getUtmId(): int
+    public function getUtmId(): ?int
     {
         return $this->utmId;
     }

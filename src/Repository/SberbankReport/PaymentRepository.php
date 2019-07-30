@@ -21,7 +21,7 @@ class PaymentRepository extends EntityRepository
         $interval = $payment->getRegDateInterval();
         $query = $this->createQueryBuilder("p");
         $query->where("p.reg_date > :start_interval")
-            ->andWhere("p.reg_date < :end_interval")
+              ->andWhere("p.reg_date < :end_interval")
         ->setParameter("start_interval", $interval[0]->format("Y-m-d H:i:s"))
         ->setParameter("end_interval", $interval[1]->format("Y-m-d H:i:s"));
         if(!empty($payment->getAccountId()))

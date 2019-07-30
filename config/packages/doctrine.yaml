@@ -21,6 +21,10 @@ doctrine:
                 driver:   pdo_mysql
                 url: '%env(resolve:UTM5_DATABASE_URL)%'
                 charset:  UTF8
+            newlk:
+                driver:   pdo_mysql
+                url: '%env(resolve:NEWLK_DATABASE_URL)%'
+                charset:  UTF8
         # configure these for your database server
         #driver: 'pdo_mysql'
         #server_version: '5.7'

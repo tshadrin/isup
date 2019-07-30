@@ -25,7 +25,7 @@ class Payment
     /**
      * Сумма платежа
      * @var double
-     * @ORM\Column(type="float", length=255)
+     * @ORM\Column(type="float", length=255, nullable=true)
      */
     private $amount;
 

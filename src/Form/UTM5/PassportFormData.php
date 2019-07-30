@@ -10,7 +10,6 @@ class PassportFormData
 {
     /**
      * @var int
-     * @Assert\NotBlank()
      */
     private $userId;
 

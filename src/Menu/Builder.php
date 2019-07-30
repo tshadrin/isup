@@ -54,6 +54,9 @@ class Builder
                 ->setExtra('dropdown', true)
                 ->setAttribute('icon', 'fas fa-toolbox')
             ;
+            $menu['Tools']->addChild('NetPay', ['route' => 'netpay'])
+                ->setExtra('orderNumber', 2)
+            ;
             $menu->addChild('Channels', ['uri' => '/files/Kanaly_v_arendu.html'])
                 ->setAttribute('icon', 'fas fa-project-diagram')
                 ->setLinkAttribute('target', '_blank')

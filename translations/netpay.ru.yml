@@ -1,0 +1,28 @@
+payments:
+    title: 'Платежи NetPay'
+    user_id: 'ID'
+    created: 'Создан'
+    updated: 'Обработан'
+    sum: 'Сумма'
+    status: 'Статус'
+    total_count: 'Всего записей'
+filter_form:
+    label:
+        user_id: 'ID'
+        status: 'Статус'
+        interval: 'Интервал'
+    choice:
+        incomplete: 'Необработан'
+        error: 'Ошибка'
+        processed: 'Обработан'
+    placeholder:
+        user_id: 'ID'
+        status: 'Статус'
+Search: 'Найти'
+Reset: 'Сбросить'
+Home: 'Главная'
+Incomplete: 'Необработан'
+Processed: 'Обработан'
+Error: 'Ошибка'
+Tools: 'Инструменты'
+NetPay: 'NetPay'
