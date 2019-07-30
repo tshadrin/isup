@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\ReadModel\Payments\NetPay;
 
-use \DateTimeImmutable;
 
 class Payment
 {
@@ -13,11 +12,15 @@ class Payment
     public const STATUS_ERROR = 2;
 
     /**
-     * @var double
+     * @var int
+     */
+    private $user_id;
+    /**
+     * @var string
      */
     private $created;
     /**
-     * @var double
+     * @var string
      */
     private $updated;
     /**
@@ -35,16 +38,27 @@ class Payment
     private $error;
 
     /**
-     * @var int
-     */
-    private $user_id;
-
-    /**
      * @return int
      */
     public function getUserId(): int
     {
         return (int)$this->user_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreated(): string
+    {
+        return $this->created;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpdated(): ?string
+    {
+        return $this->updated;
     }
 
     /**
@@ -54,38 +68,13 @@ class Payment
     {
         return (float)$this->sum;
     }
-    /**
-     * @return mixed
-     */
-    public function getCreated()
-    {
-        return $this->created;
-    }
 
     /**
-     * @return int
+     * @return bool
      */
     public function getStatus(): bool
     {
         return (bool)$this->status;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUpdated()
-    {
-        return $this->updated;
-    }
-
-    public function isIncomplete(): bool
-    {
-        return (bool)$this->status === self::STATUS_INCOMPLETE;
-    }
-
-    public function isProcessed(): bool
-    {
-        return (bool)$this->status === self::STATUS_PROCESSED;
     }
 
     /**
@@ -94,5 +83,21 @@ class Payment
     public function getError(): ?string
     {
         return $this->error;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIncomplete(): bool
+    {
+        return (bool)$this->status === self::STATUS_INCOMPLETE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProcessed(): bool
+    {
+        return (bool)$this->status === self::STATUS_PROCESSED;
     }
 }

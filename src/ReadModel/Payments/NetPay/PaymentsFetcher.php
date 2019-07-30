@@ -8,6 +8,7 @@ namespace App\ReadModel\Payments\NetPay;
 use App\ReadModel\Payments\NetPay\Filter\Filter;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentsFetcher
 {
@@ -15,10 +16,19 @@ class PaymentsFetcher
      * @var Connection
      */
     private $connection;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
-    public function __construct(Connection $connection)
+    /**
+     * PaymentsFetcher constructor.
+     * @param Connection $connection
+     */
+    public function __construct(Connection $connection, TranslatorInterface $translator)
     {
         $this->connection = $connection;
+        $this->translator = $translator;
     }
 
     const RECORDS_LIMIT = 5000;
@@ -29,34 +39,42 @@ class PaymentsFetcher
      */
     public function getFilteredPayments(Filter $filter): array
     {
-            $query = $this->connection->createQueryBuilder()
-                ->select('p.user_id', 'p.created', 'p.status', 'p.sum', 'p.updated', 'n.error')
-                ->from('netpay', 'p')
-                ->leftJoin('p', 'nperrors', 'n', 'p.id = n.id');
-            if ($filter->interval) {
-                [$from, $to] = $filter->interval;
-                $query->where("p.created > :created_from")
-                    ->andWhere("p.created < :created_to")
-                    ->setParameter("created_from", $from->format('Y-m-d H:i:s'))
-                    ->setParameter("created_to", $to->format('Y-m-d H:i:s'));
-            }
-            if (!is_null($filter->status)) {
-                if ($filter->status === Payment::STATUS_ERROR) {
-                    $query->andWhere("n.error is not NULL");
-                } else {
-                    $query->andWhere("p.status = :status")
-                        ->setParameter(':status', $filter->status);
-                }
-            }
-            if($filter->userId) {
-                $query->andWhere("p.user_id = :user_id")
-                    ->setParameter(':user_id', $filter->userId);
-            }
+        $query = $this->connection->createQueryBuilder()
+            ->select('p.user_id', 'p.created', 'p.status', 'p.sum', 'p.updated', 'n.error')
+            ->from('netpay', 'p')
+            ->leftJoin('p', 'nperrors', 'n', 'p.id = n.id');
 
-            $result = $query->orderBy('p.created', 'DESC')
-                ->setMaxResults(self::RECORDS_LIMIT)
-                ->execute();
-            $payments = $result->fetchAll(FetchMode::CUSTOM_OBJECT, Payment::class);
+        if ($filter->userId) {
+            $query->andWhere("p.user_id = :user_id")
+                ->setParameter(':user_id', $filter->userId);
+        }
+
+        if (!is_null($filter->status)) {
+            if ($filter->status === Payment::STATUS_ERROR) {
+                $query->andWhere("n.error is not NULL");
+            } else {
+                $query->andWhere("p.status = :status")
+                    ->setParameter(':status', $filter->status);
+            }
+        }
+
+        if ($filter->interval) {
+            [$from, $to] = $filter->interval;
+            $query->where("p.created > :created_from")
+                ->andWhere("p.created < :created_to")
+                ->setParameter("created_from", $from->format('Y-m-d H:i:s'))
+                ->setParameter("created_to", $to->format('Y-m-d H:i:s'));
+        }
+
+        $result = $query->orderBy('p.created', 'DESC')
+            ->setMaxResults(self::RECORDS_LIMIT)
+            ->execute();
+
+        if (!$result->rowCount()) {
+            throw new \DomainException($this->translator->trans('Records not found'));
+        }
+
+        $payments = $result->fetchAll(FetchMode::CUSTOM_OBJECT, Payment::class);
         return $payments;
     }
 }

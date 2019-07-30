@@ -285,7 +285,7 @@ commutators: 'Коммутаторы'
 'NEED FEEL IN PASSPORT DATA': 'НЕОБХОДИМО ЗАПОЛНИТЬ ПАСПОРТНЫЕ ДАННЫЕ'
 #форма заполнения паспортных данных
 'Edit passport data': 'Редактировать паспортные данные'
-'Issued': 'Выдан'
+'Issued': 'Когда и кем выдан паспорт'
 'Authority code': 'Код подразделения'
 'Registration address': 'Адрес регистрации'
 'Birthday': 'Дата рождения'

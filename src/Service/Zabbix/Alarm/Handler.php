@@ -64,7 +64,7 @@ class Handler
     private function replaceIdsToLinks(array $ids, string $message): string
     {
         foreach ($ids as $id) {
-            $url = $this->router->generate('search', ['type' => 'id', 'value' => $id], UrlGeneratorInterface::ABSOLUTE_URL);
+            $url = $this->router->generate('search.by.data', ['type' => 'id', 'value' => $id], UrlGeneratorInterface::ABSOLUTE_URL);
             $link = "[url={$url}]ID пользователя: {$id}[/url]";
             $message = preg_replace('/' . $id . '/', $link, $message);
         }

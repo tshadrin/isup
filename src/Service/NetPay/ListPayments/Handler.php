@@ -13,7 +13,6 @@ use App\Form\Phone\RowsForm;
 
 class Handler
 {
-    public const PAGINATION_NAME = 'netpay';
     /**
      * @var PaymentsFetcher
      */
@@ -35,14 +34,13 @@ class Handler
      */
     public function handle(Command $command): PaginationInterface
     {
-        /** @var Payment[] $payments */
         $payments = $this->paymentsFetcher->getFilteredPayments($command->filter);
 
        if ($command->rowsOnPage === RowsForm::ALL_ROWS_ON_PAGE) {
             $command->rowsOnPage = count($payments);
        }
 
-       $payments = $this->paginator->paginate($payments, $command->page, $command->rowsOnPage, ['name' => self::PAGINATION_NAME]);
+       $payments = $this->paginator->paginate($payments, $command->page, $command->rowsOnPage);
        return $payments;
     }
 }

@@ -71,7 +71,7 @@
             {% if user.passportO is not null %}
                 {% set msg = "NEED FILL IN"|trans %}
                 <li><span>Серия и номер:</span> {{ user.passportO.number ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
-                <li><span>Кем и когда выдан:</span> {{ user.passportO.issued ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
+                <li><span>Когда и кем выдан:</span> {{ user.passportO.issued ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
                 <li><span>Код подразделения:</span> {{ user.passportO.authorityCode ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
                 <li><span>Адрес регистрации:</span> {{ user.passportO.registrationAddress ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>
                 <li><span>Дата рождения:</span> {{ user.passportO.birthday ? : ('<span class="passport-warn">' ~ msg ~ '</span>')|raw }}</li>

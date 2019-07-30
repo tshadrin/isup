@@ -10,13 +10,9 @@ class Filter
     /**
      * @var int
      */
-    public $accountId;
-    /**
-     * @var int
-     */
     public $status;
     /**
-     * @var \DateTime[]
+     * @var \DateTimeImmutable[]
      */
     public $interval;
     /**
