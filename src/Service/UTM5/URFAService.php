@@ -121,7 +121,7 @@ class URFAService
      * @param int $id
      * @return bool
      */
-    public function getInternetStatus(int $id): bool
+    public function isInternetOn(int $id): bool
     {
         $user = $this->getUserInfo($id);
         if (array_key_exists('basic_account', $user)) {
@@ -138,11 +138,11 @@ class URFAService
      */
     public function changeInternetStatus(int $id): bool
     {
-        $internetStatus = $this->getInternetStatus($id);
+        $internetStatus = $this->isInternetOn($id);
         $this->getUrfa()->rpcf_change_intstat_for_user(
             ['user_id' => $id, 'need_block' => $internetStatus ? 1 : 0,]
         );
-        $newInternetStatus = $this->getInternetStatus($id);
+        $newInternetStatus = $this->isInternetOn($id);
         return $internetStatus !== $newInternetStatus;
     }
 
