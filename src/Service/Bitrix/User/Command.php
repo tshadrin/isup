@@ -9,6 +9,9 @@ use Webmozart\Assert\Assert;
 class Command
 {
     const VALID_PHONE_LENGTH = 11;
+    /**
+     * @var string
+     */
     public $phone;
 
     public function __construct(string $phone)

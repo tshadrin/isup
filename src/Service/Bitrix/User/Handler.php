@@ -27,7 +27,7 @@ class Handler
 
     public function handle(Command $command): array
     {
-        $this->user = $this->UTM5DbService->search(self::cropPhonePrefix($command->phone), 'phone');
+        $this->user = $this->UTM5DbService->search(self::cropPhonePrefix($command->phone), UTM5DbService::SEARCH_TYPE_PHONE);
         return $this->prepare();
     }
 
@@ -39,12 +39,31 @@ class Handler
     private function prepare(): array
     {
         $user = $this->user;
-        return [
+
+        $userData = [
             'id' => $user->getId(),
             'full_name' => $user->getFullName(),
-            'requirement_payment' => $user->getRequirementPayment(),
+            'login' => $user->getLogin(),
+            'password' => $user->getPassword(),
+            'internet_status' => $user->isInternetStatus(),
+            'address' => $user->getAddress(),
+
             'balance' => $user->getBalance(),
+            'requirement_payment' => $user->getRequirementPayment(),
+            'credit' => $user->getCredit(),
+            'block' => $user->getBlock(),
+            'promised_payment' => $user->isPromisedPayment(),
+            'lifestrem_login' => $user->getLifestreamLogin(),
         ];
+        $ips = [];
+        foreach ($user->getIps() as $ip)
+            $ips[] = $ip;
+        $userData['ips'] = $ips;
+        $tariffs = [];
+        foreach ($user->getTariffs() as $tariff)
+            $tariffs[] = ['name' => $tariff->getName(),'next_name' => $tariff->getNextName()];
+        $userData['tarifs'] = $tariffs;
+        return $userData;
     }
 
 

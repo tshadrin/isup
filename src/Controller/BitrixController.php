@@ -37,14 +37,12 @@ class BitrixController extends AbstractController
             return $this->json(['result' => 'error', 'message' => $e->getMessage()]);
         }
 
-        return $this->json(['result' => 'success', 'data' => $userFields,]);
-    }
-
-    /**
-     * @Route("/api/bitrix-user-get", name="api.bitrix.user.getinfo", methods={"POST"})
-     */
-    public function getApp(): Response
-    {
-        return $this->render('bitrix/get-user.html.twig');
+        $response  = $this->json(['result' => 'success', 'data' => $userFields,]);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET');
+        $response->headers->set('Access-Control-Allow-Headers',
+            'Content-Type, Depth, User-Agent, X-File- Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control');
+        return $response;
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\UTM5\UTM5User;
 use App\Repository\UTM5\UTM5UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * Class UTM5DbService
@@ -13,6 +14,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class UTM5DbService
 {
+    public const SEARCH_TYPE_ID = 'id';
+    public const SEARCH_TYPE_LOGIN = 'login';
+    public const SEARCH_TYPE_IP = 'ip';
+    public const SEARCH_TYPE_FULLNAME = 'fullname';
+    public const SEARCH_TYPE_ADDRESS = 'address';
+    public const SEARCH_TYPE_PHONE = 'phone';
     /**
      * @var EntityManagerInterface
      */
@@ -37,31 +44,42 @@ class UTM5DbService
     /**
      * @param string $search_value
      * @param string $search_type
-     * @return \App\Entity\UTM5\UTM5User|mixed
+     * @return \App\Collection\UTM5\UTM5UserCollection|UTM5User
      */
-    public function search(string $search_value, string $search_type = 'id')
+    public function search(string $search_value, string $search_type = self::SEARCH_TYPE_ID)
     {
+        Assert::notEmpty($search_value);
+        Assert::oneOf($search_type,[
+            self::SEARCH_TYPE_ID,
+            self::SEARCH_TYPE_LOGIN,
+            self::SEARCH_TYPE_IP,
+            self::SEARCH_TYPE_ADDRESS,
+            self::SEARCH_TYPE_FULLNAME,
+            self::SEARCH_TYPE_PHONE
+        ]);
+
         switch($search_type) {
-            case 'id':
+            case self::SEARCH_TYPE_ID:
                 $result = $this->UTM5UserRepository->findById($search_value);
                 break;
-            case 'login':
+            case self::SEARCH_TYPE_LOGIN:
                 $result =  $this->UTM5UserRepository->findByLogin($search_value);
                 break;
-            case 'ip':
+            case self::SEARCH_TYPE_IP:
+                Assert::ip($search_value);
                 $result = $this->UTM5UserRepository->findByIP($search_value);
                 break;
-            case 'fullname':
+            case self::SEARCH_TYPE_FULLNAME:
                 $result = $this->UTM5UserRepository->findByFullName($search_value);
                 break;
-            case 'address':
+            case self::SEARCH_TYPE_ADDRESS:
                 $result = $this->UTM5UserRepository->findByAddress($search_value);
                 break;
-            case 'phone':
+            case self::SEARCH_TYPE_PHONE:
                 $result = $this->UTM5UserRepository->findByPhone($search_value);
                 break;
             default:
-                throw new \DomainException("Invalid search type");
+                break;
         }
 
         if($result instanceof UTM5User) {
