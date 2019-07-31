@@ -167,6 +167,8 @@ class ApiController extends AbstractController
         try {
             if($URFA_service->changeInternetStatus($id))
                 return $this->json(['result' => 'success']);
+            else
+                return $this->json(['result' => 'error']);
         } catch(\Exception $e) {
             return $this->json(['result' => 'error']);
         }

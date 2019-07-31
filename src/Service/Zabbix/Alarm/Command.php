@@ -13,31 +13,15 @@ class Command
     /**
      * @var string
      */
-    private $subject;
+    public $subject;
     /**
      * @var string
      */
-    private $message;
+    public $message;
 
     public function __construct(string $subject, string  $message)
     {
         $this->subject = $subject;
         $this->message = $message;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubject(): string
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMessage(): string
-    {
-        return $this->message;
     }
 }

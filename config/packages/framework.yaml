@@ -19,4 +19,5 @@ framework:
         engines:
             - twig
 
-    validation: { enable_annotations: true }
+    validation:
+        enable_annotations: true

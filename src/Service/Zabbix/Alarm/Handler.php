@@ -43,12 +43,8 @@ class Handler
      */
     public function handle(Command $command): Alarm
     {
-        $subject = $command->getSubject();
-        $message = $command->getMessage();
-
-
-        if ($this->isMessageContainsLetter($message)) {
-            [$text, $letter] = $this->separateMessage($message);
+        if ($this->isMessageContainsLetter($command->message)) {
+            [$text, $letter] = $this->separateMessage($command->message);
         }
 
         $ids = $this->getIdsFromText($text);
@@ -56,8 +52,7 @@ class Handler
 
         $text = $this->prepareText($ids, $text);
 
-        $alarm = new Alarm($subject, $text, $ids, $emails, $letter ?? null);
-        return $alarm;
+        return new Alarm($command->subject, $text, $ids, $emails, $letter ?? null);
     }
 
     /**
