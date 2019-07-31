@@ -146,6 +146,27 @@ class UserMapper
     }
 
     /**
+     * @param string $phone
+     * @return Entity\UTM5User
+     */
+    public function getUserByPhone(string $phone): Entity\UTM5User
+    {
+        try {
+            $stmt = $this->userPreparer->getUserDataByPhoneStmt();
+            $stmt->execute([':mobile_telephone' => "%{$phone}%"]);
+            if(1 === $stmt->rowCount()) {
+                $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
+                return $this->UTM5UserInit($data);
+            }
+            if($stmt->rowCount() > 1)
+                throw new \DomainException("Too many results found");
+        } catch (\Exception $e) {
+            throw new \DomainException($this->translator->trans("User search error: %message%", ['%message%' => $e->getMessage()]));
+        }
+        throw new \DomainException($this->translator->trans("User with phone %phone% is not found", ['%login%' => $phone]));
+    }
+
+    /**
      * Поиск по IP адресу
      * @param string $ip
      * @return Entity\UTM5User

@@ -8,7 +8,7 @@ use App\Entity\UTM5\{ UTM5User, Passport };
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
 use App\Form\UTM5\{ PassportForm, PassportFormData, UTM5UserCommentForm };
-use App\Service\BitrixCal\BitirixCalService;
+use App\Service\Bitrix\BitirixCalService;
 use App\Service\UTM5\{ URFAService, UTM5DbService, UTM5UserCommentService };
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
