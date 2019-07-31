@@ -6,7 +6,6 @@ namespace App\Controller;
 use App\Service\Bitrix\BitirixCalService;
 use App\Service\Bitrix\User\Command;
 use App\Service\Bitrix\User\Handler;
-use App\Service\UTM5\UTM5DbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,9 +29,9 @@ class BitrixController extends AbstractController
      */
     public function getUserInfo(Request $request, Handler $handler): JsonResponse
     {
-        $command = new Command($request->query->get('phone'));
-
         try {
+            $command = new Command($request->query->get('phone'));
+
             $user = $handler->handle($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             return $this->json(['result' => 'error', 'message' => $e->getMessage()]);
