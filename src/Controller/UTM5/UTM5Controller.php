@@ -16,7 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\{ JsonResponse, Request, Response, RedirectResponse };
+use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse };
 use Symfony\Component\Routing\Annotation\Route;
 
 /**

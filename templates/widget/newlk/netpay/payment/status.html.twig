@@ -2,7 +2,7 @@
 {% if payment.processed %}
     <span class="badge badge-success">{{ 'Processed'|trans }}</span>
 {% elseif payment.error %}
-    <span class="badge badge-danger">{{ 'Error'|trans }} {{ payment.error }}</span>
+    <span class="badge badge-danger">{{ 'Error'|trans }} {{ payment.error }}</span> {{ payment.error_description }}
 {% elseif payment.incomplete %}
     <span class="badge badge-secondary">{{ 'Incomplete'|trans }}</span>
 {% endif %}

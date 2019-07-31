@@ -26,11 +26,8 @@ class NetPayController extends AbstractController
 {
     const ROWS_ON_PAGE = 30;
     const DEFAULT_PAGE = 1;
+
     /**
-     * @param Request $request
-     * @param SberbankReportService $sberbankReportService
-     * @param Session $session
-     * @return Response
      * @Route("", name="", methods={"GET", "POST"})
      */
     public function index(Request $request, ListPayments\Handler $handler): Response

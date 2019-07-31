@@ -37,6 +37,8 @@ class Payment
      */
     private $error;
 
+    public $error_description;
+
     /**
      * @return int
      */

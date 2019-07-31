@@ -6,6 +6,7 @@ namespace App\Controller\UTM5;
 use App\Entity\UTM5\UTM5User;
 use App\Service\UTM5\{ BitrixRestService, UTM5DbService, URFAService };
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
 use Symfony\Component\Routing\Annotation\Route;
@@ -140,6 +141,7 @@ class ApiController extends AbstractController
      * @param int $id  - id клиента
      * @param URFAService $URFA_service
      * @return JsonResponse
+     * @IsGranted("ROLE_SUPPORT")
      * @Route("/urfa/change-remindme/{id}/", name="utm_change_remindme", methods={"GET"}, requirements={"id": "\d+"})
      */
     public function changeRemindMe(int $id, URFAService $URFA_service): JsonResponse
@@ -160,6 +162,7 @@ class ApiController extends AbstractController
      * @param int $id  - id клиента
      * @param URFAService $URFA_service
      * @return JsonResponse
+     * @IsGranted("ROLE_SUPPORT")
      * @Route("/urfa/change-intstatus/{id}/", name="utm_change_intstatus", methods={"GET"}, requirements={"id": "\d+"})
      */
     public function changeStatus(int $id, URFAService $URFA_service): JsonResponse
@@ -180,6 +183,7 @@ class ApiController extends AbstractController
      * @param URFAService $URFAService
      * @param TranslatorInterface $translator
      * @return JsonResponse
+     * @IsGranted("ROLE_SUPPORT")
      * @Route("/urfa/change-editable-filed/", name="user_change_editable_field", methods={"GET","POST"})
      */
     public function changeEditableField(Request $request,

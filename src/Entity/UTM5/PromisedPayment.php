@@ -15,7 +15,7 @@ class PromisedPayment
      */
     private $expire_date;
     /**
-     * @var int
+     * @var float
      */
     private $amount;
     /**
@@ -40,9 +40,9 @@ class PromisedPayment
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getAmount(): int
+    public function getAmount(): float
     {
         return $this->amount;
     }

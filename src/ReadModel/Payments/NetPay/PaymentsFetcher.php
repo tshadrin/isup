@@ -41,8 +41,9 @@ class PaymentsFetcher
     public function getFilteredPayments(Filter $filter): array
     {
         $query = $this->connection->createQueryBuilder()
-            ->select('p.user_id', 'p.created', 'p.status', 'p.sum', 'p.updated', 'n.error')
+            ->select('p.user_id', 'p.created', 'p.status', 'p.sum', 'p.updated', 'n.error' , 'nec.description as error_description')
             ->from('netpay', 'p')
+            ->leftJoin('n', 'netpay_error_codes', 'nec', 'nec.code = n.error')
             ->leftJoin('p', 'nperrors', 'n', 'p.id = n.id');
 
         if ($filter->userId) {
