@@ -32,17 +32,12 @@ class BitrixController extends AbstractController
         try {
             $command = new Command($request->query->get('phone'));
 
-            $user = $handler->handle($command);
+            $userFields = $handler->handle($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             return $this->json(['result' => 'error', 'message' => $e->getMessage()]);
         }
 
-        return $this->json(['result' => 'success', 'data' => [
-            'id' => $user->getId(),
-            'full_name' => $user->getFullName(),
-            'requirement_payment' => $user->getRequirementPayment(),
-            'balance' => $user->getBalance(),
-        ],]);
+        return $this->json(['result' => 'success', 'data' => $userFields,]);
     }
 
     /**
