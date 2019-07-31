@@ -22,23 +22,23 @@
 
     function app() {
         const initDate = BX24.getAuth();
-        console.log("ititDate: ", initDate);
+        //console.log("ititDate: ", initDate);
     }
 
+    BX24.placement.call('getStatus', {}, callInfo);
     function callInfo(info) {
-        jQuery.getJSON('https://testmon.istranet.ru/api/bitrix-user-get', info.PHONE_NUMBER, function(result){
+        jQuery.getJSON('https://testmon.istranet.ru/api/bitrix-user-get', "phone=" + info.PHONE_NUMBER, function(result){
             var userdata = '';
-            for(var k in result) {
-                userdata += "<div>" + result[k] + "</div>";
+            for(var k in result['data']) {
+                userdata += '<div class="badge-light text-dark">' + result['data'][k] + "</div>";
                 jQuery("#userinfo").html(userdata);
             }
         });
     }
-    BX24.placement.call('getStatus', {}, callInfo);
 
-    BX24.placement.bindEvent("CallCard::CallStateChanged", function (callState) {
-        console.log(callState);
-    });
+   // BX24.placement.bindEvent("CallCard::CallStateChanged", function (callState) {
+   //     console.log(callState);
+   // });
 </script>
 {{ encore_entry_script_tags('bitrix') }}
 </body>

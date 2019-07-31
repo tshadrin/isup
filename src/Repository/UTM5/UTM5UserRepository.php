@@ -67,6 +67,11 @@ class UTM5UserRepository
         return $this->userMapper->getUsersByAddress($address);
     }
 
+    public function findByPhone(string $phone)
+    {
+        return $this->userMapper->getUserByPhone($phone);
+    }
+
     /**
      * @param int $user_id
      * @return bool

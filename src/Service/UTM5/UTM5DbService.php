@@ -41,21 +41,29 @@ class UTM5DbService
      */
     public function search(string $search_value, string $search_type = 'id')
     {
-        if('id' === $search_type) {
-            $result = $this->UTM5UserRepository->findById($search_value);
+        switch($search_type) {
+            case 'id':
+                $result = $this->UTM5UserRepository->findById($search_value);
+                break;
+            case 'login':
+                $result =  $this->UTM5UserRepository->findByLogin($search_value);
+                break;
+            case 'ip':
+                $result = $this->UTM5UserRepository->findByIP($search_value);
+                break;
+            case 'fullname':
+                $result = $this->UTM5UserRepository->findByFullName($search_value);
+                break;
+            case 'address':
+                $result = $this->UTM5UserRepository->findByAddress($search_value);
+                break;
+            case 'phone':
+                $result = $this->UTM5UserRepository->findByPhone($search_value);
+                break;
+            default:
+                throw new \DomainException("Invalid search type");
         }
-        if('login' === $search_type) {
-            $result =  $this->UTM5UserRepository->findByLogin($search_value);
-        }
-        if('ip' === $search_type) {
-            $result = $this->UTM5UserRepository->findByIP($search_value);
-        }
-        if('fullname' === $search_type) {
-            $result = $this->UTM5UserRepository->findByFullName($search_value);
-        }
-        if('address' === $search_type) {
-            $result = $this->UTM5UserRepository->findByAddress($search_value);
-        }
+
         if($result instanceof UTM5User) {
             $result->setComments($this->em->getRepository('App:UTM5\UTM5UserComment')
                 ->findBy(['utmId' => $result->getId()], ['datetime' => 'DESC']));

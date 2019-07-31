@@ -123,6 +123,21 @@ class UserPreparer
      * @return Statement
      * @throws DBALException
      */
+    public function getUserDataByPhoneStmt(): Statement
+    {
+        $cols = self::DATA_COLUMNS;
+        $sql = "SELECT {$cols} 
+                FROM users u
+                    INNER JOIN accounts a
+                        ON a.id = u.basic_account
+                WHERE u.is_deleted=0
+                  AND u.mobile_telephone LIKE :mobile_telephone";
+        return $this->connection->prepare($sql);
+    }
+    /**
+     * @return Statement
+     * @throws DBALException
+     */
     public function getUserDataByFullnameStmt(): Statement
     {
         $cols = self::DATA_COLUMNS;
