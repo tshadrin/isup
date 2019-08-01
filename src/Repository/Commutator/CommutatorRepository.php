@@ -5,6 +5,7 @@ namespace App\Repository\Commutator;
 
 use App\Entity\Commutator\Commutator;
 use Doctrine\ORM\EntityRepository;
+use DomainException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CommutatorRepository extends EntityRepository
@@ -31,6 +32,6 @@ class CommutatorRepository extends EntityRepository
         if($commutator = $this->findOneBy(['ip' => $ip])) {
             return $commutator;
         }
-        throw new \DomainException($this->translator->trans("Switch not found by ip %ip%", ['%ip%' => $ip]));
+        throw new DomainException($this->translator->trans("Switch not found by ip %ip%", ['%ip%' => $ip]));
     }
 }

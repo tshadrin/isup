@@ -117,7 +117,7 @@ class PhoneController extends AbstractController
             return $this->redirectToRoute('phone');
         }
 
-        try{
+        try {
             $phoneRepository->delete($phone);
             $phoneRepository->flush();
             $this->addFlash('notice', 'phone.deleted');

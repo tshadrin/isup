@@ -5,7 +5,7 @@ namespace App\Form\Vlan;
 
 use App\Form\Vlan\DTO\Filter;
 use Symfony\Component\Form\{ AbstractType, FormBuilderInterface };
-use Symfony\Component\Form\Extension\Core\Type\{ SearchType, SubmitType };
+use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**

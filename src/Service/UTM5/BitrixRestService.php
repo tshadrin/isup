@@ -4,7 +4,6 @@ namespace App\Service\UTM5;
 
 
 use App\Entity\Zabbix\Statement;
-use App\Service\Zabbix\MessagePreparer\MessagePreparerInterface;
 use Psr\Log\LoggerInterface;
 
 class BitrixRestService

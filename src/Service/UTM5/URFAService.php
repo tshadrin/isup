@@ -16,7 +16,7 @@ class URFAService
     const PARAM_BIRTHDAY = 8;
 
     /**
-     * @var \URFAClient_Function
+     * @var \URFAClient_API
      */
     private $urfa;
 

@@ -5,6 +5,8 @@ namespace App\Command\UTM5;
 
 use Doctrine\DBAL\{ Connection, DBALException };
 use Doctrine\DBAL\Driver\Statement;
+use DomainException;
+use PDO;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -57,7 +59,7 @@ class ConvertRemindsCommand extends Command
         $stmt = $this->getSelectIcqNumberStmt();
         $stmt->execute();
         if($stmt->rowCount() > 0) {
-            return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
         }
         return null;
     }
@@ -70,14 +72,14 @@ class ConvertRemindsCommand extends Command
     {
         $stmt = $this->getInsertRemindValueStmt();
         if(!$stmt->execute([':user_id' => $id])) {
-            throw  new \DomainException("Error inserting param");
+            throw  new DomainException("Error inserting param");
         }
 
     }
 
     /**
-     * @return \Doctrine\DBAL\Driver\Statement
-     * @throws \Doctrine\DBAL\DBALException
+     * @return Statement
+     * @throws DBALException
      */
     private function getSelectIcqNumberStmt(): Statement
     {
@@ -86,8 +88,8 @@ class ConvertRemindsCommand extends Command
     }
 
     /**
-     * @return \Doctrine\DBAL\Driver\Statement
-     * @throws \Doctrine\DBAL\DBALException
+     * @return Statement
+     * @throws DBALException
      */
     private function getInsertRemindValueStmt(): Statement
     {

@@ -5,6 +5,7 @@ namespace App\Controller\Commutator;
 
 use App\Repository\Commutator\CommutatorRepository;
 use App\Service\Commutator\BotService;
+use DomainException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,7 +29,7 @@ class CommutatorController extends AbstractController
         try {
             $commutator = $commutatorRepository->getByIP($ip);
             $data['commutator'] = $commutator;
-        } catch (\DomainException $e) {
+        } catch (DomainException $e) {
             $this->addFlash('error', $e->getMessage());
         }
         try{
@@ -39,7 +40,7 @@ class CommutatorController extends AbstractController
             $data['config_path'] = $switch_log['config_path'];
             $data['map_image_url'] = $switch_log['map_image_url'];
 
-        } catch (\DomainException $e){
+        } catch (DomainException $e){
             $this->addFlash('error', $e->getMessage());
         }
         return $this->render("Commutator/index.html.twig", $data);

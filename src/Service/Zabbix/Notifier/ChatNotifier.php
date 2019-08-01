@@ -20,18 +20,18 @@ class ChatNotifier implements NotifierInterface
      */
     private $bitrixRestService;
     /**
-     * @var ChatPreparer
+     * @var array
      */
-    private $chatPreparer;
+    private $parameters;
 
     /**
      * ChatNotifier constructor.
      * @param BitrixRestService $bitrixRestService
      */
-    public function __construct(BitrixRestService $bitrixRestService, ChatPreparer $chatPreparer)
+    public function __construct(array $parameters, BitrixRestService $bitrixRestService)
     {
         $this->bitrixRestService = $bitrixRestService;
-        $this->chatPreparer = $chatPreparer;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -40,7 +40,7 @@ class ChatNotifier implements NotifierInterface
      */
     public function notify(Alarm $alarm): void
     {
-        $statement = $this->chatPreparer->prepare($alarm);
+        $statement = (new chatPreparer($this->parameters))->prepare($alarm);
         $this->bitrixRestService->sendToChat($statement);
     }
 }

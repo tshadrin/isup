@@ -6,10 +6,11 @@ namespace App\Controller;
 use App\Service\Bitrix\BitirixCalService;
 use App\Service\Bitrix\User\Command;
 use App\Service\Bitrix\User\Handler;
+use DomainException;
+use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class BitrixController extends AbstractController
@@ -33,7 +34,7 @@ class BitrixController extends AbstractController
             $command = new Command($request->query->get('phone'));
 
             $userFields = $handler->handle($command);
-        } catch (\DomainException | \InvalidArgumentException $e) {
+        } catch (DomainException | InvalidArgumentException $e) {
             return $this->json(['result' => 'error', 'message' => $e->getMessage()]);
         }
 

@@ -9,9 +9,6 @@
     div.user-info-block-zabbix {
         display: none;
     }
-    div.user-info-block-zabbix2 {
-        display: block !important;
-    }
     table.orders-table,
     table.orders-table textarea{
         font-size: 0.8rem;

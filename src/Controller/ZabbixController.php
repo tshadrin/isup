@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Service\Zabbix\Alarm\{ Command, Handler };
-use App\Service\Zabbix\Notifier\{ ChatNotifier, EmailNotifier };
+use App\Service\Zabbix\Alarm;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
@@ -22,32 +22,29 @@ class ZabbixController extends AbstractController
      */
     protected $logger;
 
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @Route("/alarm/", name=".alarm", methods={"POST"})
      */
-    public function alarm(Request $request, LoggerInterface $logger,
-                          EmailNotifier $emailNotifier, ChatNotifier $chatNotifier,
-                          Handler $alarmHandler): JsonResponse
+    public function alarm(Request $request, Alarm\Handler $handler): JsonResponse
     {
-        $this->logger = $logger;
-        if ($request->request->has('subject') &&
-            $request->request->has('message')) {
-            $command = new Command(
-                $request->request->get('subject'),
-                $request->request->get('message')
+        try {
+            $command = new Alarm\Command(
+                $request->request->get('subject', ""),
+                $request->request->get('message', "")
             );
 
-            $alarm = $alarmHandler->handle($command);
-
-            $emailNotifier->notify($alarm);
-            $chatNotifier->notify($alarm);
-
-            $logger->info('Message successfully notified');
-
-            return $this->json(['result' => 'success', ]);
-        } else {
-            $logger->error('Data not provides from request');
-            return $this->json(['result' => 'error',  'error' => 'Data not provides from request', ]);
+            $handler->handle($command);
+        } catch (InvalidArgumentException $e) {
+            $this->logger->error("Bad arguments", ['message' => $e->getMessage(),]);
+            return $this->json(['result' => "error",]);
         }
+
+        $this->logger->info("Message successfully processed");
+        return $this->json(['result' => "success",]);
     }
 }

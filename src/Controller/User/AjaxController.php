@@ -22,7 +22,7 @@ class AjaxController extends BaseController
      */
     public function showHide(Request $request, Session $session): JsonResponse
     {
-        if($request->query->has('block_name') && $request->query->has('value')) {
+        if ($request->query->has('block_name') && $request->query->has('value')) {
             $session->set('hide_block_'.$request->query->get('block_name'), $request->query->getBoolean('value'));
             return $this->json(['result' => 'success']);
         } else {

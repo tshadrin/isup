@@ -40,7 +40,7 @@ class GroupMapper
     protected function getGroupsDataByIdStmt(): Statement
     {
         $sql = "SELECT g.id, g.group_name AS name
-                FROM groups g
+                FROM `groups` g
                     INNER JOIN users_groups_link u
                         ON u.group_id=g.id
                 WHERE u.user_id = :id";

@@ -15,7 +15,6 @@
     background-image:     -ms-linear-gradient(top, #2e4475, #11192b);
     background-image:      -o-linear-gradient(top, #2e4475, #11192b);
     background-image:         linear-gradient(top, #2e4475, #11192b);
-    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#2e4475', endColorstr='#11192b',GradientType=0 );
     color: #fff;
     font-size: 1.1em;
     padding: 0 5px;
@@ -69,9 +68,6 @@
 .isup-table-critical-row td{
     background: #e3afc3;
 }
-.isup-table-critical-row {
-    background-color: #e3afc3;
-}
 /** конец оформления таблиц **/
 /** pagination*/
 /* .pagination{
@@ -112,12 +108,6 @@
  */
 /** end pagination */
 
-.navbutton {
-    width:25px;
-    height:25px;
-    margin: 0;
-    display: none;
-}
 /*
 .content a {
     text-decoration: none;

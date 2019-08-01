@@ -133,9 +133,9 @@ class OrderService
     }
 
     /**
-     * Удаление заявки
      * @param $order_id
-     * @throws \DomainException
+     * @return mixed
+     * @throws \Exception
      */
     public function deleteOrder($order_id)
     {

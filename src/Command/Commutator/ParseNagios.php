@@ -6,7 +6,7 @@ namespace App\Command\Commutator;
 use App\Service\UTM5\UTM5DbService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\{ InputArgument, InputInterface };
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ParseNagios extends Command
@@ -50,7 +50,6 @@ class ParseNagios extends Command
         $ip = '';
         $link = '/switchinfo/show';
         $switch_name = '';
-        $commutator = '';
         $action_url = false;
         $result = '';
         $hostgroup = '';

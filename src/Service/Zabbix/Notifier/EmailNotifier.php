@@ -20,19 +20,14 @@ class EmailNotifier implements NotifierInterface
      * @var \Swift_Mailer
      */
     private $mailer;
-    /**
-     * @var EmailPreparer
-     */
-    private $emailPreparer;
 
     /**
      * EmailNotifier constructor.
      * @param \Swift_Mailer $mailer
      */
-    public function __construct(\Swift_Mailer $mailer, EmailPreparer $emailPreparer)
+    public function __construct(\Swift_Mailer $mailer)
     {
         $this->mailer = $mailer;
-        $this->emailPreparer = $emailPreparer;
     }
 
     /**
@@ -41,7 +36,7 @@ class EmailNotifier implements NotifierInterface
      */
     public function notify(Alarm $alarm): void
     {
-        $statement = $this->emailPreparer->prepare($alarm);
+        $statement = (new emailPreparer())->prepare($alarm);
         $this->mailer->send($statement->getMessage());
     }
 }

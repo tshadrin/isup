@@ -6,7 +6,6 @@ namespace App\Service\Sberbank\ListPayments;
 
 
 use App\Form\Phone\RowsForm;
-use App\ReadModel\Payments\Sberbank\Payment;
 use App\ReadModel\Payments\Sberbank\PaymentsFetcher;
 use App\ReadModel\Payments\Sberbank\PaymentsLogFetcher;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -45,6 +44,7 @@ class Handler
 
         $payments = $this->paginator->paginate($payments, $command->page, $command->rowsOnPage);
         foreach ($payments as $payment) {
+
             $payment->logCount = $this->paymentsLogFetcher->getCountPaymentLogRows($payment->getTransaction());
         }
 

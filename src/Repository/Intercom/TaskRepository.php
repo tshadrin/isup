@@ -5,8 +5,6 @@ namespace App\Repository\Intercom;
 
 use App\Entity\Intercom\{ Status, Task, Type };
 use App\Entity\User\User;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

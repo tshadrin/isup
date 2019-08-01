@@ -33,7 +33,7 @@ class VlanRepository extends EntityRepository
             ->orderBy('v.number', 'ASC');
 
         $query = $queryBuilder->getQuery();
-        if(!$vlans = $query->getResult()){
+        if (!$vlans = $query->getResult()){
             throw new \DomainException("VLans not found");
         }
         return $vlans;
@@ -52,7 +52,7 @@ class VlanRepository extends EntityRepository
             ->andWhere('v.id = :id')
             ->setParameter(':id', $id)
             ->getQuery();
-        if(!$vlan = $query->getOneOrNullResult()) {
+        if (!$vlan = $query->getOneOrNullResult()) {
             throw new \DomainException("Vlan not found.");
         }
         return $vlan;

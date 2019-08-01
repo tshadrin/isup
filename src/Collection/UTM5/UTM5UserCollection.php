@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Collection\UTM5;
 
-use App\Entity\UTM5\UTM5User;
+
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**

@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Entity\UTM5;
 
 use App\Entity\User\User;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 /**
  * Комментарий, базовый класс
@@ -116,12 +118,12 @@ abstract class Comment
     /**
      * Comment constructor.
      * @param User $userId
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(User $userId)
     {
         $this->userId = $userId;
-        $date = new \DateTime();
+        $date = new DateTime();
         $this->setDatetime($date->format("U"));
     }
 }

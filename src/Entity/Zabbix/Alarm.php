@@ -4,13 +4,15 @@ declare(strict_types = 1);
 
 namespace App\Entity\Zabbix;
 
+use App\Service\Zabbix\Notifier\NotifierInterface;
+use Webmozart\Assert\Assert;
+
 /**
  * Class Message
  * @package App\Entity\Zabbix
  */
 class Alarm
 {
-
     /**
      * @var string
      */
@@ -32,23 +34,40 @@ class Alarm
      */
     private $emails;
 
+    /**
+     * @var NotifierInterface[]
+     */
+    private $notifiers;
+
 
     /**
-     * Message constructor.
+     * Alarm constructor.
+     * @param string $subject
      * @param string $text
      * @param array $variables
-     * @param string $letter
+     * @param array $emails
+     * @param string|null $letter
      */
     public function __construct(string $subject, string $text, array $variables, array $emails, ?string $letter)
     {
+        Assert::notEmpty($subject);
+        Assert::notEmpty($text);
+
+        $this->subject = $subject;
         $this->text = $text;
         $this->variables = $variables;
-        $this->letter = $letter;
-        $this->subject = $subject;
         $this->emails = $emails;
-        if(count($emails) > 0 ) {
+        $this->letter = $letter;
+
+        if($this->isEmails($emails)) {
             $this->text .= "\nКлиент получит уведомление по почте.";
         }
+        $this->notifiers = [];
+    }
+
+    private function isEmails(array $emails): bool
+    {
+        return (bool)count($emails);
     }
 
     /**
@@ -91,43 +110,21 @@ class Alarm
         return $this->letter;
     }
 
-    /**
-     * @param string $subject
-     */
-    public function setSubject(string $subject): void
+    public function isVariables(): bool
     {
-        $this->subject = $subject;
+        return (bool)count($this->variables);
     }
 
-    /**
-     * @param string $text
-     */
-    public function setText(string $text): void
+    public function setNotifiers(array $notifiers)
     {
-        $this->text = $text;
+        Assert::allIsInstanceOf($notifiers, NotifierInterface::class);
+        $this->notifiers = $notifiers;
     }
 
-    /**
-     * @param array $variables
-     */
-    public function setVariables(array $variables): void
+    public function notify()
     {
-        $this->variables = $variables;
-    }
-
-    /**
-     * @param array $emails
-     */
-    public function setEmails(array $emails): void
-    {
-        $this->emails = $emails;
-    }
-
-    /**
-     * @param string $letter
-     */
-    public function setLetter(string $letter): void
-    {
-        $this->letter = $letter;
+        foreach ($this->notifiers as $notifier) {
+            $notifier->notify($this);
+        }
     }
 }

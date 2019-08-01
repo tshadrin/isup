@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Service\NetPay\ListPayments;
 
 
-use App\ReadModel\Payments\NetPay\Payment;
 use App\ReadModel\Payments\NetPay\PaymentsFetcher;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;

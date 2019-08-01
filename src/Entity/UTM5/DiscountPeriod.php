@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Entity\UTM5;
 
+use DateTimeImmutable;
+
 class DiscountPeriod
 {
     /**
@@ -10,11 +12,11 @@ class DiscountPeriod
      */
     private $id;
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     private $start;
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     private $end;
 
@@ -27,17 +29,17 @@ class DiscountPeriod
     }
 
     /**
-     * @return \DateTimeImmutable
+     * @return DateTimeImmutable
      */
-    public function getStart(): \DateTimeImmutable
+    public function getStart(): DateTimeImmutable
     {
         return $this->start;
     }
 
     /**
-     * @return \DateTimeImmutable
+     * @return DateTimeImmutable
      */
-    public function getEnd(): \DateTimeImmutable
+    public function getEnd(): DateTimeImmutable
     {
         return $this->end;
     }
@@ -51,17 +53,17 @@ class DiscountPeriod
     }
 
     /**
-     * @param \DateTimeImmutable $start
+     * @param DateTimeImmutable $start
      */
-    public function setStart(\DateTimeImmutable $start): void
+    public function setStart(DateTimeImmutable $start): void
     {
         $this->start = $start;
     }
 
     /**
-     * @param \DateTimeImmutable $end
+     * @param DateTimeImmutable $end
      */
-    public function setEnd(\DateTimeImmutable $end): void
+    public function setEnd(DateTimeImmutable $end): void
     {
         $this->end = $end;
     }
@@ -69,10 +71,10 @@ class DiscountPeriod
     /**
      * DiscountPeriod constructor.
      * @param int $id
-     * @param \DateTimeImmutable $start
-     * @param \DateTimeImmutable $end
+     * @param DateTimeImmutable $start
+     * @param DateTimeImmutable $end
      */
-    public function __construct(int $id, \DateTimeImmutable $start, \DateTimeImmutable $end)
+    public function __construct(int $id, DateTimeImmutable $start, DateTimeImmutable $end)
     {
         $this->id = $id;
         $this->start = $start;

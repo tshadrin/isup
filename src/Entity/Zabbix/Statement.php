@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace App\Entity\Zabbix;
 
 
+use PHPUnit\Framework\Assert;
+
 class Statement
 {
     private $message;
@@ -15,6 +17,7 @@ class Statement
 
     public function __construct($message, array $params = [])
     {
+        Assert::assertNotEmpty($message);
 
         $this->message = $message;
         $this->params = $params;
@@ -34,21 +37,5 @@ class Statement
     public function getMessage()
     {
         return $this->message;
-    }
-
-    /**
-     * @param array $params
-     */
-    public function setParams(array $params): void
-    {
-        $this->params = $params;
-    }
-
-    /**
-     * @param mixed $message
-     */
-    public function setMessage($message): void
-    {
-        $this->message = $message;
     }
 }

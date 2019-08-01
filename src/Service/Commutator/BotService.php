@@ -2,6 +2,8 @@
 
 namespace App\Service\Commutator;
 
+use DomainException;
+use Exception;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -48,8 +50,8 @@ class BotService
             'map_image_url' => "{$this->bot_url}/{$map_image_path}",
             'log' => $log,
             ];
-        } catch (\Exception $e) {
-            throw new \DomainException($this->translator->trans("Bot data not found for switch %ip%", ['%ip%' => $ip]));
+        } catch (Exception $e) {
+            throw new DomainException($this->translator->trans("Bot data not found for switch %ip%", ['%ip%' => $ip]));
         }
     }
 
@@ -70,9 +72,9 @@ class BotService
                 curl_close($curl);
                 return $result;
             }
-            throw new \DomainException($this->translator->trans("Curl exec error"));
+            throw new DomainException($this->translator->trans("Curl exec error"));
         } else {
-            throw new \DomainException($this->translator->trans("Curl initializate error"));
+            throw new DomainException($this->translator->trans("Curl initializate error"));
         }
     }
 }

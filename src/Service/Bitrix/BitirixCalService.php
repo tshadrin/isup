@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace App\Service\Bitrix;
 
+use DateTimeImmutable;
+use Exception;
 use om\IcalParser;
+use Redis;
+
 
 /**
  * Парсер календаря в битрикс
@@ -18,15 +22,16 @@ class BitirixCalService
      */
     private $parameters;
     /**
-     * @var \Redis
+     * @var Redis
      */
     private $redis;
 
     /**
-     * BitrixCalService constructor.
-     * @param $parameters
+     * BitirixCalService constructor.
+     * @param array $parameters
+     * @param Redis $redis
      */
-    public function __construct(array $parameters, \Redis $redis)
+    public function __construct(array $parameters, Redis $redis)
     {
         $this->parameters = $parameters;
         $this->redis = $redis;
@@ -65,13 +70,13 @@ class BitirixCalService
         $cal = new IcalParser();
         try {
             $cal->parseFile($this->parameters['path']);
-            $current_date = new \DateTimeImmutable();
+            $current_date = new DateTimeImmutable();
             foreach ($cal->getSortedEvents() as $event) {
                 if ($current_date > $event['DTSTART'] && $current_date < $event['DTEND']) {
                     $events[] = ['title' => $event['SUMMARY'], 'description' => $event['DESCRIPTION'],];
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ['error' => 'Error retrieving calendar. ' . $e->getMessage()];
         }
         return $events;

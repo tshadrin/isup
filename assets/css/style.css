@@ -204,12 +204,15 @@ div.user-info-block-main-inner {
     box-shadow: 0 0 10px #000;
 }
 /* utm/userinfo */
+/*
 div.user-info-block-warn-inner {
     font-size: 1.1rem;
     height: 100%;
     background: #ffdad8;
     box-shadow: 0 0 10px #000;
 }
+*/
+ */
 .passport-warn {
     background: #ffdad8;
 }
@@ -225,10 +228,13 @@ div.user-info-block-utm5-comments {
     background: #ffffcc;
 }
 /* utm/userinfo */
+/*
 div.user-info-block-zabbix-notices {
     background: #c4ccaf;
     height: 100%;
 }
+*/
+ */
 /* utm/userinfo */
 div.user-info-block-zabbix-notices > div {
     max-height: 350px;
@@ -584,15 +590,6 @@ table.orders-table input.del {
     color:#1d2d44;
     background: none;
 }
-/* order/order-list */
-table.orders-table input.dd {
-    text-indent: -9999px;
-    background: url(/images/delete.svg) no-repeat;
-    background-size: 20px 20px;
-    border:0;
-    width:20px;
-    height:20px;
-}
 
 /* order/order-list */
 /*
@@ -602,12 +599,6 @@ table.orders-table tr:hover textarea {
 /* order/order-list */
 table.orders-table input.del:hover {
     background:#e6e6fa;
-}
-/* order/order-list */
-table.orders-table input.dd:hover {
-    background: url(/images/delete.svg) no-repeat;
-    background-size: 20px 20px;
-    cursor: pointer;
 }
 
 table.table-sham {
@@ -656,7 +647,7 @@ table.table-sham caption {
     cursor: pointer;
     border-bottom: dashed 1px #0088cc;
 }
-.fa-times-square,
+
 .fa-check-square {
     font-size:1.3rem;
 }

@@ -114,7 +114,7 @@ class VlanController extends AbstractController
             return $this->redirectToRoute('vlan');
         }
 
-        try{
+        try {
             $vlanRepository->delete($vlan);
             $vlanRepository->flush();
             $this->addFlash('notice', 'vlan.deleted');

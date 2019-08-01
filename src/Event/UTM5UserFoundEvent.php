@@ -29,7 +29,7 @@ class UTM5UserFoundEvent extends GenericEvent
     {
         parent::__construct();
         $this->user = $user;
-        $result = [];
+        $this->result = [];
     }
 
     /**

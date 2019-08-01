@@ -37,7 +37,7 @@ class Handler
     public function handle(Command $command): PaginationInterface
     {
         $phones = $this->phoneRepository->getFilteredPhones($command->filter);
-        if($command->rowsOnPage === RowsForm::ALL_ROWS_ON_PAGE) {
+        if ($command->rowsOnPage === RowsForm::ALL_ROWS_ON_PAGE) {
             $command->rowsOnPage = count($phones);
         }
         return $this->paginator->paginate($phones, $command->page, $command->rowsOnPage);

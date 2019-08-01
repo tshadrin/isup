@@ -5,6 +5,7 @@ namespace App\Controller\UTM5;
 
 use App\Entity\UTM5\UTM5User;
 use App\Service\UTM5\{ BitrixRestService, UTM5DbService, URFAService };
+use Exception;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -79,13 +80,11 @@ class ApiController extends AbstractController
     }
 
     /**
-     * Проверка оплаты клиентом подключения к сети
      * @param Request $request
      * @param BitrixRestService $bitrix_rest_service
      * @param UTM5DbService $UTM5_db_service
      * @param LoggerInterface $logger
      * @return JsonResponse
-     * @throws \Exception
      * @Route("/api/paycheck/", name="bitrix_check_payments", methods={"GET", "POST"})
      */
     public function checkUTM5Payments(Request $request,
@@ -149,7 +148,7 @@ class ApiController extends AbstractController
         try{
             $URFA_service->changeRemindMe($id);
             return $this->json(['result' => 'success']);
-        } catch(\Exception $e)
+        } catch(Exception $e)
         {
             return $this->json(['result' => 'error']);
         }
@@ -172,7 +171,7 @@ class ApiController extends AbstractController
                 return $this->json(['result' => 'success']);
             else
                 return $this->json(['result' => 'error']);
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             return $this->json(['result' => 'error']);
         }
     }
@@ -256,7 +255,7 @@ class ApiController extends AbstractController
             } else {
                 return $this->json(['result' => 'error', 'message' => $translator->trans('Request data not found'),]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(['result' => 'error', 'message' => $e->getMessage(),]);
         }
     }

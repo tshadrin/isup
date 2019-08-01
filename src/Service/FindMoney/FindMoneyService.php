@@ -119,8 +119,7 @@ class FindMoneyService
     }
 
     /**
-     * Подготовка запроса для получения названий архивных таблиц
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return Statement
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getPaymentsArchivesStmt(): Statement
@@ -139,8 +138,7 @@ class FindMoneyService
     }
 
     /**
-     * Подготавливает и возварщает запрос на поиск пользователей по аккаунту
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return Statement
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getAccountsByAddressStmt(): Statement
@@ -152,10 +150,9 @@ class FindMoneyService
     }
 
     /**
-     * Подготовка запроса на поиск суммы платежей в архивных таблицах по аккаунтам пользователей
-     * @param $table
-     * @param $accounts
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @param string $table
+     * @param string $accounts
+     * @return Statement
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getPaymentsFromArchiveStmt(string $table, string $accounts): Statement

@@ -37,7 +37,7 @@ class Handler
     public function handle(Command $command): PaginationInterface
     {
         $vlans = $this->vlanRepository->getFilteredVlans($command->filter);
-        if($command->rowsOnPage === RowsForm::ALL_ROWS_ON_PAGE) {
+        if ($command->rowsOnPage === RowsForm::ALL_ROWS_ON_PAGE) {
             $command->rowsOnPage = count($vlans);
         }
         return $this->paginator->paginate($vlans, $command->page, $command->rowsOnPage);

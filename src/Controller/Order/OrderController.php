@@ -23,7 +23,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class OrderController extends AbstractController
 {
     /**
-     * @param Request $request
      * @param OrderService $orderService
      * @param Session $session
      * @param UTM5UserRepository $UTM5UserRepository
@@ -31,7 +30,7 @@ class OrderController extends AbstractController
      * @throws \Exception
      * @Route("/orders/", name="orders_index", methods={"GET", "POST"}, options={"expose": true})
      */
-    public function index(Request $request, OrderService $orderService,
+    public function index(OrderService $orderService,
                           Session $session, UTM5UserRepository $UTM5UserRepository): Response
     {
         $hideid1 = $session->get('hide_id1', false);

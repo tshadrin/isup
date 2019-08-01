@@ -34,6 +34,7 @@ class UTM5UserCommentService
     /**
      * @param User $user
      * @return UTM5UserComment
+     * @throws \Exception
      */
     public function getNewUTM5UserComment(User $user): UTM5UserComment
     {

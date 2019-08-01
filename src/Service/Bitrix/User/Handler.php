@@ -44,6 +44,7 @@ class Handler
             'id' => $user->getId(),
             'full_name' => $user->getFullName(),
             'login' => $user->getLogin(),
+            'email' => $user->getEmail(),
             'password' => $user->getPassword(),
             'internet_status' => $user->isInternetStatus(),
             'address' => $user->getAddress(),
@@ -55,14 +56,14 @@ class Handler
             'promised_payment' => $user->isPromisedPayment(),
             'lifestrem_login' => $user->getLifestreamLogin(),
         ];
-        $ips = [];
         foreach ($user->getIps() as $ip)
-            $ips[] = $ip;
-        $userData['ips'] = $ips;
-        $tariffs = [];
+            $userData['ips'][] = $ip;
+        foreach ($user->getRouters() as $router)
+            $userData['routers'][] = ['name' => $router->getName(), 'ip' => $router->getIp()];
         foreach ($user->getTariffs() as $tariff)
-            $tariffs[] = ['name' => $tariff->getName(),'next_name' => $tariff->getNextName()];
-        $userData['tarifs'] = $tariffs;
+            $userData['tariffs'][] = ['name' => $tariff->getName(),'next_name' => $tariff->getNextName()];
+        foreach ($user->getGroups() as $group)
+            $userData['groups'][] = $group->getName();
         return $userData;
     }
 

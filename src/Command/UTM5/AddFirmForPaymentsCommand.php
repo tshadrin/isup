@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Command\UTM5;
 
 use App\Service\UTM5\UTM5DbService;
+use DomainException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\{ InputArgument, InputInterface };
@@ -29,8 +30,8 @@ class AddFirmForPaymentsCommand extends Command
     protected $ippark_group;
 
     /**
-     * AddFirmForAcquirPaymentsCommand constructor.
-     * @param string $files_dir
+     * AddFirmForPaymentsCommand constructor.
+     * @param array $parameters
      * @param UTM5DbService $UTM5DbService
      */
     public function __construct(array $parameters, UTM5DbService $UTM5DbService)
@@ -45,7 +46,6 @@ class AddFirmForPaymentsCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|void|null
-     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -72,7 +72,7 @@ class AddFirmForPaymentsCommand extends Command
                         if(false === fputcsv($handler_new, [$data[4], $data[5],$utm5_id, $data[6], $csv_group?'Ай Пи Парк':''], ';')) {
                             fclose($handler);
                             fclose($handler_new);
-                            throw new \DomainException("Ошибка записи в новый файл!");
+                            throw new DomainException("Ошибка записи в новый файл!");
                         }
                     }
                 }

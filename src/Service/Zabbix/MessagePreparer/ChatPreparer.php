@@ -6,6 +6,7 @@ namespace App\Service\Zabbix\MessagePreparer;
 
 
 use App\Entity\Zabbix\{ Alarm, Statement };
+use PHPUnit\Framework\Assert;
 
 class ChatPreparer implements MessagePreparerInterface
 {
@@ -20,6 +21,9 @@ class ChatPreparer implements MessagePreparerInterface
      */
     public function __construct(array $parameters)
     {
+        Assert::arrayHasKey('chat_id');
+        Assert::arrayHasKey('channels_chat_id');
+
         $this->parameters = $parameters;
     }
 
@@ -30,23 +34,21 @@ class ChatPreparer implements MessagePreparerInterface
      */
     public function prepare(Alarm $message): Statement
     {
-        $parameters = [];
-        if(0 === count($message->getVariables())) {
-            $parameters['chat_id'] = $this->parameters['chat_id'];
-        } else {
-            $parameters['chat_id'] = $this->parameters['channels_chat_id'];
-        }
-
-        return new Statement($this->createText($message), $this->parameters);
+        return new Statement(
+            $this->createText($message),
+            ['chat_id' => $this->selectChannel($message),]
+        );
     }
 
-    /**
-     * Создание текста сообщения для отправки в чат
-     * @param Alarm $message
-     * @return string
-     */
     private function createText(Alarm $message): string
     {
         return $text = "{$message->getSubject()}\n{$message->getText()}";
+    }
+
+    private function selectChannel(Alarm $message): string
+    {
+        return $message->isVariables() ?
+            $this->parameters['chat_id']:
+            $this->parameters['channels_chat_id'];
     }
 }

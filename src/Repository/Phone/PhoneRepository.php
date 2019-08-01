@@ -69,7 +69,7 @@ class PhoneRepository extends EntityRepository
             ->andWhere('p.id = :id')
             ->setParameter(':id', $id)
             ->getQuery();
-        if(!$phone = $query->getOneOrNullResult()) {
+        if (!$phone = $query->getOneOrNullResult()) {
             throw new \DomainException("Phone not found.");
         }
         return $phone;

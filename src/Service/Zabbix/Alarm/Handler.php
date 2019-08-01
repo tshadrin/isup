@@ -1,13 +1,13 @@
 <?php
 declare(strict_types = 1);
 
-
 namespace App\Service\Zabbix\Alarm;
-
 
 use App\Entity\UTM5\UTM5User;
 use App\Entity\Zabbix\Alarm;
 use App\Service\UTM5\UTM5DbService;
+use App\Service\Zabbix\Notifier\ChatNotifier;
+use App\Service\Zabbix\Notifier\EmailNotifier;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -24,24 +24,32 @@ class Handler
      * @var UTM5DbService
      */
     private $UTM5DbService;
+    /**
+     * @var EmailNotifier
+     */
+    private $emailNotifier;
+    /**
+     * @var ChatNotifier
+     */
+    private $chatNotifier;
 
     /**
      * ZabbixParser constructor.
      * @param RouterInterface $router
      */
-    public function __construct(RouterInterface $router, UTM5DbService $UTM5DbService)
+    public function __construct(RouterInterface $router, UTM5DbService $UTM5DbService,
+                                EmailNotifier $emailNotifier, ChatNotifier $chatNotifier)
     {
         $this->router = $router;
         $this->UTM5DbService = $UTM5DbService;
+        $this->emailNotifier = $emailNotifier;
+        $this->chatNotifier = $chatNotifier;
     }
 
     /**
-     * Обработка данных из контроллера
-     * @param string $subject
-     * @param string $text
-     * @return Alarm
+     * @param Command $command
      */
-    public function handle(Command $command): Alarm
+    public function handle(Command $command): void
     {
         if ($this->isMessageContainsLetter($command->message)) {
             [$text, $letter] = $this->separateMessage($command->message);
@@ -52,7 +60,16 @@ class Handler
 
         $text = $this->prepareText($ids, $text);
 
-        return new Alarm($command->subject, $text, $ids, $emails, $letter ?? null);
+        $alarm = new Alarm(
+            $command->subject,
+            $text,
+            $ids,
+            $emails,
+            $letter ?? null
+        );
+
+        $alarm->setNotifiers([$this->emailNotifier, $this->chatNotifier]);
+        $alarm->notify();
     }
 
     /**
@@ -90,7 +107,6 @@ class Handler
 
         return $ids;
     }
-
 
     /**
      * Получение email адресов по id

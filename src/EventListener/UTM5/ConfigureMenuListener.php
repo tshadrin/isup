@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\EventListener\UTM5;
 
 use App\Event\ConfigureMenuEvent;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Обработчик события создания меню

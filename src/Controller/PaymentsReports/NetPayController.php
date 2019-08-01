@@ -8,12 +8,10 @@ namespace App\Controller\PaymentsReports;
 use App\ReadModel\Payments\NetPay\Filter\Filter;
 use App\ReadModel\Payments\NetPay\Filter\Form;
 use App\Service\NetPay\ListPayments;
-use App\Service\SberbankReport\SberbankReportService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**

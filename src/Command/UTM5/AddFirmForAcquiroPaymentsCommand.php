@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Command\UTM5;
 
 use App\Service\UTM5\UTM5DbService;
+use DomainException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\{ InputArgument, InputInterface };
@@ -72,7 +73,7 @@ class AddFirmForAcquiroPaymentsCommand extends Command
                         if(false === fputcsv($handler_new, [$data[0], $data[3],$data[6], $data[1], $csv_group?'Ай Пи Парк':''], ';')) {
                             fclose($handler);
                             fclose($handler_new);
-                            throw new \DomainException("Ошибка записи в новый файл!");
+                            throw new DomainException("Ошибка записи в новый файл!");
                         }
                     }
                 }

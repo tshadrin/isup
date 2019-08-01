@@ -149,7 +149,7 @@ services:
     App\Service\SMS\smscSender:
         bind:
             $parameters: '%smsc%'
-    App\Service\Zabbix\MessagePreparer\ChatPreparer:
+    App\Service\Zabbix\Notifier\ChatNotifier:
       bind:
         $parameters: '%bitrix%'
     ### Обработчики событий ###
