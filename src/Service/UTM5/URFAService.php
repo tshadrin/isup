@@ -5,6 +5,8 @@ namespace App\Service\UTM5;
 
 use App\Entity\UTM5\Passport;
 use App\Entity\UTM5\UTM5UrfaUser;
+use ErrorException;
+use URFAClient_API;
 
 class URFAService
 {
@@ -16,33 +18,37 @@ class URFAService
     const PARAM_BIRTHDAY = 8;
 
     /**
-     * @var \URFAClient_API
+     * @var URFAClient_API
      */
     private $urfa;
 
     public function __construct(array $parameters)
     {
-        $this->urfa = \URFAClient::init($parameters);
+        try {
+            /** @noinspection PhpUnhandledExceptionInspection*/
+            $this->urfa = \URFAClient::init($parameters);
+        } catch (ErrorException $e) {
+            //@todo write to log
+            $this->urfa = null;
+        }
     }
 
     /**
-     * @return \URFAClient_API
-     * Возвращаем объект соединения с UTM5
+     * @return URFAClient_API|null
      */
-    public function getUrfa() { return $this->urfa; }
+    public function getUrfa(): ?URFAClient_API
+    {
+        if(isset($this->urfa))
+            return $this->urfa;
+        throw new \DomainException("Urfa service is not started");
+    }
 
     /**
-     * @param $id
-     * @return UTM5UrfaUser
-     * Ищем пользователя по id
-     */
-    public function getUser($id) { return UTM5UrfaUser::findById($id, $this->urfa); }
-
-    /**
-     * @param $account_id
+     * @param int $account_id
      * @return UTM5UrfaUser
      */
-    public function getUserByAccount(int $account_id) {
+    public function getUserByAccount(int $account_id)
+    {
         return UTM5UrfaUser::findByAccount($account_id, $this->urfa);
     }
 
@@ -53,7 +59,7 @@ class URFAService
      */
     public function getRequirementPaymentForUser($account): float
     {
-        $tmp =  $this->urfa->rpcf_get_requirement_payment(['account_id' => $account]);
+        $tmp =  $this->getUrfa()->rpcf_get_requirement_payment(['account_id' => $account]);
         return round($tmp['result'], 2);
     }
 
@@ -64,7 +70,7 @@ class URFAService
      */
     public function searchUserByAccount($account)
     {
-        $user = $this->urfa->rpcf_search_users_new([
+        $user = $this->getUrfa()->rpcf_search_users_new([
             'select_type' => 0,
             'patterns_count'=> [
                 0 => [
@@ -81,13 +87,12 @@ class URFAService
     }
 
     /**
-     * Получение информации о пользователе из утм5
-     * @param $id
-     * @return array|bool
+     * @param int $id
+     * @return array
      */
     public function getUserInfo(int $id): array
     {
-        $user = $this->urfa->rpcf_get_userinfo(['user_id' => $id]);
+        $user = $this->getUrfa()->rpcf_get_userinfo(['user_id' => $id]);
         // hack to save additional fields
         $user['parameters_count'] = $user['parameters_size'];
         if (array_key_exists('user_id', $user))
@@ -99,7 +104,7 @@ class URFAService
      * @param string $phone
      * @param int $id
      */
-    public function editMobilePhoneField(string $phone, int $id): void
+    public function editMobilePhone(string $phone, int $id): void
     {
         $user = $this->getUserInfo($id);
         $user['mob_tel'] = $phone;
@@ -110,7 +115,7 @@ class URFAService
      * @param string $email
      * @param int $id
      */
-    public function editEmailField(string $email, int $id): void
+    public function editEmail(string $email, int $id): void
     {
         $user = $this->getUserInfo($id);
         $user['email'] = $email;
@@ -192,15 +197,15 @@ class URFAService
     }
 
     /**
-     * Добавить пользователя в утм5 заполнив логин пароль и адрес и номер телефона
      * @param $login
      * @param $phone
      * @param $address
+     * @param $name
      * @return bool
      */
     public function addUser($login, $phone, $address, $name)
     {
-        $user = $this->urfa->rpcf_add_user_new([
+        $user = $this->getUrfa()->rpcf_add_user_new([
             'login' => $login,
             'full_name' => $name,
             'mob_tel' => $phone,
@@ -219,7 +224,7 @@ class URFAService
      */
     public function removeUser($id)
     {
-        $data = $this->urfa->rpcf_remove_user(['user_id' => (int)$id,]);
+        $data = $this->getUrfa()->rpcf_remove_user(['user_id' => (int)$id,]);
         return $data;
     }
 }

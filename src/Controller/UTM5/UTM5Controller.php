@@ -110,7 +110,11 @@ class UTM5Controller extends AbstractController
                 $template_data = $event_dispatcher->dispatch(
                     new UTM5UserFoundEvent($search_result)
                 )->getResult();
-                $search_result->setRequirementPayment($URFA_service->getRequirementPaymentForUser($search_result->getAccount()));
+                try {
+                    $search_result->setRequirementPayment($URFA_service->getRequirementPaymentForUser($search_result->getAccount()));
+                } catch (\DomainException $e) {
+                    $this->addFlash('error', $e->getMessage());
+                }
                 $template_data['user'] = $search_result;
                 $comment = $UTM5_user_comment_service->getNewUTM5UserComment($this->getUser());
                 $comment->setUtmId($search_result->getId());

@@ -21,6 +21,7 @@ parameters:
         channels_chat_id: '%env(BITRIX_CHANNELS_CHAT_ID)%'
     bitrix_cal:
         path: '%env(BITRIX_CALENDAR_PATH)%'
+    bitrix_member_id: '%env(BITRIX_MEMBER_ID)%'
     bot:
         bot_path: '%env(BOT_PATH)%'
     smsc:
@@ -85,7 +86,10 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
-    App\Controller\UTM5\ApiController:
+    App\Security\Voter\Bitrix\UserAccess:
+        bind:
+            $bitrixMemberId: '%bitrix_member_id%'
+    App\Controller\BitrixController:
         bind:
             $logger: '@monolog.logger.bitrix_create'
     App\Controller\ZabbixController:

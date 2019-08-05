@@ -258,6 +258,7 @@ profit_for_townships: 'Платежи в поселках'
 "Tariffs query error: %message%": "Ошибка запроса на получение тарифных планов пользователя: %message%"
 "Services data query error: %message%": "Ошибка запроса на получение услуг пользователя: %message%"
 "Paymets for user query error: %message%": "Ошибка получения платежей пользователя: %message%"
+"Invalid ID value": "Некорректное значение ID"
 "No block": "Нет блокировки"
 "Admin block": "Админская блокировка"
 "System block": "Системная блокировка"

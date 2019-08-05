@@ -112,6 +112,15 @@ class Passport
         $this->birthday = $birthday;
     }
 
+    public function isNotFill(): bool
+    {
+        return empty($this->number) ||
+               empty($this->issued) ||
+               empty($this->registrationAddress) ||
+               empty($this->authorityCode) ||
+               empty($this->birthday);
+    }
+
     /**
      * @param PassportFormData $passportFormData
      * @return Passport

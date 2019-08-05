@@ -53,6 +53,8 @@ class Handler
     {
         if ($this->isMessageContainsLetter($command->message)) {
             [$text, $letter] = $this->separateMessage($command->message);
+        } else {
+            $text = $command->message;
         }
 
         $ids = $this->getIdsFromText($text);
@@ -87,7 +89,7 @@ class Handler
      */
     private function separateMessage(string $message): array
     {
-        return explode(self::MESSAGE_DELIMITER, $message);
+        return array_map('trim', explode(self::MESSAGE_DELIMITER, $message));
     }
 
     /**
@@ -133,8 +135,7 @@ class Handler
     private function prepareText(array $ids, string $text): string
     {
         $text = $this->replaceIdsToLinks($ids, $text);
-        $text = html_entity_decode($text);
-        $text = trim($text);
+        $text = html_entity_decode(htmlspecialchars_decode($text));
 
         return $text;
     }
@@ -148,8 +149,11 @@ class Handler
     private function replaceIdsToLinks(array $ids, string $message): string
     {
         foreach ($ids as $id) {
-            $url = $this->router->generate('search.by.data',
-                ['type' => 'id', 'value' => $id], UrlGeneratorInterface::ABSOLUTE_URL);
+            $url = $this->router->generate(
+                'search.by.data',
+                ['type' => 'id', 'value' => $id],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
             $link = "[url={$url}]ID пользователя: {$id}[/url]";
             $message = preg_replace('/' . $id . '/', $link, $message);
         }

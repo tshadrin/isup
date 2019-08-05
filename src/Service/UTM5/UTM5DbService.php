@@ -60,7 +60,7 @@ class UTM5DbService
 
         switch($search_type) {
             case self::SEARCH_TYPE_ID:
-                $result = $this->UTM5UserRepository->findById($search_value);
+                $result = $this->UTM5UserRepository->findById((int)$search_value);
                 break;
             case self::SEARCH_TYPE_LOGIN:
                 $result =  $this->UTM5UserRepository->findByLogin($search_value);

@@ -28,7 +28,7 @@ class ZabbixController extends AbstractController
     }
 
     /**
-     * @Route("/alarm/", name=".alarm", methods={"POST"})
+     * @Route("/alarm/", name=".alarm", methods={"GET","POST"})
      */
     public function alarm(Request $request, Alarm\Handler $handler): JsonResponse
     {

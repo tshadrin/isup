@@ -92,6 +92,9 @@ class UserMapper
      */
     public function getUserById(int $id): Entity\UTM5User
     {
+        if($id === 0) {
+            throw new \DomainException($this->translator->trans("Invalid ID value"));
+        }
         try {
             $stmt = $this->userPreparer->getUserDataByIdStmt();
             $stmt->execute([':id' => $id]);

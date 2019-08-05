@@ -150,7 +150,9 @@ class User extends BaseUser
      */
     public function hasOption(string $key): bool
     {
-        return array_key_exists($key, $this->options)?true:false;
+        if(isset($this->options))
+            return array_key_exists($key, $this->options)?true:false;
+        return false;
     }
 
     /**
