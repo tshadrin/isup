@@ -28,7 +28,9 @@ class UserAccess extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        return in_array($attribute, [self::PAYCHECK], true) && $subject instanceof Request;
+        return
+            in_array($attribute, [self::PAYCHECK, self::CREATE, self::REMOVE], true) &&
+            $subject instanceof Request;
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
@@ -40,28 +42,13 @@ class UserAccess extends Voter
 
         $auth =  $subject->request->get(self::AUTH_NAME);
 
-        switch ($attribute) {
-            case self::PAYCHECK:
-                return
-                    $this->array_keys_exists(['domain', 'member_id'], $auth) &&
-                    $auth['member_id'] === $this->bitrixMemberId;
-                break;
-            case self::CREATE:
-                return
-                    $this->array_keys_exists(['domain', 'member_id'], $auth) &&
-                    $auth['member_id'] === $this->bitrixMemberId;
-                break;
-            case self::REMOVE:
-                return
-                    $this->array_keys_exists(['domain', 'member_id'], $auth) &&
-                    $auth['member_id'] === $this->bitrixMemberId;
-                break;
-        }
-        return false;
+        return
+            $this->array_keys_exists(['domain', 'member_id'], $auth) &&
+            $auth['member_id'] === $this->bitrixMemberId ? true: false;
     }
 
-    private function array_keys_exists(array $keys, array $arr): bool
+    private function array_keys_exists(array $keys, array $array): bool
     {
-        return !array_diff_key(array_flip($keys), $arr);
+        return !array_diff_key(array_flip($keys), $array);
     }
 }

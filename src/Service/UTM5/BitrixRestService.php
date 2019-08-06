@@ -8,6 +8,9 @@ use Psr\Log\LoggerInterface;
 
 class BitrixRestService
 {
+    const GET_DEAL_COMMAND = 'crm.deal.get';
+    const DEAL_UTM5_ID_FIELD = 'UF_CRM_5B3A2EC6DC360';
+    const DEAL_STATUS_FIELD = 'STAGE_ID';
     private $rest_url;
     private $logger;
     private $chat_id;
@@ -82,18 +85,6 @@ class BitrixRestService
     }
 
     /**
-     * @param $id
-     * @param $fields
-     * @return bool|mixed|string
-     */
-    public function updateDeal($id, $fields)
-    {
-        $result = $this->getBitrixData('crm.deal.update',
-            ['ID' => $id, 'FIELDS' => $fields]);
-        return $result;
-    }
-
-    /**
      * @param Statement $statement
      * @return bool|mixed|string
      */
@@ -103,6 +94,91 @@ class BitrixRestService
         $params = $statement->getParams();
         $result = $this->getBitrixData('im.message.add.json',
             ["CHAT_ID" => $params['chat_id'], "MESSAGE" => $message,]);
+        return $result;
+    }
+
+    /**
+     * Получение данных сделки по id
+     * @param int $id
+     * @return DealData
+     */
+    public function getDealDataById(int $id): DealData
+    {
+        $rawDeal = $this->getRawDeal($id);
+        if ($this->isFieldFill(self::DEAL_STATUS_FIELD, $rawDeal) &&
+           $this->isFieldFill(self::DEAL_UTM5_ID_FIELD, $rawDeal)) {
+            return new DealData($id,
+                $rawDeal['result'][self::DEAL_STATUS_FIELD],
+                (int)$rawDeal['result'][self::DEAL_UTM5_ID_FIELD]
+            );
+        } else {
+            throw new \DomainException("Not all required fields fill in deal");
+        }
+    }
+
+    /**
+     * Получение необработанных данных сделки
+     * @param int $id
+     * @return array
+     */
+    public function getRawDeal(int $id): array
+    {
+        $result = $this->getBitrixData(self::GET_DEAL_COMMAND, ["ID" => $id,]);
+        if ($this->hasError($result)) {
+            throw new \DomainException("Deal search error: {$result['error_description']}");
+        }
+        return $result;
+    }
+
+    /**
+     * Проверка запроса на ошибки
+     * @param array $queryResult
+     * @return bool
+     */
+    private function hasError(array $queryResult): bool
+    {
+        return
+            array_key_exists('error', $queryResult) &&
+            array_key_exists('error_description', $queryResult);
+    }
+
+    /**
+     * Проверка заполненности поля
+     * @param string $field
+     * @param array $rawDeal
+     * @return bool
+     */
+    private function isFieldFill(string $field, array $rawDeal): bool
+    {
+        if (!array_key_exists($field, $rawDeal['result']) ||
+            empty($rawDeal['result'][$field])) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Меняет статус сделки на WON
+     * @param DealData $dealData
+     */
+    public function setDealWon(DealData $dealData): void
+    {
+        [$prefix,] = explode(':', $dealData->status);
+        $this->updateDeal($dealData->id, [self::DEAL_STATUS_FIELD => "{$prefix}:WON",]);
+    }
+
+    /**
+     * @param $id
+     * @param $fields
+     * @return bool|mixed|string
+     */
+    public function updateDeal($id, $fields)
+    {
+        $result = $this->getBitrixData('crm.deal.update',
+            ['ID' => $id, 'FIELDS' => $fields]);
+        if ($this->hasError($result)) {
+            throw new \DomainException("Deal update error: {$result['error_description']}");
+        }
         return $result;
     }
 }

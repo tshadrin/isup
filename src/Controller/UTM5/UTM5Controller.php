@@ -89,7 +89,7 @@ class UTM5Controller extends AbstractController
      * @param EventDispatcherInterface $event_dispatcher
      * @param PaginatorInterface $paginator
      * @return Response
-     * @Route("/search/{type}/{value}/", name="search.by.data", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login"})
+     * @Route("/search/{type}/{value}/", name="search.by.data", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login|phone"})
      */
     public function search(string $type,
                                  $value,
@@ -127,6 +127,7 @@ class UTM5Controller extends AbstractController
                 $smsTemplateForm->handleRequest($request);
                 $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();
+                $template_data['searchType'] = $type;
                 return $this->render('Utm/find.html.twig', $template_data);
             }
             if($search_result instanceof UTM5UserCollection) {
@@ -139,7 +140,7 @@ class UTM5Controller extends AbstractController
                     $request->query->getInt('page', 1),
                     $rows=='all'?count($search_result):$rows);
                 $paged_users->setCustomParameters(['align' => 'center', 'size' => 'small',]);
-                return $this->render('Utm/find.html.twig', ['users' => $paged_users, 'rows' => $rows]);
+                return $this->render('Utm/find.html.twig', ['searchType' => $type, 'users' => $paged_users, 'rows' => $rows]);
             }
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
@@ -270,7 +271,7 @@ class UTM5Controller extends AbstractController
     /**
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @Route("/search/{type}/{value}/", name="search.by.data.rows", methods={"POST"}, requirements={"type": "id|fullname|address|ip|login"})
+     * @Route("/search/{type}/{value}/", name="search.by.data.rows", methods={"POST"}, requirements={"type": "id|fullname|address|ip|login|phone"})
      */
     public function rowsOnPage(Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {

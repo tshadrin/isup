@@ -58,15 +58,15 @@ class Handler
         }
 
         $ids = $this->getIdsFromText($text);
-        $emails = $this->getEmailsFromIds($ids);
+        $userData = $this->getUsersDataFromIds($ids);
 
-        $text = $this->prepareText($ids, $text);
+        $text = $this->prepareText($ids, $userData->fullNames,  $text);
 
         $alarm = new Alarm(
             $command->subject,
             $text,
             $ids,
-            $emails,
+            $userData->emails,
             $letter ?? null
         );
 
@@ -111,30 +111,33 @@ class Handler
     }
 
     /**
-     * Получение email адресов по id
+     * Достает необходимые данные пользователя (fullnames, emails)
      * @param array $ids
-     * @return array
+     * @return UsersData
      */
-    private function getEmailsFromIds(array $ids): array
+    private function getUsersDataFromIds(array $ids): UsersData
     {
-        $emails = [];
+        $usersData = new UsersData();
         foreach ($ids as $id) {
             $user = $this->UTM5DbService->search((string)$id, 'id');
             if ($user instanceof UTM5User && (!is_null($email = $user->getEmail()))) {
-                $emails[] = $user->getEmail();
+                $usersData->emails[] = $user->getEmail();
+                $usersData->fullNames[] = $user->getFullName();
             }
         }
 
-        return $emails;
+        return $userData;
     }
 
     /**
+     * Подготавливает текст оповещения
      * @param string $text
      * @return string
      */
-    private function prepareText(array $ids, string $text): string
+    private function prepareText(array $ids, array $fullNames, string $text): string
     {
         $text = $this->replaceIdsToLinks($ids, $text);
+        $text = $this->addUsersFullNamesToText($fullNames, $text);
         $text = html_entity_decode(htmlspecialchars_decode($text));
 
         return $text;
@@ -154,10 +157,26 @@ class Handler
                 ['type' => 'id', 'value' => $id],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
-            $link = "[url={$url}]ID пользователя: {$id}[/url]";
+            $link = "([url={$url}]ID пользователя: {$id}[/url])";
             $message = preg_replace('/' . $id . '/', $link, $message);
         }
 
         return $message;
     }
+
+    /**
+     * Добавляет наименования организаций/имена пользователей в текст оповещения
+     * @param array $fullNames
+     * @param $text
+     * @return string
+     */
+    private function addUsersFullNamesToText(array $fullNames, $text): string
+    {
+        foreach ($fullNames as $fullName) {
+            $text .= $fullName . PHP_EOL;
+        }
+
+        return $text;
+    }
+
 }

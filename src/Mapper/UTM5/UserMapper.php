@@ -150,19 +150,25 @@ class UserMapper
 
     /**
      * @param string $phone
-     * @return Entity\UTM5User
+     * @return UTM5UserCollection|Entity\UTM5User
      */
-    public function getUserByPhone(string $phone): Entity\UTM5User
+    public function getUserByPhone(string $phone)
     {
         try {
             $stmt = $this->userPreparer->getUserDataByPhoneStmt();
             $stmt->execute([':mobile_telephone' => "%{$phone}%"]);
-            if(1 === $stmt->rowCount()) {
+            if (1 === $stmt->rowCount()) {
                 $data = $stmt->fetch(FetchMode::ASSOCIATIVE);
                 return $this->UTM5UserInit($data);
             }
-            if($stmt->rowCount() > 1)
-                throw new \DomainException("Too many results found");
+            if ($stmt->rowCount() > 1) {
+                $data = $stmt->fetchAll(FetchMode::ASSOCIATIVE);
+                $users = new UTM5UserCollection();
+                foreach ($data as $row) {
+                    $users->add($this->UTM5UserInitPartial($row));
+                }
+                return $users;
+            }
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("User search error: %message%", ['%message%' => $e->getMessage()]));
         }

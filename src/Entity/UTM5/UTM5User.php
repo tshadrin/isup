@@ -784,4 +784,23 @@ class UTM5User
     {
         $this->requirement_payment = $requirement_payment;
     }
+
+    public function hasPaidForServices(): bool
+    {
+        if (!is_null($this->payments)) {
+            return $this->getTotalPaymentsAmount() > 0.0;
+        } else {
+            return false;
+        }
+    }
+
+    private function getTotalPaymentsAmount(): float
+    {
+        $this->payments->forAll(function ($num, $payment) use (&$amount){
+            if($payment->getAmount() > 0)
+                $amount += $payment->getAmount();
+            return true;
+        });
+        return $amount;
+    }
 }

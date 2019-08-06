@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Entity\UTM5\UTM5User;
 use App\Service\Bitrix\BitirixCalService;
+use App\Service\Bitrix\User\Paycheck;
 use App\Service\Bitrix\User\{ Command, Handler };
 use App\Service\UTM5\{ BitrixRestService, URFAService, UTM5DbService };
 use App\Security\Voter\Bitrix\UserAccess;
@@ -121,58 +122,23 @@ class BitrixController extends AbstractController
 
     /**
      * @param Request $request
-     * @param BitrixRestService $bitrix_rest_service
-     * @param UTM5DbService $UTM5_db_service
      * @param LoggerInterface $logger
      * @return JsonResponse
-     * @IsGranted(UserAccess::PAYCHECK, subject="request")
+     * IsGranted(UserAccess::PAYCHECK, subject="request")
      * @Route("/paycheck/", name=".pay-check.user", methods={"GET", "POST"})
      */
     public function checkUTM5Payments(Request $request,
-                                      BitrixRestService $bitrix_rest_service,
-                                      UTM5DbService $UTM5_db_service,
-                                      LoggerInterface $logger): JsonResponse
+                                      LoggerInterface $logger,
+                                      Paycheck\Handler $handler): JsonResponse
     {
-        if($request->request->has('document_id')) {
-            $did = $request->request->get('document_id');
-            $tmp_login = $did[2]; //DEAL_<NUM>
-            $deal_id = explode('_', $tmp_login); //DEAL <NUM>
-            $result = $bitrix_rest_service->getBitrixData('crm.deal.get', ["ID" => $deal_id[1],]);
-            if (array_key_exists('result', $result) && array_key_exists('STAGE_ID', $result['result'])) {
-                if(array_key_exists('UF_CRM_5B3A2EC6DC360', $result['result']) && (!empty($result['result']['UF_CRM_5B3A2EC6DC360']))) {
-                    $user = $UTM5_db_service->search($result['result']['UF_CRM_5B3A2EC6DC360']);
-                    if($user instanceof UTM5User) {
-                        $payments = $user->getPayments();
-                        if(is_array($payments)) {
-                            $amount = 0;
-                            foreach($payments as $payment) {
-                                if($payment['amount'] > 0)
-                                    $amount += $payment['amount'];
-                            }
-                            if($amount > 0) {
-                                $status = $result['result']['STAGE_ID'];
-                                $status = explode(':', $status);
-                                $new_status = "{$status[0]}:WON";
-                                $bitrix_rest_service->updateDeal($deal_id[1], ["STAGE_ID" => $new_status,]);
-                                $logger->info("Статус задачи {$deal_id[1]} изменен");
-                                return $this->json(['result' => 'success']);
-                            }
-                        } else {
-                            $logger->error("Пользователь {$result['result']['UF_CRM_5B3A2EC6DC360']} не проводил оплату");
-                        }
-                    } else {
-                        $logger->error("Пользователь {$result['result']['UF_CRM_5B3A2EC6DC360']} не найден");
-                    }
-                } else {
-                    $logger->error("Для сделки не указан id пользователя", $result);
-                }
-            } else {
-                $logger->error("Данные сделки не были получены", $_POST);
-            }
-        } else {
-            $logger->error("Не корректно были переданы данные сделки", $_POST);
+        try {
+            $command = new Paycheck\Command($request->query->get('document_id', []));
+            $handler->handle($command);
+            return $this->json(['result' => 'success']);
+        } catch (InvalidArgumentException | DomainException $e) {
+            $logger->error($e->getMessage());
+            return $this->json(['result' => 'error']);
         }
-        return $this->json(['result' => 'error']);
     }
 
 }
