@@ -4,11 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Service\Bitrix\User\Paycheck;
 
-
-use App\Collection\UTM5\PaymentCollection;
-use App\Service\UTM5\BitrixRestService;
-use App\Service\UTM5\UTM5DbService;
-use phpDocumentor\Reflection\DocBlock\Tags\Uses;
+use App\Service\UTM5\{BitrixRestService, UTM5DbService };
 
 class Handler
 {
@@ -27,13 +23,15 @@ class Handler
         $this->UTM5DbService = $UTM5DbService;
     }
 
-    public function handle(Command $command): void
+    public function handle(Command $command): bool
     {
         [, $dealId] = explode('_', $command->document[2]); //DEAL_<NUM> exploding
         $dealData = $this->bitrixRestService->getDealDataById((int)$dealId);
         $user = $this->UTM5DbService->search((string)$dealData->utm5Id, UTM5DbService::SEARCH_TYPE_ID);
         if ($user->hasPaidForServices()) {
             $this->bitrixRestService->setDealWon($dealData);
+            return true;
         }
+        return false;
     }
 }
