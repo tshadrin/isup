@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Security\Voter\Bitrix\UserAccess;
 use App\Service\Bitrix\BitirixCalService;
 use App\Service\Bitrix\User\Paycheck;
 use App\Service\Bitrix\User\{ Command, Handler };
 use App\Service\UTM5\{ BitrixRestService, URFAService };
-use App\Security\Voter\Bitrix\UserAccess;
 use DomainException;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -94,7 +94,7 @@ class BitrixController extends AbstractController
      * @param LoggerInterface $logger
      * @return JsonResponse
      * @IsGranted(UserAccess::REMOVE, subject="request")
-     * @Route("/bitrixremoveuser/", name=".remove.user", methods={"GET", "POST"})
+     * @Route("/bitrixremoveuser/", name=".remove.user", methods={"POST"})
      */
     public function  deleteUTM5User(Request $request,
                                     BitrixRestService $bitrixRestService,
@@ -125,14 +125,15 @@ class BitrixController extends AbstractController
      * @param Paycheck\Handler $handler
      * @return JsonResponse
      * IsGranted(UserAccess::PAYCHECK, subject="request")
-     * @Route("/paycheck/", name=".pay-check.user", methods={"GET", "POST"})
+     * @Route("/paycheck/", name=".pay-check.user", methods={"POST"})
      */
     public function checkUTM5Payments(Request $request,
                                       LoggerInterface $logger,
                                       Paycheck\Handler $handler): JsonResponse
     {
         try {
-            $command = new Paycheck\Command($request->query->get('document_id', []));
+            $command = new Paycheck\Command($request->request->get('document_id', []));
+            $logger->info("Deal info", $request->request->get('document_id', []));
             if ($handler->handle($command)) {
                 $logger->info("Deal updated");
                 return $this->json(['result' => 'success']);

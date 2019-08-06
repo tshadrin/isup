@@ -126,7 +126,7 @@ class Handler
             }
         }
 
-        return $userData;
+        return $usersData;
     }
 
     /**
@@ -172,6 +172,7 @@ class Handler
      */
     private function addUsersFullNamesToText(array $fullNames, $text): string
     {
+        $text .= PHP_EOL;
         foreach ($fullNames as $fullName) {
             $text .= $fullName . PHP_EOL;
         }
