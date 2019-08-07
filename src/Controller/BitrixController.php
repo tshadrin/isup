@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Security\Voter\Bitrix\UserAccess;
-use App\Service\Bitrix\BitirixCalService;
+
+use App\Service\Bitrix\Calendar\CalendarInterface;
 use App\Service\Bitrix\User\Paycheck;
 use App\Service\Bitrix\User\{ Command, Handler };
 use App\Service\UTM5\{ BitrixRestService, URFAService };
@@ -24,12 +25,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class BitrixController extends AbstractController
 {
     /**
+     * @param CalendarInterface $calendar
      * @return JsonResponse
+     * @throws \Exception
      * @Route("/getbitrixcal", name=".get.calendar", methods={"GET"})
      */
-    public function getCalendar(BitirixCalService $bitirixCalendarService): JsonResponse
+    public function getCalendar(CalendarInterface $calendar): JsonResponse
     {
-        return $this->json($bitirixCalendarService->getActualCallEvents());
+        $events = $calendar->getActualEvents();
+        return $this->json(['events' => ['events_count' => count($events), $events],]);
     }
 
     /**
@@ -146,5 +150,4 @@ class BitrixController extends AbstractController
             return $this->json(['result' => 'error']);
         }
     }
-
 }

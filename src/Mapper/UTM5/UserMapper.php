@@ -389,6 +389,7 @@ class UserMapper
             if (1 === $stmt->rowCount()) {
                 return (int)$stmt->fetch(FetchMode::COLUMN);
             }
+            dump($stmt->fetchAll());exit;
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("Check user passport query error: %message%", ['%message%' => $e->getMessage()]));
         }

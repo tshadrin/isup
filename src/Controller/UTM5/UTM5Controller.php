@@ -8,13 +8,13 @@ use App\Entity\UTM5\{ UTM5User, Passport };
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
 use App\Form\UTM5\{ PassportForm, PassportFormData, UTM5UserCommentForm };
-use App\Service\Bitrix\BitirixCalService;
+use App\Service\Bitrix\Calendar\CalendarInterface;
+use App\Service\Bot\Chain;
 use App\Service\UTM5\{ URFAService, UTM5DbService, UTM5UserCommentService };
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse };
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,54 +27,21 @@ use Symfony\Component\Routing\Annotation\Route;
 class UTM5Controller extends AbstractController
 {
     /**
-     * @param BitirixCalService $bitirixCalService
+     * @var CalendarInterface
      */
-    private function calEvents(BitirixCalService $bitirixCalService): void
+    private $calendar;
+
+    public function __construct(CalendarInterface $calendar)
     {
-        $result = $bitirixCalService->getActualCallEvents();
-        if(array_key_exists('events', $result)) {
-            $events = $result['events'];
-            $events_count = array_shift($events);
-            if (null !== $events && $events_count > 0) {
-                foreach ($events as $event) {
-                    $this->addFlash('info', "{$event[0]['title']}: {$event[0]['description']}");
-                }
-            }
-        }
+        $this->calendar = $calendar;
     }
 
-    /**
-     * @param UTM5User $user
-     */
-    private function setChain(UTM5User $user): void
+    private function calEvents(): void
     {
-        $queryData = http_build_query(['id' => $user->getId()]);
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_HEADER => 0,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://bot.istra.news/idsw',
-            CURLOPT_POSTFIELDS => $queryData,
-            CURLOPT_CONNECTTIMEOUT => 1,
-            CURLOPT_TIMEOUT => 1,
-        ]);
-        if($result = curl_exec($curl)) {
-            $crawler = new Crawler($result);
-            $crawler = $crawler->filter('body > div > div > table > tr > td')
-                               ->last()
-                               ->filter('p')
-                               ->first();
-            $html = '';
-            foreach ($crawler as $domElement) {
-                $html .= $domElement->ownerDocument->saveHTML($domElement);
-            }
-            list($chain) = explode('<br><br><br>', $html);
-            $tmp = explode("<br>", $chain);
-            array_shift($tmp);
-            $chain =  implode("<br>", $tmp);
-            $user->setChain($chain);
+        $events = $this->calendar->getActualEvents();
+        foreach ($events as $event) {
+            $this->addFlash('info', "{$event['title']} {$event['description']}");
         }
-        curl_close($curl);
     }
 
     /**
@@ -82,7 +49,6 @@ class UTM5Controller extends AbstractController
      * @param $type - тип поискового запроса
      * @param $value - значение для поиска
      * @param Request $request
-     * @param BitirixCalService $bitirix_cal_service
      * @param UTM5DbService $UTM5_db_service
      * @param URFAService $URFA_service
      * @param UTM5UserCommentService $UTM5_user_comment_service
@@ -92,21 +58,22 @@ class UTM5Controller extends AbstractController
      * @Route("/search/{type}/{value}/", name="search.by.data", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login|phone"})
      */
     public function search(string $type,
-                                 $value,
+                           $value,
                            Request $request,
-                           BitirixCalService $bitirix_cal_service,
+                           Chain\Parser $parser,
                            UTM5DbService $UTM5_db_service,
                            URFAService $URFA_service,
                            UTM5UserCommentService $UTM5_user_comment_service,
                            EventDispatcherInterface $event_dispatcher,
                            PaginatorInterface $paginator): Response
     {
-        $this->calEvents($bitirix_cal_service);
+        $this->calEvents();
 
         try {
             $search_result = $UTM5_db_service->search($value, $type);
             if($search_result instanceof UTM5User) {
-                $this->setChain($search_result);
+                $chain = $parser->getChain($search_result->getId());
+                $search_result->setChain($chain);
                 $template_data = $event_dispatcher->dispatch(
                     new UTM5UserFoundEvent($search_result)
                 )->getResult();
@@ -149,14 +116,12 @@ class UTM5Controller extends AbstractController
     }
 
     /**
-     * Шаблон поиска по-умолчанию
-     * @param BitirixCalService $bitirix_cal_service
      * @return Response
      * @Route("/search/", name="search", methods={"GET"})
      */
-    public function searchDefault(BitirixCalService $bitirix_cal_service): Response
+    public function searchDefault(): Response
     {
-        $this->calEvents($bitirix_cal_service);
+        $this->calEvents();
         return $this->render('Utm/find.html.twig');
     }
 

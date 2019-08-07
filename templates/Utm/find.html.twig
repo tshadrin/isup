@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
-
+{% if searchType is not defined %}
+    {% set searchType = 'none' %}
+{% endif %}
 {% block title %}
     {{ parent() }} |
     {% if user is defined %}

@@ -4,7 +4,7 @@
 {% if app.session.get('hide_block_previlous_orders') is defined and app.session.get('hide_block_previlous_orders') == true %}
     {% set hbpo = true %}
 {% endif %}
-    <table class="table table-sm orders-table generic-table">
+    <table class="table table-sm orders-table generic-table" id="lastest-orders">
         <caption class="pt-0 pb-0">{{ title }}:{{  orders|length }}
             <div id="{{ hide_name }}" class="show-hide-button">
                 {% if (hbto is defined and hide_name == 'today_orders') or

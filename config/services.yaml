@@ -3,6 +3,7 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+
 parameters:
     add_firm:
         files_dir: '%kernel.project_dir%/public/files'
@@ -22,8 +23,7 @@ parameters:
     bitrix_cal:
         path: '%env(BITRIX_CALENDAR_PATH)%'
     bitrix_member_id: '%env(BITRIX_MEMBER_ID)%'
-    bot:
-        bot_path: '%env(BOT_PATH)%'
+    bot_path: '%env(BOT_PATH)%'
     smsc:
         url: "%env(SMSC_URL)%"
         login: "%env(SMSC_LOGIN)%"
@@ -138,18 +138,25 @@ services:
     App\Service\SSH\SSHService:
         bind:
             $parameters: '%ssh%'
-    App\Service\Commutator\BotService:
+    App\Service\Bot\HttpClient:
         bind:
-            $parameters: '%bot%'
+            $botPath: '%bot_path%'
+    App\Service\Bot\Commutator\Parser:
+        bind:
+            $botPath: '%bot_path%'
     App\Service\UTM5\URFAService:
         bind:
             $parameters: '%urfa%'
     App\Service\UTM5\BitrixRestService:
         bind:
             $parameters: '%bitrix%'
-    App\Service\Bitrix\BitirixCalService:
+    App\Service\Bitrix\Calendar\CachedCalendar:
         bind:
             $parameters: '%bitrix_cal%'
+    App\Service\Bitrix\Calendar\Calendar:
+        bind:
+            $parameters: '%bitrix_cal%'
+    App\Service\Bitrix\Calendar\CalendarInterface: '@App\Service\Bitrix\Calendar\CachedCalendar'
     App\Service\SMS\smscSender:
         bind:
             $parameters: '%smsc%'

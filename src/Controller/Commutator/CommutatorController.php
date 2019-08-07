@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controller\Commutator;
 
 use App\Repository\Commutator\CommutatorRepository;
-use App\Service\Commutator\BotService;
+use App\Service\Bot\Commutator;
 use DomainException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,13 +17,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommutatorController extends AbstractController
 {
     /**
-     * @param $ip
+     * @param string $ip
      * @param CommutatorRepository $commutatorRepository
-     * @param BotService $botService
+     * @param Commutator\Parser $parser
      * @return Response
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      * @Route("/switchinfo/show/{ip}", name="switch_info_show", methods={"GET"}, requirements={"ip": "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z"})
      */
-    public function show(string $ip, CommutatorRepository $commutatorRepository, BotService $botService): Response
+    public function show(string $ip, CommutatorRepository $commutatorRepository, Commutator\Parser $parser): Response
     {
         $data = [];
         try {
@@ -33,7 +37,7 @@ class CommutatorController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
         try{
-            $switch_log = $botService->getCommutatorData($ip);
+            $switch_log = $parser->getCommutatorData($ip);
             $data['bot_data'] = $switch_log;
             $data['log'] = $switch_log['log'];
             $data['model'] = $switch_log['model'];
