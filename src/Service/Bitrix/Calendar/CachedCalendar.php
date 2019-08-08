@@ -50,7 +50,8 @@ class CachedCalendar extends Calendar
     private function cacheEvents(array $events): void
     {
         $this->cache('events_count', $count = count($events));
-        if($this->isEventsExists($events)) {
+
+        if ($this->isEventsExists($events)) {
             $this->cache('events', json_encode($events));
         }
     }

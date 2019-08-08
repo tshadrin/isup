@@ -6,7 +6,7 @@ namespace App\Service\Zabbix\MessagePreparer;
 
 
 use App\Entity\Zabbix\{ Alarm, Statement };
-use PHPUnit\Framework\Assert;
+use Webmozart\Assert\Assert;
 
 class ChatPreparer implements MessagePreparerInterface
 {
@@ -21,8 +21,8 @@ class ChatPreparer implements MessagePreparerInterface
      */
     public function __construct(array $parameters)
     {
-        Assert::arrayHasKey('chat_id');
-        Assert::arrayHasKey('channels_chat_id');
+        Assert::keyExists($parameters, 'chat_id');
+        Assert::keyExists($parameters, 'channels_chat_id');
 
         $this->parameters = $parameters;
     }

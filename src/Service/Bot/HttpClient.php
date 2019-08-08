@@ -7,6 +7,10 @@ namespace App\Service\Bot;
 
 use App\Service\Bot\Chain\IdswPageGetterInterface;
 use App\Service\Bot\Commutator\SwPageGetterInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
@@ -32,10 +36,6 @@ class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
     /**
      * @param int $id
      * @return string
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function getIdswPage(int $id): string
     {
@@ -45,10 +45,6 @@ class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
     /**
      * @param string $switch
      * @return string
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function getSwPage(string $switch): string
     {
@@ -60,15 +56,19 @@ class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
      * @param string $command
      * @param array $parameters
      * @return string
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function getPage(string $command, array $parameters): string
     {
-        $result = $this->httpClient->request("GET", $this->buildUrl($command, $parameters));
-        return $result->getContent();
+        try {
+            $result = $this->httpClient->request("GET", $this->buildUrl($command, $parameters));
+            return $result->getContent();
+        } catch (
+            ClientExceptionInterface |
+            RedirectionExceptionInterface |
+            ServerExceptionInterface |
+            TransportExceptionInterface $e) {
+            throw new \DomainException("Error retrieving page: {$e->getMessage()}");
+        }
     }
 
     /**

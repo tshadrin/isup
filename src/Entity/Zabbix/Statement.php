@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Entity\Zabbix;
 
 
-use PHPUnit\Framework\Assert;
+use Webmozart\Assert\Assert;
 
 class Statement
 {
@@ -17,7 +17,7 @@ class Statement
 
     public function __construct($message, array $params = [])
     {
-        Assert::assertNotEmpty($message);
+        Assert::notEmpty($message);
 
         $this->message = $message;
         $this->params = $params;

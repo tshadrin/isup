@@ -14,6 +14,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserMapper
 {
+    const ADMIN_BLOCK=2;
     /**
      * @var UserPreparer
      */
@@ -388,6 +389,9 @@ class UserMapper
             }
             if (1 === $stmt->rowCount()) {
                 return (int)$stmt->fetch(FetchMode::COLUMN);
+            }
+            if (2 === $stmt->rowCount()) {
+                return self::ADMIN_BLOCK;
             }
             dump($stmt->fetchAll());exit;
         } catch (\Exception $e) {

@@ -56,14 +56,19 @@ class Handler
             'promised_payment' => $user->isPromisedPayment(),
             'lifestrem_login' => $user->getLifestreamLogin(),
         ];
+
         foreach ($user->getIps() as $ip)
             $userData['ips'][] = $ip;
+
         foreach ($user->getRouters() as $router)
             $userData['routers'][] = ['name' => $router->getName(), 'ip' => $router->getIp()];
+
         foreach ($user->getTariffs() as $tariff)
             $userData['tariffs'][] = ['name' => $tariff->getName(),'next_name' => $tariff->getNextName()];
+
         foreach ($user->getGroups() as $group)
             $userData['groups'][] = $group->getName();
+
         return $userData;
     }
 

@@ -33,25 +33,25 @@ class Parser
     /**
      * @param string $ip
      * @return array
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function getCommutatorData(string $ip): array
     {
         $result = $this->swPageGetter->getSwPage($ip);
         $crawler = new Crawler($result);
-        $crawler = $crawler->filter('body > div > div');
-        $model = trim($crawler->eq(1)->html());
-        $config_path = $crawler->eq(5)->filter('a')->attr('href');
-        $map_image_path = $crawler->eq(6)->filter('a')->attr('href');
-        $log = trim($crawler->eq(4)->html());
-        return [
-            'model' => $model,
-            'config_path' => "{$this->botPath}/{$config_path}",
-            'map_image_url' => "{$this->botPath}/{$map_image_path}",
-            'log' => $log,
-        ];
+        try {
+            $crawler = $crawler->filter('body > div > div');
+            $model = trim($crawler->eq(1)->html());
+            $configUri = $crawler->eq(5)->filter('a')->attr('href');
+            $log = trim($crawler->eq(4)->html());
+            $mapImageUri = $crawler->eq(6)->filter('a')->attr('href');
+            return [
+                'model' => $model,
+                'config_path' => "{$this->botPath}/{$configUri}",
+                'log' => $log,
+                'map_image_url' => "{$this->botPath}/{$mapImageUri}",
+            ];
+        } catch (\InvalidArgumentException $e) {
+            throw new \DomainException("Data parsing failed: {$e->getMessage()}");
+        }
     }
 }
