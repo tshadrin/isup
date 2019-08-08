@@ -1,0 +1,36 @@
+filter_form:
+  label:
+    user_id: 'ID'
+    command: 'Команда'
+    processed: 'Обработан'
+    fiscal: 'Фискализован'
+    interval: 'Интервал'
+  choice:
+    check: 'check'
+    pay: 'pay'
+    processed: 'Да'
+    not_processed: 'Нет'
+    fiscal: 'Да'
+    not_fiscal: 'Нет'
+  placeholder:
+    user_id: '4894'
+
+payments:
+  title: 'Платежи Qiwi'
+  userId: 'ID'
+  login: 'Логин'
+  command: 'Команда'
+  sum: 'Сумма'
+  payDate: 'Дата платежа'
+  requestDate: 'Дата запроса'
+  processed: 'Обработан'
+  fisk: 'Фискализован'
+  total_count: 'Всего записей'
+Search: 'Поиск'
+Reset: 'Сброс'
+Home: 'Главная'
+Processed: 'Обработан'
+Fiscal: 'Фискализован'
+Tools: 'Инструменты'
+Qiwi: 'Qiwi'
+

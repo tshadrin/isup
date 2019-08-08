@@ -1,0 +1,6 @@
+{% trans_default_domain 'qiwi' %}
+{% if status %}
+    <span class="badge badge-success">{{ 'Processed'|trans }}</span>
+{% else %}
+    <span class="badge badge-danger">{{ 'Not processed'|trans }}</span>
+{% endif %}

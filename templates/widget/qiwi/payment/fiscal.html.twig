@@ -1,0 +1,6 @@
+{% trans_default_domain 'qiwi' %}
+{% if fiscal %}
+    <span class="badge badge-success">{{ 'Fiscal'|trans }}</span>
+{% else %}
+    <span class="badge badge-secondary">{{ 'Not fiscal'|trans }}</span>
+{% endif %}

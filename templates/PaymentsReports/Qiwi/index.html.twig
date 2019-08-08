@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'qiwi' %}
+
+{% block title %} {{ parent() }} | {{ 'payments.title'|trans }}{% endblock %}
+
+{% block context %}
+    {{ 'payments.title'|trans }}
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+        {{ form_start(filterForm, {'attr': {'class': 'form-inline'} }) }}
+        <div class="form-group pl-3">
+            {{ form_label(filterForm.userId, null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.userId, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(filterForm.command,null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.command, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(filterForm.processed,null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.processed, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(filterForm.fisk,null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.fisk, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(filterForm.interval,null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.interval, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm btn-primary-sham">{{ 'Search'|trans }}</button>
+        <a href="{{ path('qiwi') }}" class="btn btn-sm btn-secondary ml-1">{{ 'Reset'|trans }}</a>
+        {{ form_end(filterForm) }}
+    </nav>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block body %}
+    {% if payments is not null %}
+    <table class="isup-table isup-table-bordered isup-table-wide isup-table-zebra isup-table-vert-margin isup-table-hovered">
+        <caption>{{ 'payments.title'|trans }}</caption>
+        <thead class="table-primary">
+        <tr>
+            <th>{{ knp_pagination_sortable(payments, 'payments.userId'|trans, 'id') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.login'|trans, 'login') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.command'|trans, 'command') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.sum'|trans, 'sum') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.payDate'|trans, 'payDate') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.requestDate'|trans, 'requestDate') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.processed'|trans, 'processed') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.fisk'|trans, 'fisk') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for payment in payments %}
+            <tr>
+                <td><a href="{{ path('search.by.data', {'type': 'id', 'value': payment.id }) }}">{{ payment.id }}</a></td>
+                <td><a href="{{ path('search.by.data', {'type': 'login', 'value': payment.login }) }}">{{ payment.login }}</a></td>
+                <td>{{ payment.command }}</td>
+                <td>{{ payment.sum }}</td>
+                <td>{{ payment.payDate }}</td>
+                <td>{{ payment.requestDate }}</td>
+                <td>{{ qiwi_payment_status(payment.processed) }}</td>
+                <td>{{ qiwi_payment_fiscal(payment.fisk) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="8">{{ 'payments.total_count'|trans }}: {{ payments.getTotalItemCount }}</td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(payments, null, {}, {'align': 'center', 'size': 'small'}) }}
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('daterangepicker') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('daterangepicker') }}
+{% endblock %}
+

@@ -112,6 +112,9 @@ services:
     App\ReadModel\Payments\NetPay\PaymentsFetcher:
         bind:
             $connection: '@doctrine.dbal.newlk_connection'
+    App\ReadModel\Payments\Qiwi\PaymentsFetcher:
+        bind:
+            $connection: '@doctrine.dbal.sberbank_connection'
     App\ReadModel\Payments\Sberbank\PaymentsFetcher:
         bind:
             $connection: '@doctrine.dbal.sberbank_connection'

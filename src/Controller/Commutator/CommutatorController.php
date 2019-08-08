@@ -6,6 +6,7 @@ namespace App\Controller\Commutator;
 use App\Repository\Commutator\CommutatorRepository;
 use App\Service\Bot\Commutator;
 use DomainException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class CommutatorController
  * @package App\Controller\Commutator
+ * @IsGranted("ROLE_SUPPORT")
  */
 class CommutatorController extends AbstractController
 {

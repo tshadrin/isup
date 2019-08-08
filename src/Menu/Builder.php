@@ -57,6 +57,9 @@ class Builder
             $menu['Tools']->addChild('NetPay', ['route' => 'netpay'])
                 ->setExtra('orderNumber', 2)
             ;
+            $menu['Tools']->addChild('Qiwi', ['route' => 'qiwi'])
+                ->setExtra('orderNumber', 3)
+            ;
             $menu->addChild('Channels', ['uri' => '/files/Kanaly_v_arendu.html'])
                 ->setAttribute('icon', 'fas fa-project-diagram')
                 ->setLinkAttribute('target', '_blank')
