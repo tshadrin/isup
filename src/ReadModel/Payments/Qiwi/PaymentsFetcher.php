@@ -40,7 +40,7 @@ class PaymentsFetcher
     public function getFilteredPayments(Filter $filter): array
     {
         $query = $this->connection->createQueryBuilder()
-            ->select('p.account as login', 'p.command', 'p.sum', 'p.txn_date as payDate',
+            ->select('p.account as login', 'p.command', 'p.sum', 'p.txn_date as payDate', 'p.txn_id as transaction',
                 'p.request_date as requestDate', 'q.status_pay as processed', 'q.status_fisk as fisk', 'u.id')
             ->from('qiwi_payments', 'p')
             ->join('p', 'UTM5.users', 'u', 'u.login=p.account')

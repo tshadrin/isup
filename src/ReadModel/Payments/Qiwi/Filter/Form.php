@@ -8,9 +8,7 @@ namespace App\ReadModel\Payments\Qiwi\Filter;
 use App\ReadModel\DateIntervalTransformer;
 use App\ReadModel\Payments\Qiwi\Payment;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SearchType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\{ ChoiceType,  SearchType, TextType };
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -36,7 +34,6 @@ class Form extends AbstractType
             ],
             'label' => 'filter_form.label.command',
             'required' => false,
-
         ]);
         $builder->add('processed', ChoiceType::class, [
             'choices'  => [
@@ -55,8 +52,6 @@ class Form extends AbstractType
             'label' => 'filter_form.label.fiscal',
             'required' => false,
         ]);
-
-
         $builder->add('interval',TextType::Class, [
             'label' => 'filter_form.label.interval',
             'required' => false,
@@ -64,7 +59,6 @@ class Form extends AbstractType
                 'pattern' => '\d{2}-\d{2}-\d{4} - \d{2}-\d{2}-\d{4}',
             ],
         ]);
-
         $builder->get('interval')->addModelTransformer(DateIntervalTransformer::factory());
     }
 

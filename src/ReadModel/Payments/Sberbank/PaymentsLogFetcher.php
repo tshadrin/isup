@@ -34,7 +34,7 @@ class PaymentsLogFetcher
     {
         $result = $this->connection->createQueryBuilder()
             ->select('l.date', 'l.ip', 'l.in_data', 'l.out_data', 'l.err_code', 'l.err_text')
-            ->from('logs', 'l')
+            ->from('log_sber', 'l')
             ->where("l.in_data LIKE :pay_num")
             ->setParameter('pay_num', "%pay_num => {$transaction}%")
             ->execute();
@@ -55,7 +55,7 @@ class PaymentsLogFetcher
     public function getCountPaymentLogRows(int $transaction): int
     {
         $query = "SELECT count(l.in_data)
-                  FROM logs l
+                  FROM log_sber l
                   WHERE MATCH(l.in_data) AGAINST(:pay_num)";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([':pay_num' => $transaction]);

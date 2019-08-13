@@ -51,7 +51,7 @@ class Parser
                 'map_image_url' => "{$this->botPath}/{$mapImageUri}",
             ];
         } catch (\InvalidArgumentException $e) {
-            throw new \DomainException("Data parsing failed: {$e->getMessage()}");
+            throw new \DomainException("Data parsing from bot failed: {$e->getMessage()}");
         }
     }
 }

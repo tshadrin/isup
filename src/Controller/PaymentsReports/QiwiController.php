@@ -7,6 +7,7 @@ namespace App\Controller\PaymentsReports;
 
 use App\ReadModel\Payments\Qiwi\Filter\Filter;
 use App\ReadModel\Payments\Qiwi\Filter\Form;
+use App\ReadModel\Payments\Qiwi\Payment;
 use App\Service\Payments\Qiwi\FilteredList;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

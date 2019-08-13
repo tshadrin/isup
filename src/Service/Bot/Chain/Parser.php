@@ -39,10 +39,13 @@ class Parser
      */
     private function getChainBlock(string $page): string
     {
-        $crawler = new Crawler($page);
-        $html = $crawler->filter('body > div > div > table > tr > td')
-            ->last()->filter('p')->first()->html();
-
+        try {
+            $crawler = new Crawler($page);
+            $html = $crawler->filter('body > div > div > table > tr > td')
+                ->last()->filter('p')->first()->html();
+        } catch (\InvalidArgumentException $e) {
+            throw new \DomainException("Data parsing from bot failed: {$e->getMessage()}");
+        }
         return $html;
     }
 

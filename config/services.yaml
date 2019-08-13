@@ -216,7 +216,7 @@ services:
         bind:
             $parameters: '%add_firm%'
         tags:
-            - { name: 'console.command', command: 'commutator:get-users-by-ip' }
+            - { name: 'console.command', command: 'tv:get-users-from-list' }
     #меню
     app.menu_builder: #сделан алиас чтоб не орал type-hint
         alias: App\Menu\Builder

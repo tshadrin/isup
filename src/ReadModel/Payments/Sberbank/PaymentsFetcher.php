@@ -34,8 +34,11 @@ class PaymentsFetcher
     public function getFilteredPayments(Filter $filter): array
     {
         $query = $this->connection->createQueryBuilder()
-            ->select('p.account_id as user_id', 'p.amount', 'p.pay_num as transaction', 'p.reg_date as created')
-            ->from('payments', 'p');
+            ->select('p.user_id', 'p.amount', 'p.transaction_id as transaction', 'p.pay_date as payDate', 'p.created', 'q.status_pay as processed', 'q.status_fisk as fisk')
+            ->from('sber_payments', 'p')
+            ->leftJoin('p', 'queue', 'q', 'q.transaction_id = p.transaction_id')
+            ->where("q.type = 'sb'");
+
         if ($filter->userId) {
             $query->andWhere("p.account_id = :user_id")
                 ->setParameter(':user_id', $filter->userId);
@@ -48,8 +51,8 @@ class PaymentsFetcher
 
         if ($filter->interval) {
             [$from, $to] = $filter->interval;
-            $query->where("p.reg_date > :created_from")
-                ->andWhere("p.reg_date < :created_to")
+            $query->andWhere("p.created > :created_from")
+                ->andWhere("p.created < :created_to")
                 ->setParameter("created_from", $from->format('Y-m-d H:i:s'))
                 ->setParameter("created_to", $to->format('Y-m-d H:i:s'));
         }

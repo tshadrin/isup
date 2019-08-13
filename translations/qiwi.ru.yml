@@ -4,7 +4,7 @@ filter_form:
     command: 'Команда'
     processed: 'Обработан'
     fiscal: 'Фискализован'
-    interval: 'Интервал'
+    interval: 'Период'
   choice:
     check: 'check'
     pay: 'pay'
@@ -14,7 +14,6 @@ filter_form:
     not_fiscal: 'Нет'
   placeholder:
     user_id: '4894'
-
 payments:
   title: 'Платежи Qiwi'
   userId: 'ID'
@@ -26,6 +25,7 @@ payments:
   processed: 'Обработан'
   fisk: 'Фискализован'
   total_count: 'Всего записей'
+  transaction: 'Номер транзакции'
 Search: 'Поиск'
 Reset: 'Сброс'
 Home: 'Главная'
@@ -33,4 +33,6 @@ Processed: 'Обработан'
 Fiscal: 'Фискализован'
 Tools: 'Инструменты'
 Qiwi: 'Qiwi'
+Not processed: 'Не обработан'
+Not fiscal: 'Не фискализован'
 

@@ -55,6 +55,8 @@
             <th>{{ knp_pagination_sortable(payments, 'payments.pay_num'|trans, 'transaction') }}</th>
             <th>{{ knp_pagination_sortable(payments, 'payments.amount'|trans, 'amount') }}</th>
             <th>{{ knp_pagination_sortable(payments, 'payments.pay_date'|trans, 'created') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.pay_date'|trans, 'processed') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.pay_date'|trans, 'fisk') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -64,12 +66,14 @@
                 <td><a href="{{ path('sberbank.log', {'transaction': payment.transaction}) }}">{{ payment.transaction }}</a></td>
                 <td>{{ payment.amount }}</td>
                 <td>{{ payment.created | date('Y-m-d') }} {{ payment.created|date('H:i:s') }}</td>
+                <td>{{ qiwi_payment_status(payment.processed) }}</td>
+                <td>{{ qiwi_payment_fiscal(payment.fisk) }}</td>
             </tr>
         {% endfor %}
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="5">{{ 'log.items_found'|trans }}: {{ payments.getTotalItemCount }}</td>
+            <td colspan="6">{{ 'log.items_found'|trans }}: {{ payments.getTotalItemCount }}</td>
         </tr>
         </tfoot>
     </table>

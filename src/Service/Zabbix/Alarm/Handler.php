@@ -8,6 +8,7 @@ use App\Entity\Zabbix\Alarm;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\Zabbix\Notifier\ChatNotifier;
 use App\Service\Zabbix\Notifier\EmailNotifier;
+use App\Service\Zabbix\Notifier\SmsNotifier;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -34,8 +35,12 @@ class Handler
     private $chatNotifier;
 
     /**
-     * ZabbixParser constructor.
+     * Handler constructor.
      * @param RouterInterface $router
+     * @param UTM5DbService $UTM5DbService
+     * @param EmailNotifier $emailNotifier
+     * @param SmsNotifier $smsNotifier
+     * @param ChatNotifier $chatNotifier
      */
     public function __construct(RouterInterface $router, UTM5DbService $UTM5DbService,
                                 EmailNotifier $emailNotifier, ChatNotifier $chatNotifier)
@@ -46,9 +51,6 @@ class Handler
         $this->chatNotifier = $chatNotifier;
     }
 
-    /**
-     * @param Command $command
-     */
     public function handle(Command $command): void
     {
         if ($this->isMessageContainsLetter($command->message)) {

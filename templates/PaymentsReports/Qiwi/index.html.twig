@@ -62,6 +62,7 @@
         <tr>
             <th>{{ knp_pagination_sortable(payments, 'payments.userId'|trans, 'id') }}</th>
             <th>{{ knp_pagination_sortable(payments, 'payments.login'|trans, 'login') }}</th>
+            <th>{{ knp_pagination_sortable(payments, 'payments.transaction'|trans, 'transaction') }}</th>
             <th>{{ knp_pagination_sortable(payments, 'payments.command'|trans, 'command') }}</th>
             <th>{{ knp_pagination_sortable(payments, 'payments.sum'|trans, 'sum') }}</th>
             <th>{{ knp_pagination_sortable(payments, 'payments.payDate'|trans, 'payDate') }}</th>
@@ -75,6 +76,7 @@
             <tr>
                 <td><a href="{{ path('search.by.data', {'type': 'id', 'value': payment.id }) }}">{{ payment.id }}</a></td>
                 <td><a href="{{ path('search.by.data', {'type': 'login', 'value': payment.login }) }}">{{ payment.login }}</a></td>
+                <td>{{ payment.transaction }}</td>
                 <td>{{ payment.command }}</td>
                 <td>{{ payment.sum }}</td>
                 <td>{{ payment.payDate }}</td>
@@ -86,7 +88,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="8">{{ 'payments.total_count'|trans }}: {{ payments.getTotalItemCount }}</td>
+            <td colspan="9">{{ 'payments.total_count'|trans }}: {{ payments.getTotalItemCount }}</td>
         </tr>
         </tfoot>
     </table>

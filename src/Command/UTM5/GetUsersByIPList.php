@@ -48,13 +48,28 @@ class GetUsersByIPList extends Command
         $filepath = $this->files_dir.DIRECTORY_SEPARATOR.$filename;
         $new_filename = "new_{$filename}";
         $new_filepath = $this->files_dir . DIRECTORY_SEPARATOR . $new_filename;
-/*
         if ($f->exists($filepath)) {
             $output->writeln("Файл найден, начинаем работу.");
             if(false !== ($handler = fopen($filepath, 'r'))) {
                 if(false !== ($handler_new = fopen($new_filepath, 'w'))) {
-                    $fields = fgetcsv($handler, 9000, ';');  // 4 - sum 5 - email 8 - id 6 - date
-                    fputcsv($handler_new, [$fields[4], $fields[5],$fields[8], $fields[6], 'Фирма'], ';');
+
+                    while(false !== ($ip = fgets($handler))) {
+                        $output = [];
+                        $output[] = trim($ip);
+                        try {
+                            $user = $this->UTM5DbService->search(trim($ip), 'ip');
+                            $output[] = $user->getFullName();
+                            $output[] = $user->getMobilePhone();
+                            foreach($user->getTariffs() as $tariff) {
+                                $output[] = $tariff->getName();;
+                            }
+                        } catch (\Exception $e) {
+                            $output[] = $e->getMessage();
+                        }
+                        fputcsv($handler_new, $output, ';');
+                    }
+                    /*
+                    fputs($handler_new, $fields);
                     while (false !== ($data = fgetcsv($handler, 9000, ';'))) {
                         list($param_name, $utm5_id) = explode('=', "{$data[8]}=");
                         $user = $this->UTM5DbService->search($utm5_id);
@@ -69,7 +84,9 @@ class GetUsersByIPList extends Command
                             throw new \DomainException("Ошибка записи в новый файл!");
                         }
                     }
+                    */
                 }
+
             }
             fclose($handler);
             fclose($handler_new);
@@ -77,7 +94,6 @@ class GetUsersByIPList extends Command
         } else {
             $output->writeln("Ошибка. Файл не найден.");
         }
-*/
     }
 
     protected function configure(): void

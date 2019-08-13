@@ -28,14 +28,6 @@ class EmailPreparer implements MessagePreparerInterface
             ->setFrom(self::ISUP_MAIL_FROM)
             ->setTo($message->getEmails())
             ->setBody($message->getLetter())
-//                ->setBody(
-//                    $this->renderView(
-//                    // app/Resources/views/Emails/registration.html.twig
-//                        'Emails/registration.html.twig',
-//                        ['name' => $name]
-//                    ),
-//                    'text/html'
-//                )
         ;
         return new Statement($message);
     }

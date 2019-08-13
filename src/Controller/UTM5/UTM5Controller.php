@@ -72,12 +72,16 @@ class UTM5Controller extends AbstractController
         try {
             $search_result = $UTM5_db_service->search($value, $type);
             if($search_result instanceof UTM5User) {
-                $chain = $parser->getChain($search_result->getId());
-                $search_result->setChain($chain);
+                try {
+                    $chain = $parser->getChain($search_result->getId());
+                    $search_result->setChain($chain);
+                } catch (\DomainException $e) {
+                    $this->addFlash('error', $e->getMessage());
+                }
                 $template_data = $event_dispatcher->dispatch(
                     new UTM5UserFoundEvent($search_result)
                 )->getResult();
-                try {
+                try{
                     $search_result->setRequirementPayment($URFA_service->getRequirementPaymentForUser($search_result->getAccount()));
                 } catch (\DomainException $e) {
                     $this->addFlash('error', $e->getMessage());
