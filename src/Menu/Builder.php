@@ -105,6 +105,9 @@ class Builder
         if ($authorizationChecker->isGranted('ROLE_ADMIN')) {
             $menu['Control']->addChild('admin', ['route' => 'sonata_admin_redirect']);
         }
+        if ($authorizationChecker->isGranted('ROLE_SMS_ADMINISTRATOR')) {
+            $menu['Control']->addChild('admin_sms', ['route' => 'admin_app_sms_smstemplate_list']);
+        }
         $menu['Control']->addChild('Exit', ['route' => 'fos_user_security_logout']);
 
         $eventDispatcher->dispatch(
