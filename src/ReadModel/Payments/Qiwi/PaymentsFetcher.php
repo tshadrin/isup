@@ -41,14 +41,13 @@ class PaymentsFetcher
     {
         $query = $this->connection->createQueryBuilder()
             ->select('p.account as login', 'p.command', 'p.sum', 'p.txn_date as payDate', 'p.txn_id as transaction',
-                'p.request_date as requestDate', 'q.status_pay as processed', 'q.status_fisk as fisk', 'u.id')
+                'p.request_date as requestDate', 'q.status_pay as processed', 'q.status_fisk as fisk', 'p.user_id as id')
             ->from('qiwi_payments', 'p')
-            ->join('p', 'UTM5.users', 'u', 'u.login=p.account')
             ->leftJoin('p', 'queue', 'q', 'p.txn_id = q.transaction_id')
             ->where("q.type='qw'");
 
         if ($filter->userId) {
-            $query->andWhere("u.id = :user_id")
+            $query->andWhere("p.user_id = :user_id")
                 ->setParameter(':user_id', $filter->userId);
         }
         if (isset($filter->processed)) {
