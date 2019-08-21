@@ -3,15 +3,29 @@
 
 namespace App\Command\UTM5;
 
+use App\Service\UTM5\URFAService;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class FindInactiveUsersCommand extends Command
 {
-    protected function
+    /**
+     * @var URFAService
+     */
+    private $URFAService;
+
+    public function __construct(URFAService $URFAService)
+    {
+        parent::__construct();
+        $this->URFAService = $URFAService;
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         ini_set('memory_limit', '-1');
 
-        $result = $urfa->rpcf_search_users_new(array(
+        $result = $this->URFAService->getUrfa()->rpcf_search_users_new(array(
             'select_type' => 0,
             'patterns_count' => array(),
         ));
@@ -20,11 +34,11 @@ class FindInactiveUsersCommand extends Command
 
         foreach ($result['user_data_size'] as $value)
         {
-            $info = $urfa->rpcf_get_userinfo(array(
+            $info = $this->URFAService->getUrfa()->rpcf_get_userinfo(array(
                 'user_id' => $value['user_id']
             ));
 
-            $urfa_user = auth($info['login'], $info['password']);
+            $urfa_user = $this->auth($info['login'], $info['password']);
 
 
             $report = $urfa_user->rpcf_user5_payments_report(array(
@@ -61,5 +75,15 @@ class FindInactiveUsersCommand extends Command
                 echo $value['user_id'] . " active\n";
             }
         }
+    }
+
+    private function auth($login, $password) {
+        $urfa = \URFAClient::init(array(
+            'login'    => $login,
+            'password' => $password,
+            'address'  => '10.3.7.42',
+        ));
+
+        return $urfa;
     }
 }
