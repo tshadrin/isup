@@ -72,18 +72,20 @@ class SMSController extends AbstractController
     {
         $form = $this->createForm(SmsTemplateForm::class);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             $smsTemplateData = $form->getData();
-            $sender->send($smsTemplateData->getPhone(),$smsTemplateData->getSmsTemplate()->getMessage());
-            $this->addFlash("notice", "Message sended");
-        } else {
-            $errors = $form->getErrors(true);
-            foreach ($errors as $error) {
-                $this->addFlash('error', $error->getMessage());
+            if ($form->isValid()) {
+                $sender->send($smsTemplateData->getPhone(),$smsTemplateData->getSmsTemplate()->getMessage());
+                $this->addFlash("notice", "Message sended");
+            } else {
+                $errors = $form->getErrors(true);
+                foreach ($errors as $error) {
+                    $this->addFlash('error', $error->getMessage());
+                }
             }
+            return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
         }
-        return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
-
+        return $this->redirectToRoute("search");
     }
 
     /**
