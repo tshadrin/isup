@@ -104,6 +104,14 @@ services:
             $entityName: 'App\Entity\Phone\Phone'
         calls:
             - method: setTranslator
+    App\Repository\Statistics\LastPaymentRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Statistics\LastPayment'
+    App\Repository\Statistics\PaymentRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Statistics\Payment'
     App\Repository\Vlan\VlanRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:

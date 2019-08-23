@@ -27,6 +27,7 @@ class UserPreparer
 	   u.flat_number,
 	   u.passport,
 	   u.house_id,
+	   u.is_juridical as juridical,
 	   u.create_date AS created,
 	   u.comments AS utm5_comments,
 	   TRUNCATE(a.balance, 2) AS balance,

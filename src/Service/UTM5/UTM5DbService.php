@@ -20,6 +20,7 @@ class UTM5DbService
     public const SEARCH_TYPE_FULLNAME = 'fullname';
     public const SEARCH_TYPE_ADDRESS = 'address';
     public const SEARCH_TYPE_PHONE = 'phone';
+    public const SEARCH_TYPE_ACCOUNT = 'account';
     /**
      * @var EntityManagerInterface
      */
@@ -55,7 +56,8 @@ class UTM5DbService
             self::SEARCH_TYPE_IP,
             self::SEARCH_TYPE_ADDRESS,
             self::SEARCH_TYPE_FULLNAME,
-            self::SEARCH_TYPE_PHONE
+            self::SEARCH_TYPE_PHONE,
+            self::SEARCH_TYPE_ACCOUNT
         ]);
 
         switch($search_type) {
@@ -77,6 +79,9 @@ class UTM5DbService
                 break;
             case self::SEARCH_TYPE_PHONE:
                 $result = $this->UTM5UserRepository->findByPhone($search_value);
+                break;
+            case self::SEARCH_TYPE_ACCOUNT:
+                $result = $this->UTM5UserRepository->findByAccount($search_value);
                 break;
             default:
                 break;

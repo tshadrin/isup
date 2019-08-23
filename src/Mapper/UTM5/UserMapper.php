@@ -442,6 +442,7 @@ class UserMapper
         if(!empty($data['juridical_address'])) {
             $user->setJuridicalAddress($data['juridical_address']);
         }
+        $user->setJuridical((bool)$data['juridical']);
         $user->setBalance((float)$data['balance']);
         $user->setInternetStatus((bool)$data['int_status']);
         if(!empty($data['mobile_telephone'])) {

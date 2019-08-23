@@ -1,0 +1,33 @@
+<?php
+
+
+namespace App\ReadModel\PaymentStatistics\ExistsUsers;
+
+
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
+
+class UserFetcher
+{
+    /**
+     * @var Connection
+     */
+    private $connection;
+
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
+    public function getExistsUsersIds(): array
+    {
+        $query = "SELECT id FROM users WHERE is_deleted=0";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute();
+
+        if(!$stmt->rowCount()) {
+            throw new \DomainException("Not found users");
+        }
+        return $stmt->fetchAll(FetchMode::COLUMN);
+    }
+}

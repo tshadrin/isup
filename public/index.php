@@ -5,7 +5,7 @@ use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
 require dirname(__DIR__).'/config/bootstrap.php';
-
+ini_set("date.timezone", "Europe/Moscow");
 if ($_SERVER['APP_DEBUG']) {
     umask(0000);
 

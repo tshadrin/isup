@@ -132,6 +132,11 @@ class UTM5User
      * @var int
      */
     protected $block;
+
+    /**
+     * @var bool
+     */
+    protected $juridical;
     /**
      * @var PromisedPayment
      */
@@ -148,6 +153,22 @@ class UTM5User
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isJuridical(): bool
+    {
+        return $this->juridical;
+    }
+
+    /**
+     * @param bool $juridical
+     */
+    public function setJuridical(bool $juridical): void
+    {
+        $this->juridical = $juridical;
     }
 
     /**

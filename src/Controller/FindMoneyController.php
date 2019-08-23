@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\FindMoney\FindMoneyService;
+use App\Service\PaymentStatistics\MonthPayments\Command;
+use App\Service\PaymentStatistics\MonthPayments\Handler;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Request, Response };
@@ -33,5 +35,17 @@ class FindMoneyController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
         return $this->render('FindMoney/index.html.twig', $template_data);
+    }
+
+    /**
+     * @Route("/month-payments", name="month-paymetns", methods={"GET"})
+     */
+    public function getMonthPayments(Request $request, Handler $handler): Response
+    {
+        $command = new Command(1,2017);
+        dump("OK");
+        $handler->handle($command);
+        //@todo год и месяц можно будет выбрать в форме
+        exit;
     }
 }

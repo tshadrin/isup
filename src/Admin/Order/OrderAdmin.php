@@ -22,7 +22,7 @@ class OrderAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper): void
     {
         $formMapper->add('id')
-            ->add('utmId', TextType::class)
+            ->add('utmId', TextType::class, ['required' => false])
             ->add('fullName')
             ->add('address')
             ->add('serverName')

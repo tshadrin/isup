@@ -191,7 +191,7 @@ class Order
     /**
      * @return int
      */
-    public function getCompleted(): int
+    public function getCompleted(): ?int
     {
         return $this->completed;
     }
