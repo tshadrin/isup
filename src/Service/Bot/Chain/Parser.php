@@ -41,8 +41,7 @@ class Parser
     {
         try {
             $crawler = new Crawler($page);
-            $html = $crawler->filter('body > div > div > table > tr > td')
-                ->last()->filter('p')->first()->html();
+            $html = $crawler->filter('#chain')->html();
         } catch (\InvalidArgumentException $e) {
             throw new \DomainException("Data parsing from bot failed: {$e->getMessage()}");
         }
@@ -55,10 +54,12 @@ class Parser
      */
     public function prepareText(string $html): string
     {
-        [$chain,] = explode('<br><br>', $html); // Во второй части строки ссылка на Ping
-        $strings = explode("<br>", $chain); // Построчное разбиение блока
-        array_shift($strings); //Удаление строки заголовка
-        $chain =  implode("<br>", $strings);
+        $chain = $html;
+        //$chain = strip_tags($html, "<a>");
+        //[$chain,] = explode('<br><br>', $html); // Во второй части строки ссылка на Ping
+        //$strings = explode("<br>", $chain); // Построчное разбиение блока
+        //array_shift($strings); //Удаление строки заголовка
+        //$chain =  implode("<br>", $strings);
         return $chain;
     }
 }

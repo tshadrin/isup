@@ -27,7 +27,7 @@
         {% for payment in payments %}
         <tr>
             <td>{{ payment.amount }}</td>
-            <td>{{ payment.date|date('d-m-Y H:i') }}</td>
+            <td>{{ payment.date|date('d-m-Y H:i:s') }}</td>
             <td>{{ payment.transactionNumber }}</td>
             <td>{{ payment.method }}</td>
             <td>{{ payment.receiver }}</td>

@@ -39,7 +39,7 @@ class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
      */
     public function getIdswPage(int $id): string
     {
-        return $this->getPage(self::SWITCH_CHAIN_URI, ['id' => $id]);
+        return $this->getPage(self::SWITCH_CHAIN_URI, ['idsw' => $id]);
     }
 
     /**
