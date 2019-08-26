@@ -61,8 +61,8 @@ class OrderController extends AbstractController
         $last_orders = $orderService->findOrdersByFilter($filter, false);
         foreach($last_orders as $order) {
             if(!is_null($order->getUtmId())) {
-                $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
-                $order->setEmptyPassport($passport);
+                $passport = $passportRepository->findById($order->getUtmId());
+                $order->setEmptyPassport($passport->isNotFill());
             }
         }
 
