@@ -33,7 +33,6 @@ class OrderController extends AbstractController
      */
     public function index(OrderService $orderService,
                           Session $session,
-                          UTM5UserRepository $UTM5UserRepository,
                           PassportRepository $passportRepository): Response
     {
         $hideid1 = $session->get('hide_id1', false);
