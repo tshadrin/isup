@@ -15,6 +15,8 @@ class FindInactiveUsersCommand extends Command
      */
     private $URFAService;
 
+    protected static $defaultName="utm5:inactive-users";
+
     public function __construct(URFAService $URFAService)
     {
         parent::__construct();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller\Order;
 
 use App\Form\Order\OrderForm;
+use App\Repository\UTM5\PassportRepository;
 use App\Repository\UTM5\UTM5UserRepository;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\Order\OrderService;
@@ -31,7 +32,9 @@ class OrderController extends AbstractController
      * @Route("/orders/", name="orders_index", methods={"GET", "POST"}, options={"expose": true})
      */
     public function index(OrderService $orderService,
-                          Session $session, UTM5UserRepository $UTM5UserRepository): Response
+                          Session $session,
+                          UTM5UserRepository $UTM5UserRepository,
+                          PassportRepository $passportRepository): Response
     {
         $hideid1 = $session->get('hide_id1', false);
         $hideid2 = $session->get('hide_id2', false);
@@ -50,8 +53,8 @@ class OrderController extends AbstractController
         $today_orders = $orderService->findOrdersByFilter($filter);
         foreach($today_orders as $order) {
             if(!is_null($order->getUtmId())) {
-                $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
-                $order->setEmptyPassport($passport);
+                $passport = $passportRepository->findById($order->getUtmId());
+                $order->setEmptyPassport($passport->isNotFill());
             }
         }
 
