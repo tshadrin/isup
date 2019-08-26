@@ -8,6 +8,7 @@ use App\Repository\UTM5\PassportRepository;
 use App\Repository\UTM5\UTM5UserRepository;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\Order\OrderService;
+use Psr\Container\ContainerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,7 +54,12 @@ class OrderController extends AbstractController
         foreach($today_orders as $order) {
             if(!is_null($order->getUtmId())) {
                 $passport = $passportRepository->findById($order->getUtmId());
-                $order->setEmptyPassport($passport->isNotFill());
+                if (!is_null($passport)) {
+                    $order->setEmptyPassport($passport->isNotFill());
+                } else {
+                    $order->setEmptyPassport(true);
+                }
+
             }
         }
 
@@ -61,7 +67,12 @@ class OrderController extends AbstractController
         foreach($last_orders as $order) {
             if(!is_null($order->getUtmId())) {
                 $passport = $passportRepository->findById($order->getUtmId());
-                $order->setEmptyPassport($passport->isNotFill());
+                if (!is_null($passport)) {
+                    $order->setEmptyPassport($passport->isNotFill());
+                } else {
+                    $order->setEmptyPassport(true);
+                }
+
             }
         }
 
@@ -201,15 +212,18 @@ class OrderController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/order/{id}/print/", name="order_print", methods={"GET"}, requirements={"id": "\d+"})
      */
-    public function print(int $id, OrderService $orderService, UTM5UserRepository $UTM5UserRepository)
+    public function print(int $id, OrderService $orderService, PassportRepository $passportRepository)
     {
         try {
             $order = $orderService->getOrder($id);
             if(!is_null($order->getUtmId())) {
-                if(!is_null($order->getUtmId())) {
-                    $passport = $UTM5UserRepository->isUserPassportById($order->getUtmId());
-                    $order->setEmptyPassport($passport);
+                $passport = $passportRepository->findById($order->getUtmId());
+                if (!is_null($passport)) {
+                    $order->setEmptyPassport($passport->isNotFill());
+                } else {
+                    $order->setEmptyPassport(true);
                 }
+
             }
             return $this->render('Order/pritable.html.twig', ['order' => $order]);
         } catch (\DomainException $e) {
@@ -217,7 +231,6 @@ class OrderController extends AbstractController
             return $this->redirectToRoute('orders_index');
         }
     }
-
 
     /**
      * Возвращает список статусов для select поля
