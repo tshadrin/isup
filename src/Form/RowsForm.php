@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Form\Phone;
+namespace App\Form;
 
-use App\Form\Phone\DTO\Rows;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\{ ChoiceType };
 use Symfony\Component\Form\FormBuilderInterface;
@@ -12,11 +11,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Форма для ввода количества записей на странице
  * Class RowsForm
- * @package App\Form\Phone
+ * @package App\Form
  */
 class RowsForm extends AbstractType
 {
     const TWENTY_ROWS_ON_PAGE = 20;
+    const THIRTY_ROWS_ON_PAGE = 30;
     const FIFTY_ROWS_ON_PAGE = 50;
     const ONE_HUNDRED_ROWS_ON_PAGE = 100;
     const TWO_HUNDRED_ROWS_ON_PAGE = 200;
@@ -30,6 +30,7 @@ class RowsForm extends AbstractType
                 'label' => 'rows_form.label_value',
                 'choices'  => [
                         'rows_form.20' => self::TWENTY_ROWS_ON_PAGE,
+                        'rows_form.30' => self::THIRTY_ROWS_ON_PAGE,
                         'rows_form.50' => self::FIFTY_ROWS_ON_PAGE,
                         'rows_form.100' => self::ONE_HUNDRED_ROWS_ON_PAGE,
                         'rows_form.200' => self::TWO_HUNDRED_ROWS_ON_PAGE,

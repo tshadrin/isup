@@ -5,19 +5,17 @@ declare(strict_types = 1);
 namespace App\Service\Bitrix\Calendar;
 
 
-use Redis;
-
 class CachedCalendar extends Calendar
 {
     const EVENTS_NOT_FOUND = 0;
     const CACHE_LIVETIME = 100;
 
     /**
-     * @var Redis
+     * @var \Redis
      */
     private $redis;
 
-    public function __construct(array $parameters, Redis $redis)
+    public function __construct(array $parameters, \Redis $redis)
     {
         $this->redis = $redis;
         parent::__construct($parameters);

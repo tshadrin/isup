@@ -100,12 +100,7 @@
                 <tfoot>
                 <tr>
                     <td colspan="10">
-                        <div class="d-flex justify-content-end">
-                            {{ form_start(rowsPerPageForm, {'attr': {'class': 'form-inline'} }) }}
-                            {{ form_label(rowsPerPageForm.value, null, { 'label_attr': {'class': 'col-auto col-form-label-sm col-form-label'} }) }}
-                            {{ form_widget(rowsPerPageForm.value, {'attr': {'class': 'form-control form-control-sm'}}) }}
-                            {{ form_end(rowsPerPageForm) }}
-                        </div>
+                        {{ include('form/rows.html.twig') }}
                     </td>
                 </tr>
                 </tfoot>

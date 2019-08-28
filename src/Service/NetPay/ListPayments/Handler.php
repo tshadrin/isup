@@ -8,7 +8,7 @@ namespace App\Service\NetPay\ListPayments;
 use App\ReadModel\Payments\NetPay\PaymentsFetcher;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use App\Form\Phone\RowsForm;
+use App\Form\RowsForm;
 
 class Handler
 {

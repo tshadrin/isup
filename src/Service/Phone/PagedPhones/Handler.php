@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Service\Phone\PagedPhones;
 
-use App\Form\Phone\RowsForm;
+use App\Form\RowsForm;
 use App\Repository\Phone\PhoneRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;

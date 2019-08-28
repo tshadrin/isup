@@ -1,0 +1,153 @@
+{% if app.session.get('hide_block_today_orders') is defined and app.session.get('hide_block_today_orders') == true %}
+    {% set hbto = true %}
+{% endif %}
+{% if app.session.get('hide_block_previlous_orders') is defined and app.session.get('hide_block_previlous_orders') == true %}
+    {% set hbpo = true %}
+{% endif %}
+    <table class="table table-sm orders-table generic-table" id="lastest-orders">
+        <caption class="pt-0 pb-0">{{ title }}: {{ orders.getTotalItemCount }}</caption>
+        {% if (hbto is defined and hide_name == 'today_orders') or
+              (hbpo is defined and hide_name == 'previlous_orders') %}
+            <thead style="display:none;">
+        {% else %}
+            <thead>
+        {% endif %}
+        <tr>
+            <th>{{ knp_pagination_sortable(orders, '№', 'id') }}</th>
+            <th>{{ knp_pagination_sortable(orders, 'ID', 'utm_id') }}</th>
+            <th>Данные клиента</th>
+            <th>Комментарий</th>
+            <th>{{ knp_pagination_sortable(orders, 'Добавил', 'created_user_name') }}</th>
+            <th>{{ knp_pagination_sortable(orders, 'Выполняет', 'executed') }}</th>
+            <th>{{ knp_pagination_sortable(orders, 'Статус', 'status') }}</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        {% if (hbto is defined and hide_name == 'today_orders') or
+            (hbpo is defined and hide_name == 'previlous_orders') %}
+            <tbody style="display:none;">
+        {% else %}
+            <tbody>
+        {% endif %}
+        {% for num, order in orders %}
+            <tr{% if loop.index0 is even %} class="chet"{% endif %}>
+                <td>
+                    <a class="content-link" target="_blank" href="{{ path('order_print', {'id': order.id}) }}">
+                        {{ order.id }}
+                    </a>
+                </td>
+                <td>
+                    {% if order.utm_id is not empty %}
+                    <a class="content-link" href="{{ path('search.by.data', {'type':'id', 'value': order.utm_id}) }}">
+                        {{ order.utm_id }}
+                    </a>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="row m-0 p-0">
+                        <div class="col-lg-12 col-xl-12 m-0 pl-1">
+                            <span class="font-weight-bold">ФИО:</span> {{ order.full_name }}
+                        </div>
+                        <div class="col-lg-12 col-xl-12 m-0 pl-1 pt-1">
+                            <span class="font-weight-bold">Адрес:</span> {{ order.address }}
+                        </div>
+                        <div class="col-lg-12 col-xl-12 m-0 pl-1 pt-1">
+                            <span class="font-weight-bold">Телефон:</span> {{ order.mobile_telephone }}
+                        </div>
+                        <div class="col-lg-12 col-xl-12 m-0 pl-1 pt-1">
+                            <span class="font-weight-bold">Сервер:</span> {{ order.server_name is not empty?order.server_name}}
+                        </div>
+                        <div class="col-lg-12 col-xl-12 m-0 pl-1 pt-1">
+                            <span class="font-weight-bold">IP:</span> {{ order.ip_address }}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="row m-0 p-0">
+                        <div class="col-12 m-0 p-0">
+                            <div class="x-editable"
+                                  data-mode="inline"
+                                  data-inputclass="form-control form-control-lg w-100"
+                                  data-type="textarea"
+                                  data-emptytext="комментарий не задан"
+                                  data-value="{{ order.comment }}"
+                                  data-pk="{{ order.id }}"
+                                  data-rows="0"
+                                  data-name="comment"
+                                  data-url="{{ path('order_change_editable_field') }}"
+                            ></div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="row p-0 m-0">
+                        <div class="col-12 m-0 p-1">{{ order.created_user_name }}</div>
+                        <div class="col-12 m-0 p-1">{{ order.created|date('d-m-Y H:i') }}</div>
+                    </div>
+                </td>
+                <td id="td-{{ order.id }}">
+                    <div class="row m-0 p-0">
+                        <div class="col-12 m-0 p-0">
+                            <div class="x-editable"
+                                 data-mode="inline"
+                                 data-type="select"
+                                 data-emptytext="Не назначена"
+                                 data-value="{{ order.executed is not null ? order.executed : '' }}"
+                                 data-pk="{{ order.id }}"
+                                 data-name="executed"
+                                 data-source="{{ path('order_get_employees') }}"
+                                 data-url="{{ path('order_change_editable_field') }}"
+                            ></div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="row m-0 p-0">
+                        <div class="col-12 m-0 p-0">
+                            <div class="x-editable"
+                                  data-mode="inline"
+                                  data-type="select"
+                                  data-value="{{ order.status_id }}"
+                                  data-pk="{{ order.id }}"
+                                  data-name="status"
+                                  data-source="{{ path('order_get_statuses') }}"
+                                  data-url="{{ path('order_change_editable_field') }}"
+                            ></div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="edit-button-link m-0 pt-1 pb-1 text-nowrap">
+                        <a href="{{ path('order_print', {'id': order.id}) }}">
+                            <i class="fa fa-print" aria-hidden="true"></i>
+                            Печать
+                        </a>
+                    </div>
+                    {% if is_granted('ROLE_ORDER_MODERATOR') %}
+                        <div class="edit-button-link m-0 pt-1 text-nowrap">
+                            <a data-toggle="confirmation" href="{{ path('order_delete', {'id': order.id}) }}">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                Удалить
+                            </a>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% if order.emptyPassport is defined and order.emptyPassport == true %}
+                <tr>
+                    <td colspan="8" style="background:#ffdad8;">
+                        {{ 'Need to update client passport data'|trans }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        <tr>
+            <td colspan="8">
+                {{ include('form/rows.html.twig') }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+<div class="mt-2">
+    {{ knp_pagination_render(orders, null, {}, {'align': 'center', 'size': 'small'}) }}
+</div>

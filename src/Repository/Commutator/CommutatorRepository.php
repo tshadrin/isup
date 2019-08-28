@@ -29,6 +29,7 @@ class CommutatorRepository extends EntityRepository
      */
     public function getByIP(string $ip): ?Commutator
     {
+        /** @var Commutator $commutator */
         if($commutator = $this->findOneBy(['ip' => $ip])) {
             return $commutator;
         }

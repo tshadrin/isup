@@ -34,12 +34,12 @@ class ConfigureMenuListener
     {
         if($this->authorizationChecker->isGranted('ROLE_SUPPORT')) {
             $menu = $event->getMenu();
-            $menu->addChild('Orders', ['route' => 'orders_index'])
+            $menu->addChild('Orders', ['route' => 'order'])
                 ->setAttribute('icon', 'fas fa-tasks')
                 ->setExtra('dropdown', true)
                 ->setExtra('orderNumber', 2)
             ;
-            $menu['Orders']->addChild('List', ['route' => 'orders_index']);
+            $menu['Orders']->addChild('List', ['route' => 'order']);
             $menu['Orders']->addChild('Add', ['route' => 'order_add']);
         }
     }

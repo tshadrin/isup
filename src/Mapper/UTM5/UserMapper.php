@@ -15,59 +15,28 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UserMapper
 {
     const ADMIN_BLOCK=2;
-    /**
-     * @var UserPreparer
-     */
+
+    /** @var UserPreparer  */
     private $userPreparer;
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
-    /**
-     * @var HouseRepository
-     */
+    /** @var HouseRepository  */
     private $houseRepository;
-    /**
-     * @var GroupRepository
-     */
+    /** @var GroupRepository  */
     private $groupRepository;
-    /**
-     * @var RouterRepository
-     */
+    /** @var RouterRepository  */
     private $routerRepository;
-    /**
-     * @var ServiceRepository
-     */
+    /** @var ServiceRepository  */
     private $serviceRepository;
-    /**
-     * @var TariffRepository
-     */
+    /** @var TariffRepository  */
     private $tariffRepository;
-    /**
-     * @var PromisedPaymentRepository
-     */
+    /** @var PromisedPaymentRepository  */
     private $promisedPaymentRepository;
-    /**
-     * @var PaymentRepository
-     */
+    /** @var PaymentRepository  */
     private $paymentRepository;
-    /**
-     * @var PassportRepository
-     */
+    /** @var PassportRepository  */
     private $passportRepository;
 
-    /**
-     * UserMapper constructor.
-     * @param UserPreparer $userPreparer
-     * @param TranslatorInterface $translator
-     * @param HouseRepository $houseRepository
-     * @param GroupRepository $groupRepository
-     * @param RouterRepository $routerRepository
-     * @param ServiceRepository $serviceRepository
-     * @param TariffRepository $tariffRepository
-     * @param PromisedPaymentRepository $promisedPaymentRepository
-     * @param PaymentRepository $paymentRepository
-     */
     public function __construct(UserPreparer $userPreparer, TranslatorInterface $translator,
                                 HouseRepository $houseRepository, GroupRepository $groupRepository,
                                 RouterRepository $routerRepository, ServiceRepository $serviceRepository,
@@ -492,7 +461,7 @@ class UserMapper
         if(($payments  = $this->paymentRepository->findByAccount($user->getAccount())) instanceof PaymentCollection) {
             $user->setPayments($payments);
         }
-        if(!is_null($passport = $this->passportRepository->findById($user->getId()))) {
+        if(!is_null($passport = $this->passportRepository->getById($user->getId()))) {
             $user->setPassportO($passport);
         }
         return $user;

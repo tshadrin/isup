@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace App\Mapper\UTM5;
 
 use App\Entity\UTM5\Passport;
-use Doctrine\DBAL\{ Connection, DBALException };
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\{Connection, DBALException, Driver\Statement, FetchMode};
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PassportMapper
@@ -32,11 +31,11 @@ class PassportMapper
     }
 
     /**
-     * @return Statement
      * @throws DBALException
      */
     public function getPassportDataStmt(): Statement
     {
+        //CREATE INDEX paramiduserid ON user_additional_params (paramid, userid);
         $sql = "SELECT up.name, uap.value
                 FROM user_additional_params uap
                     JOIN uaddparams_desc up
@@ -46,18 +45,14 @@ class PassportMapper
         return $this->connection->prepare($sql);
     }
 
-    /**
-     * @param int $userId
-     * @return Passport|null
-     */
-    public function getPassportById(int $userId): ?Passport
+    public function getPassportById(int $userId): Passport
     {
+        $passport = new Passport();
         try{
             $stmt = $this->getPassportDataStmt();
             $stmt->execute([':user_id' => $userId]);
             if ($stmt->rowCount() > 0) {
-                $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-                $passport = new Passport();
+                $data = $stmt->fetchAll(FetchMode::ASSOCIATIVE);
                 foreach ($data as $param) {
                     if(self::FIELD_SERIESANDNUMBER === $param['name']) {
                         $passport->setNumber($param['value']);
@@ -75,11 +70,10 @@ class PassportMapper
                         $passport->setBirthday($param['value']);
                     }
                 }
-                return $passport;
             }
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("Check user passport query error: %message%", ['%message%' => $e->getMessage()]));
         }
-        return null;
+        return $passport;
     }
 }

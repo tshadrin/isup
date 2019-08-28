@@ -7,10 +7,20 @@ payments:
     status: 'Статус'
     total_count: 'Всего записей'
 filter_form:
+    preset:
+        istra: 'Истринские'
+        dedovsk: 'Дедовские'
+        iptv: 'IPTV'
+        actual: 'Актуальные'
+        outdate: 'Просроченные'
+        current_user: 'Мои'
+        not_assigned: 'Не назначенные'
     label:
         user_id: 'ID'
         status: 'Статус'
         interval: 'Интервал'
+        presets: 'Фильтры'
+        text: 'Текст'
     choice:
         incomplete: 'Необработан'
         error: 'Ошибка'
@@ -18,6 +28,8 @@ filter_form:
     placeholder:
         user_id: 'ID'
         status: 'Статус'
+        preset: 'Актуальные'
+        text: 'Например 192.168 или Дедовск'
 Search: 'Найти'
 Reset: 'Сбросить'
 Home: 'Главная'
@@ -26,3 +38,4 @@ Processed: 'Обработан'
 Error: 'Ошибка'
 Tools: 'Инструменты'
 NetPay: 'NetPay'
+

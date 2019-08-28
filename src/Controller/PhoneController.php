@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Phone\Phone;
-use App\Form\Phone\DTO\{ Filter, Rows };
-use App\Form\Phone\{ PhoneForm, FilterForm, RowsForm};
+use App\Form\Phone\DTO\Filter;
+use App\Form\Phone\{ PhoneForm, FilterForm};
+use App\Form\{ Rows, RowsForm };
 use App\Repository\Phone\PhoneRepository;
 use App\Service\Phone\PagedPhones\{ Command, Handler };
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -140,6 +141,6 @@ class PhoneController extends AbstractController
         } else {
             $this->addFlash("error", "Incorrect filter value");
         }
-        return $this->redirect($request->getUri());
+        return $this->redirectToRoute('phone');
     }
 }

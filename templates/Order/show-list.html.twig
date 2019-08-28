@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{ parent() }} | {{ 'orders.title'|trans }}{% endblock %}
+
+{% block context %}
+    {{ 'orders.title'|trans }}
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+        {{ form_start(filterForm, {'attr': {'class': 'form-inline'} }) }}
+        <div class="form-group pl-2 mt-1 mb-1 ml-1">
+            {{ form_label(filterForm.preset, null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.preset, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group pl-2 mt-1 mb-1 ml-1">
+            {{ form_label(filterForm.status, null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.status, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group pl-2 mt-1 mb-1 ml-1">
+            {{ form_label(filterForm.text, null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.text, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group pl-2 mt-1 mb-1 ml-1">
+            {{ form_label(filterForm.interval, null, {'label_attr': {'class': 'text-light'}}) }}
+            {{ form_widget(filterForm.interval, {'attr': {'class': 'form-control-sm mx-sm-2'}}) }}
+        </div>
+        <div class="form-group pl-2 mt-1 mb-1">
+            <button type="submit" class="btn btn-primary btn-sm btn-primary-sham">{{ 'Search'|trans }}</button>
+            <a href="{{ path('order') }}" class="btn btn-sm btn-secondary ml-1">{{ 'Reset'|trans }}</a>
+        </div>
+        {{ form_end(filterForm) }}
+    </nav>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center ml-0 mr-0 mt-1">
+        <div class="col-xl-10 col-lg-12 p-2">
+            {% if orders is defined and orders is not empty %}
+                {% include 'Order/show-list-orders-table.html.twig' with {'title': 'Найдено заявок' } %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('orders') }}
+    {{ encore_entry_script_tags('daterangepicker') }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('daterangepicker') }}
+{% endblock %}

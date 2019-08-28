@@ -7,9 +7,7 @@ use App\Mapper\UTM5\PassportMapper;
 
 class PassportRepository
 {
-    /**
-     * @var PassportMapper
-     */
+    /** @var PassportMapper  */
     private $passportMapper;
 
     public function __construct(PassportMapper $passportMapper)
@@ -17,7 +15,7 @@ class PassportRepository
         $this->passportMapper = $passportMapper;
     }
 
-    public function findById(int $id): ?Passport
+    public function getById(int $id): Passport
     {
         return $this->passportMapper->getPassportById($id);
     }

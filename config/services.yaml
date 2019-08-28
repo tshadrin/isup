@@ -116,6 +116,9 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
             $entityName: 'App\Entity\Vlan\Vlan'
+    App\ReadModel\Orders\ShowList\OrdersFetcher:
+        bind:
+            $connection: '@doctrine.dbal.default_connection'
     App\ReadModel\Payments\NetPay\PaymentsFetcher:
         bind:
             $connection: '@doctrine.dbal.newlk_connection'

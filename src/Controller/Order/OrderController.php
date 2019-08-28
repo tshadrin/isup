@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace App\Controller\Order;
 
 use App\Form\Order\OrderForm;
+use App\Form\{ Rows, RowsForm };
+use App\ReadModel\Orders\ShowList\OrdersFetcher;
 use App\Repository\UTM5\PassportRepository;
-use App\Repository\UTM5\UTM5UserRepository;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\Order\OrderService;
-use Psr\Container\ContainerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Order\ShowList;
+use App\ReadModel\Orders\ShowList\Filter;
 
 /**
  * Class OrderController
@@ -24,11 +26,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class OrderController extends AbstractController
 {
+    const DEFAULT_PAGE = 1;
+    const DEFAULT_ROWS_ON_PAGE = 30;
+
     /**
-     * @param OrderService $orderService
-     * @param Session $session
-     * @param UTM5UserRepository $UTM5UserRepository
-     * @return Response
      * @throws \Exception
      * @Route("/orders/", name="orders_index", methods={"GET", "POST"}, options={"expose": true})
      */
@@ -36,6 +37,7 @@ class OrderController extends AbstractController
                           Session $session,
                           PassportRepository $passportRepository): Response
     {
+        //@todo удалить этот action после тестирования
         $hideid1 = $session->get('hide_id1', false);
         $hideid2 = $session->get('hide_id2', false);
 
@@ -53,20 +55,19 @@ class OrderController extends AbstractController
         $today_orders = $orderService->findOrdersByFilter($filter);
         foreach($today_orders as $order) {
             if(!is_null($order->getUtmId())) {
-                $passport = $passportRepository->findById($order->getUtmId());
+                $passport = $passportRepository->getById($order->getUtmId());
                 if (!is_null($passport)) {
                     $order->setEmptyPassport($passport->isNotFill());
                 } else {
                     $order->setEmptyPassport(true);
                 }
-
             }
         }
 
         $last_orders = $orderService->findOrdersByFilter($filter, false);
         foreach($last_orders as $order) {
             if(!is_null($order->getUtmId())) {
-                $passport = $passportRepository->findById($order->getUtmId());
+                $passport = $passportRepository->getById($order->getUtmId());
                 if (!is_null($passport)) {
                     $order->setEmptyPassport($passport->isNotFill());
                 } else {
@@ -113,7 +114,7 @@ class OrderController extends AbstractController
             $orderService->saveOrder($order);
             $this->addFlash('notice', 'order.order_created');
             if ($form['saveandlist']->isCLicked())
-                return $this->redirectToRoute('orders_index');
+                return $this->redirectToRoute('order');
             if ($form['saveandback']->isCLicked())
                 return $this->redirectToRoute('search.by.data',
                     ['type' => 'id', 'value' => $order->getUtmId(),]);
@@ -146,7 +147,7 @@ class OrderController extends AbstractController
             $orderService->saveOrder($order);
             $this->addFlash('notice', 'order.order_created');
             if ($form['saveandlist']->isCLicked())
-                return $this->redirectToRoute('orders_index');
+                return $this->redirectToRoute('order');
             if ($form['saveandback']->isCLicked())
                 return $this->redirectToRoute('search.by.data',
                     ['type' => 'id', 'value' => $order->getUtmId(),]);
@@ -202,7 +203,7 @@ class OrderController extends AbstractController
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
         }
-        return $this->redirectToRoute("orders_index");
+        return $this->redirectToRoute("order");
     }
 
     /**
@@ -217,7 +218,7 @@ class OrderController extends AbstractController
         try {
             $order = $orderService->getOrder($id);
             if(!is_null($order->getUtmId())) {
-                $passport = $passportRepository->findById($order->getUtmId());
+                $passport = $passportRepository->getById($order->getUtmId());
                 if (!is_null($passport)) {
                     $order->setEmptyPassport($passport->isNotFill());
                 } else {
@@ -228,7 +229,7 @@ class OrderController extends AbstractController
             return $this->render('Order/pritable.html.twig', ['order' => $order]);
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('orders_index');
+            return $this->redirectToRoute('order');
         }
     }
 
@@ -341,12 +342,64 @@ class OrderController extends AbstractController
                 return $this->json($data);
             } else {
                 $this->addFlash('notice', 'Ошибка при изменении заявки.');
-                return $this->redirectToRoute("orders_index");
+                return $this->redirectToRoute("order");
             }
         } catch (\DomainException $e) {
             $this->addFlash('error', $e->getMessage());
             $data['refresh'] = true;
             return $this->json($data);
         }
+    }
+
+    /**
+     * @Route("/order", name="order", methods={"GET"}, options={"expose": true})
+     */
+    public function orders(Request $request, Session $session, ShowList\Handler $handler): Response
+    {
+        $filter = new Filter\Filter();
+        $form = $this->createForm(Filter\Form::class, $filter);
+        $form->handleRequest($request);
+
+        $rowsOnPage = $session->get('rowsOnPage', self::DEFAULT_ROWS_ON_PAGE);
+        $rows = new Rows();
+        $rows->value = $rowsOnPage;
+        $rowsPerPageForm = $this->createForm(RowsForm::class, $rows);
+
+        $command = new ShowList\Command(
+            $filter,
+            $request->query->getInt('page',self::DEFAULT_PAGE),
+            $rowsOnPage
+        );
+
+        try {
+            $orders = $handler->handle($command);
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->render("Order/show-list.html.twig",
+            [
+                "orders" => $orders,
+                "filterForm" => $form->createView(),
+                'rowsPerPageForm' => $rowsPerPageForm->createView(),
+            ]
+        );
+    }
+
+    /**
+     * @Route("/order", name="order.rows", methods={"POST"})
+     */
+    public function rowsPerPage(Request $request, Session $session): RedirectResponse
+    {
+        $rows = new Rows();
+        $rowsPerPageForm = $this->createForm(RowsForm::class, $rows);
+        $rowsPerPageForm->handleRequest($request);
+
+        if ($rowsPerPageForm->isSubmitted() && $rowsPerPageForm->isValid()) {
+            $session->set('rowsOnPage', $rows->value);
+        } else {
+            $this->addFlash("error", "Incorrect filter value");
+        }
+        return $this->redirectToRoute("order");
     }
 }
