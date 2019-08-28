@@ -21,7 +21,11 @@ class OrdersFetcher
     public function __construct(Connection $connection, TokenStorageInterface $tokenStorage)
     {
         $this->connection = $connection;
-        $this->currentUserId = $tokenStorage->getToken()->getUser()->getId();
+        $user = $tokenStorage->getToken()->getUser();
+        $this->currentUserId =
+            $user instanceof User ?
+                $user->getId() :
+                null;
     }
 
     public function getFilteredOrders(Filter $filter): array
