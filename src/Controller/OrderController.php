@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Order\Order;
+use App\Entity\UTM5\UTM5User;
 use App\Repository\Order\OrderRepository;
 use App\Form\{ Order\OrderForm, Rows, RowsForm };
 use App\ReadModel\Orders\ShowList\{ Filter, OrdersFetcher };
 use App\Repository\UTM5\PassportRepository;
 use App\Service\{ Order\OrderService, Order\ShowList, UTM5\UTM5DbService };
-use PHPUnit\Util\Json;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\{ IsGranted, ParamConverter };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request, Session\Session };
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,6 +26,22 @@ class OrderController extends AbstractController
 {
     const DEFAULT_PAGE = 1;
     const DEFAULT_ROWS_ON_PAGE = 30;
+
+    /** @var OrderRepository  */
+    private $orderRepository;
+    /** @var OrderService  */
+    private $orderService;
+    /** @var TranslatorInterface  */
+    private $translator;
+
+    public function __construct(OrderRepository $orderRepository,
+                                OrderService $orderService,
+                                TranslatorInterface $translator)
+    {
+        $this->orderRepository = $orderRepository;
+        $this->translator = $translator;
+        $this->orderService = $orderService;
+    }
 
     /**
      * @Route("", name="", methods={"GET"})
@@ -68,7 +83,7 @@ class OrderController extends AbstractController
      * @Route("/{order_id}/delete", name=".delete", methods={"POST"}, requirements={"order_id": "\d+"})
      * @ParamConverter("order", options={"id" = "order_id"})
      */
-    public function delete(Order $order, Request $request, OrderRepository $orderRepository, TranslatorInterface $translator): RedirectResponse
+    public function delete(Request $request, Order $order): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
             return $this->redirectToRoute('order');
@@ -76,13 +91,13 @@ class OrderController extends AbstractController
 
         try {
             $order->delete($this->getUser());
-            $orderRepository->save($order);
-            $orderRepository->flush();
-            $this->addFlash('notice', $translator->trans('Order %id% deleted', ["%id%" => $order->getId()]));
+            $this->orderRepository->save($order);
+
+            $this->addFlash('notice', $this->translator->trans('Order %id% deleted', ["%id%" => $order->getId()]));
         } catch (\DomainException $e) {
-            $this->addFlash('error', $translator->trans(
+            $this->addFlash('error', $this->translator->trans(
                 "Error deleting order: %error%",
-                ["%error%" => $translator->trans($e->getMessage())]
+                ["%error%" => $this->translator->trans($e->getMessage())]
             ));
         }
         return $this->redirectToRoute("order");
@@ -93,7 +108,7 @@ class OrderController extends AbstractController
      * @Route("/{order_id}/delete/ajax", name=".delete.ajax", methods={"POST"}, requirements={"order_id": "\d+"})
      * @ParamConverter("order", options={"id" = "order_id"})
      */
-    public function deleteAjax(Order $order, Request $request, OrderRepository $orderRepository, TranslatorInterface $translator): JsonResponse
+    public function deleteAjax(Request $request, Order $order): JsonResponse
     {
         if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
             return $this->json(['result' => "error", "message" => "Invalid csrf token"]);
@@ -101,17 +116,16 @@ class OrderController extends AbstractController
 
         try {
             $order->delete($this->getUser());
-            $orderRepository->save($order);
-            $orderRepository->flush();
+            $this->orderRepository->save($order);
 
             return $this->json([
                 'result' => 'success',
-                'message' => $translator->trans('Order %id% deleted', ["%id%" => $order->getId(),]),
+                'message' => $this->translator->trans('Order %id% deleted', ["%id%" => $order->getId(),]),
             ]);
         } catch (\DomainException $e) {
             return $this->json([
                 'result' => 'error',
-                'message' =>  $translator->trans("Error deleting order: %error%", ["%error%" => $translator->trans($e->getMessage()),]),
+                'message' =>  $this->translator->trans("Error deleting order: %error%", ["%error%" => $this->translator->trans($e->getMessage()),]),
             ]);
         }
 
@@ -121,22 +135,16 @@ class OrderController extends AbstractController
      * @return RedirectResponse|Response
      * @Route("/add", name=".add", methods={"GET", "POST"})
      */
-    public function add(Request $request, OrderService $orderService, UTM5DbService $UTM5DbService): Response
+    public function add(Request $request): Response
     {
-        if($request->request->has('create') && 'full' == $request->request->has('create')) {
-            $utm_user = $UTM5DbService->search((string)$request->request->getInt('id'));
-            $order = $orderService->createOrderByUTM5User($utm_user, $request->request->get('comment'));
-            $form = $this->createForm(OrderForm::class, $order);
-            $form->handleRequest($request);
-            return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
-        } else {
-            $order = $orderService->getNew();
-        }
+        $order = $this->orderRepository->getNew();
         $form = $this->createForm(OrderForm::class, $order);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $order =$form->getData();
-            $orderService->saveOrder($order);
+            $this->orderRepository->save($order);
+
             $this->addFlash('notice', 'order.order_created');
             if ($form['saveandlist']->isCLicked())
                 return $this->redirectToRoute('order');
@@ -149,42 +157,37 @@ class OrderController extends AbstractController
 
     /**
      * @return RedirectResponse|Response
-     * @Route("/add-from-user", name=".add_from_user", methods={"GET", "POST"})
+     * @Route("/{utm5_user_id}/add", name=".add_from_user", methods={"GET", "POST"}, requirements={"utm5_user_id": "\d+"})
+     * @ParamConverter("UTM5User", options={"id" = "utm5_user_id"})
      */
-    public function addFromUser(Request $request, OrderService $orderService, UTM5DbService $UTM5DbService): Response
+    public function addFromUser(UTM5User $UTM5User, Request $request, UTM5DbService $UTM5DbService): Response
     {
-        if($request->request->has('create') && 'full' == $request->request->has('create')) {
-            $utm_user = $UTM5DbService->search((string)$request->request->getInt('id'));
-            $order = $orderService->createOrderByUTM5User($utm_user, $request->request->get('comment'));
-            $form = $this->createForm(OrderForm::class, $order);
-            $form->handleRequest($request);
-            return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
-        } else {
-            $order = $orderService->getNew();
-        }
+        $order = $this->orderService->createByUTM5User($UTM5User, $request->query->get('comment', ''));
+
         $form = $this->createForm(OrderForm::class, $order);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $order =$form->getData();
-            $orderService->saveOrder($order);
+            $order = $form->getData();
+            $this->orderRepository->save($order);
+
             $this->addFlash('notice', 'order.order_created');
             if ($form['saveandlist']->isCLicked())
                 return $this->redirectToRoute('order');
             if ($form['saveandback']->isCLicked())
                 return $this->redirectToRoute('search.by.data',
-                    ['type' => 'id', 'value' => $order->getUtmId(),]);
+                    ['type' => 'id', 'value' => $id,]);
         }
         return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
     }
 
     /**
      * @return RedirectResponse|Response
-     * @Route("/{id}/print", name=".print", methods={"GET"}, requirements={"id": "\d+"})
+     * @Route("/{order_id}/print", name=".print", methods={"GET"}, requirements={"order_id": "\d+"})
+     * @ParamConverter("order", options={"id" = "order_id"})
      */
-    public function print(int $id, OrderService $orderService, PassportRepository $passportRepository): Response
+    public function print(Order $order, OrderService $orderService, PassportRepository $passportRepository): Response
     {
         try {
-            $order = $orderService->getOrder($id);
             if(!is_null($order->getUtmId())) {
                 $passport = $passportRepository->getById($order->getUtmId());
                 if (!is_null($passport)) {

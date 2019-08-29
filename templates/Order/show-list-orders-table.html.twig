@@ -33,7 +33,7 @@
         {% for num, order in orders %}
             <tr{% if loop.index0 is even %} class="chet"{% endif %}>
                 <td>
-                    <a class="content-link" target="_blank" href="{{ path('order.print', {'id': order.id}) }}">
+                    <a class="content-link" target="_blank" href="{{ path('order.print', {'order_id': order.id}) }}">
                         {{ order.id }}
                     </a>
                 </td>
@@ -119,7 +119,7 @@
                 </td>
                 <td>
                     <div class="edit-button-link m-0 pt-1 pb-1 text-nowrap">
-                        <a href="{{ path('order.print', {'id': order.id}) }}">
+                        <a href="{{ path('order.print', {'order_id': order.id}) }}">
                             <i class="fa fa-print" aria-hidden="true"></i>
                             Печать
                         </a>

@@ -641,7 +641,8 @@ table.table-sham caption {
     box-shadow: 0 0 3px #000;
 }
 
-.x-editable {
+.x-editable,
+.x-editable-order {
     cursor: pointer;
     border-bottom: dashed 1px #0088cc;
 }

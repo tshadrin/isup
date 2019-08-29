@@ -135,6 +135,8 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
             $entityName: 'App\Entity\Order\Order'
+        calls:
+            - method: setUser
     App\Repository\Intercom\TaskRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:

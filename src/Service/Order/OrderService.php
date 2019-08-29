@@ -3,7 +3,6 @@
 namespace App\Service\Order;
 
 use App\Repository\Order\OrderRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Order\Order;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -41,20 +40,6 @@ class OrderService
         $this->translator = $translator;
         $this->token_storage = $token_storage;
         $this->orderRepository = $orderRepository;
-    }
-
-    /**
-     * Поиск заявки по id
-     * @param $id
-     * @return mixed
-     * @throws \DomainException
-     */
-    public function getOrder($id)
-    {
-        $order = $this->em->getRepository('App:Order\Order')->findOneById($id);
-        if($order)
-            return $order;
-        throw new \DomainException($this->translator->trans('order not found with id %id%', ['%id%' => $id]));
     }
 
     /**
@@ -133,67 +118,6 @@ class OrderService
     }
 
     /**
-     * @param $order_id
-     * @return mixed
-     * @throws \Exception
-     */
-    public function deleteOrder($order_id)
-    {
-        // @todo корректно переделать функцию
-        $order = $this->em->getRepository('App:Order\Order')->findOneById($order_id);
-        if($order) {
-            if("new" == $order->getStatus()->getName() ||
-               "work" == $order->getStatus()->getName() ||
-               "layoff" == $order->getStatus()->getName()
-            )
-                throw new \DomainException($this->translator->trans("delete_order.not_permited", ["%status%" => $order->getStatus()->getDescription(),]));
-            if ("complete" == $order->getStatus()->getName()) {
-                if (!is_null($order->getExecuted())) {
-                    $this->doDelete($order);
-                    return $order->getId();
-                } else
-                    throw new \DomainException($this->translator->trans("delete_order.executed_clear"));
-            } else if ("cansel" == $order->getStatus()->getName()) {
-                $this->doDelete($order);
-                return $order->getId();
-            }
-        } else
-            throw new \DomainException($this->translator->trans('delete_order.not_found_order', ['%id%' => $order_id]));
-    }
-
-    /**
-     * Процесс удаления заявки
-     * @param $order
-     * @throws \Exception
-     */
-    public function doDelete($order)
-    {
-        $order->setIsDeleted(true);
-        $date = new \Datetime();
-        $order->setCompleted($date->format("U"));
-        $user = $this->token_storage->getToken()->getUser();
-        $order->setDeletedId($user);
-        $this->em->persist($order);
-        $this->em->flush();
-    }
-
-    /**
-     * Поиск задач по фильтру
-     * @param string $filter
-     * @param bool $today
-     * @return ArrayCollection
-     * @throws \Exception
-     */
-    public function findOrdersByFilter(string $filter, bool $today = true): ArrayCollection
-    {
-        if('my' === $filter)
-            return $this->orderRepository->findMyOrders($this->token_storage->getToken()->getUser()->getId(), $today);
-        else {
-            return $this->orderRepository->findByFilterNotDeleted($filter, $today);
-        }
-    }
-
-    /**
      * Подготовка данных для заполнения пользователей
      * поля select в списке заявок
      * @return array
@@ -230,7 +154,7 @@ class OrderService
         return $statuses_to_select;
     }
 
-    public function createOrderByUTM5User(UTM5User $user, $comment = '')
+    public function createByUTM5User(UTM5User $user, string $comment)
     {
         $order = Order::createByUTM5User($user);
         $order->setComment($comment);
@@ -251,11 +175,5 @@ class OrderService
     {
         $this->em->persist($order);
         $this->em->flush();
-    }
-    public function getNew()
-    {
-        $order = new Order();
-        $order->setUser($this->token_storage->getToken()->getUser());
-        return $order;
     }
 }

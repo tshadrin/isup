@@ -27,9 +27,53 @@
         <tr {% if order.isDeleted == false %}class="open"{% endif %}>
             <td>{{ order.id }}</td>
             <td>{{ order.created|date('d-m-Y')}}</td>
-            <td>{{ order.comment }}</td>
-            <td>{{ order.executed is not empty?order.executed.fullName:'last_orders.no_data'|trans }}</td>
-            <td>{{ order.status.description }}</td>
+            <td>
+                {% if order.isDeleted == false %}
+                    <div class="x-editable-order"
+                         data-mode="inline"
+                         data-type="textarea"
+                         data-emptytext="комментарий не задан"
+                         data-value="{{ order.comment }}"
+                         data-pk="{{ order.id }}"
+                         data-rows="0"
+                         data-name="comment"
+                         data-url="{{ path('order.change_editable_field') }}"
+                    ></div>
+                {% else %}
+                    {{ order.comment }}
+                {% endif %}
+            </td>
+            <td>
+                {% if order.isDeleted == false %}
+                    <div class="x-editable-order"
+                         data-mode="inline"
+                         data-type="select"
+                         data-emptytext="Не назначена"
+                         data-value="{{ order.executed is not null ? order.executed.id : '' }}"
+                         data-pk="{{ order.id }}"
+                         data-name="executed"
+                         data-source="{{ path('order.get_employees') }}"
+                         data-url="{{ path('order.change_editable_field') }}"
+                    ></div>
+                {% else %}
+                    {{ order.executed is not empty?order.executed.fullName:'last_orders.no_data'|trans }}
+                {% endif %}
+            </td>
+            <td>
+                {% if order.isDeleted == false %}
+                    <div class="x-editable-order"
+                         data-mode="inline"
+                         data-type="select"
+                         data-value="{{ order.status.id }}"
+                         data-pk="{{ order.id }}"
+                         data-name="status"
+                         data-source="{{ path('order.get_statuses') }}"
+                         data-url="{{ path('order.change_editable_field') }}"
+                    ></div>
+                {% else %}
+                    {{ order.status }}
+                {% endif %}
+            </td>
             <td>{{ order.isDeleted and order.deletedId is not empty?order.deletedId.fullName:'last_orders.no_data'|trans }}</td>
         </tr>
         {% endfor %}

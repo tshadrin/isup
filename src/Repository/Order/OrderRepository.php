@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace App\Repository\Order;
 
 use App\Entity\Order\Order;
+use App\Entity\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class OrderRepository
@@ -13,6 +15,16 @@ use Doctrine\ORM\EntityRepository;
  */
 class OrderRepository extends EntityRepository
 {
+    /**
+     * @var User
+     */
+    private $currentUser;
+
+    public function setUser(TokenStorageInterface $tokenStorage): void
+    {
+        $this->currentUser = $tokenStorage->getToken()->getUser();
+    }
+
     /**
      * Поиск фильтрованных заявок прошлых дней
      * @param string $filter
@@ -71,9 +83,17 @@ class OrderRepository extends EntityRepository
         return new ArrayCollection($result);
     }
 
+    public function getNew(): Order
+    {
+        $order = new Order();
+        $order->setUser($this->currentUser);
+        return $order;
+    }
+
     public function save(Order $order): void
     {
         $this->getEntityManager()->persist($order);
+        $this->flush();
     }
 
     public function flush(): void

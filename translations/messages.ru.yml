@@ -93,6 +93,10 @@ task.placeholder.description: 'Введите краткое описание...
 list_tasks.edit: 'Редактировать'
 list_tasks.actions: 'Действия'
 #orders
+'Order %id% deleted': 'Заявка %id% удалена'
+'Error deleting order: %error%': 'Ошибка удаления заявки: %error%'
+'Cannot delete a not assigned order': 'Нельзя удалить заявку которая не назначена'
+'Сannot delete a order with this status': 'Нельзя удалить заявку с таким статусом'
 today_orders: 'Сегодняшние заявки'
 previlous_orders: 'Заявки от прошлых дней'
 orders: Заявки

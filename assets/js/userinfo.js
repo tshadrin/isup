@@ -1,3 +1,5 @@
+//autosize textarea lib
+const autosize = require('autosize');
 require('X-editable/dist/bootstrap3-editable/css/bootstrap-editable.css');
 require('X-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js');
 
@@ -56,7 +58,17 @@ jQuery(document).ready(function() {
         e.preventDefault();
     });
 
-    // Шаблон кнопок формы
+    // Шаблон формы редактируемых полей
+    jQuery.fn.editableform.template =
+        '<form class="form-inline editableform">\n' +
+            '<div class="row w-100 p-0 m-1">\n'+
+                '<div class="col-12 editable-input"></div>\n'+
+                '<div class="col-12 pt-1 editable-buttons text-nowrap text-left"></div>\n'+
+                '<div class="col-12 editable-error-block text-left"></div>\n'+
+            '</div>\n'+
+        '</form>\n';
+
+    // Шаблон кнопок формы редактируемых полей
     jQuery.fn.editableform.buttons =
         '<button type="submit" class="btn btn-primary btn-sm btn-primary-sham ml-0">\n'+
         '<i class="fas fa-check"></i>\n'+
@@ -65,37 +77,65 @@ jQuery(document).ready(function() {
         '<i class="fa fa-times"></i>\n'+
         '</button>\n';
 
-
-    // Шаблон формы
-    jQuery.fn.editableform.template =
-        '<form class="form-inline editableform">\n' +
-        '<div class="row justify-content-between w-100 p-0 m-1">\n'+
-        '<div class="col-8 editable-input pr-2"></div>\n'+
-        '<div class="col-4 editable-buttons pl-2"></div>\n'+
-        '<div class="editable-error-block"></div>\n'+
-        '</div>\n'+
-        '</form>\n';
-
     // Обработчик редактируемых полей форм
     var editable_field =  jQuery('.x-editable');
     editable_field.editable({
+        inputclass: 'form-control form-control-sm',
         success: function (response, newValue) {
-            if(response.result === 'error') return response.message;
+            if(response.result === 'error') {
+                return response.message;
+            }
+            if(response.result === 'success') {
+                showMessageAfterHeader(prepareHeaderMessage(response.message));
+            }
         }
     });
-
-    editable_field.on('save', function(e, params) {
-        var elem = jQuery(this);
-        var msg = params.response.message;
+    function showMessageAfterHeader(message) {
         var header = jQuery('header.main-header');
-        jQuery(header).after(
-            '<div class="alert alert-success m-2 dynamic-flash" role="alert">\n' +
-                 params.response.message +
+        header.after(message);
+        setTimeout(function() { jQuery('.dynamic-flash').fadeOut('slow') },5000);
+    }
+    function prepareHeaderMessage(message) {
+        return '<div class="alert alert-success m-2 dynamic-flash" role="alert">\n' +
+            message +
             '    <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
             '        <span aria-hidden="true">&times;</span>\n' +
             '    </button>\n' +
-            '</div>'
-        );
-        setTimeout(function() { jQuery('.dynamic-flash').fadeOut('slow') },5000);
+            '</div>';
+    }
+
+    // Обработчик редактируемых полей форм заявки
+    var editable_order_field = jQuery('.x-editable-order');
+    editable_order_field.editable({
+        inputclass: 'form-control form-control-sm w-100',
+        success: function (response, newValue) {
+            showMessageBelowOrder(jQuery(this), prepareOrderMessage(response.message));
+        }
     });
+    /**
+     * автоматически раздвигать textarea
+     */
+    editable_order_field.on('shown', function(e, editable) {
+        if('textarea' === editable.options.type) {
+            var editable_order_field_textarea = jQuery('textarea');
+            editable_order_field_textarea.on('focus', function(){ autosize(editable_order_field_textarea); });
+        }
+    });
+    function showMessageBelowOrder(elem, message) {
+        var tr = elem.parents('tr').first();
+        tr.after(message);
+        setTimeout(function() { jQuery('.dynamic-flash').fadeOut('slow') },3000);
+    }
+    function prepareOrderMessage(message) {
+        return '<tr class="dynamic-flash">\n' +
+            '    <td colspan="8">\n' +
+            '        <div class="alert alert-success m-0" role="alert">\n' +
+            message +
+            '            <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+            '                <span aria-hidden="true">&times;</span>\n' +
+            '            </button>\n' +
+            '        </div>' +
+            '    </td>' +
+            '</tr>';
+    }
 });

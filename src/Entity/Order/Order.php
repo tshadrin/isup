@@ -377,11 +377,6 @@ class Order
         $this->executed = null;
     }
 
-    /**
-     * Order constructor.
-     * @param array $data
-     * @throws \Exception
-     */
     public function __construct()
     {
         $this->isDeleted = false;

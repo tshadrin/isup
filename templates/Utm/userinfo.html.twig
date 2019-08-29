@@ -17,7 +17,6 @@
                 <span>Мобильный телефон: &nbsp;</span>
                 <div class="x-editable"
                      data-mode="inline"
-                     data-inputclass="form-control form-control-sm pr-0"
                      data-type="text"
                      data-emptytext="нет данных"
                      data-value="{{ user.mobilePhone }}"
@@ -32,7 +31,6 @@
                     <span>e-mail: &nbsp;</span>
                     <div class="x-editable"
                          data-mode="inline"
-                         data-inputclass="form-control form-control-sm pr-0"
                          data-type="text"
                          data-emptytext="нет данных"
                          data-value="{{ user.email }}"
@@ -292,9 +290,7 @@
     <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
     <h4>Действия</h4>
         <h5>Создание заявки</h5>
-    <form  method="POST" action="{{  path('order.add_from_user') }}">
-        <input type="hidden" name="create" value="full">
-        <input type="hidden" name="id" value="{{ user.id }}">
+    <form  method="GET" action="{{  path('order.add_from_user', {'utm5_user_id': user.id}) }}">
         <div class="form-row">
             <div class="col-sm-5">
             <input class="form-control form-control-sm" type="text" name="comment" value="" placeholder="оставьте комментарий...">
