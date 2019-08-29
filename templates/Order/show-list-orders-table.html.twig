@@ -32,7 +32,7 @@
         {% for num, order in orders %}
             <tr{% if loop.index0 is even %} class="chet"{% endif %}>
                 <td>
-                    <a class="content-link" target="_blank" href="{{ path('order_print', {'id': order.id}) }}">
+                    <a class="content-link" target="_blank" href="{{ path('order.print', {'id': order.id}) }}">
                         {{ order.id }}
                     </a>
                 </td>
@@ -74,7 +74,7 @@
                                   data-pk="{{ order.id }}"
                                   data-rows="0"
                                   data-name="comment"
-                                  data-url="{{ path('order_change_editable_field') }}"
+                                  data-url="{{ path('order.change_editable_field') }}"
                             ></div>
                         </div>
                     </div>
@@ -95,8 +95,8 @@
                                  data-value="{{ order.executed is not null ? order.executed : '' }}"
                                  data-pk="{{ order.id }}"
                                  data-name="executed"
-                                 data-source="{{ path('order_get_employees') }}"
-                                 data-url="{{ path('order_change_editable_field') }}"
+                                 data-source="{{ path('order.get_employees') }}"
+                                 data-url="{{ path('order.change_editable_field') }}"
                             ></div>
                         </div>
                     </div>
@@ -110,22 +110,22 @@
                                   data-value="{{ order.status_id }}"
                                   data-pk="{{ order.id }}"
                                   data-name="status"
-                                  data-source="{{ path('order_get_statuses') }}"
-                                  data-url="{{ path('order_change_editable_field') }}"
+                                  data-source="{{ path('order.get_statuses') }}"
+                                  data-url="{{ path('order.change_editable_field') }}"
                             ></div>
                         </div>
                     </div>
                 </td>
                 <td>
                     <div class="edit-button-link m-0 pt-1 pb-1 text-nowrap">
-                        <a href="{{ path('order_print', {'id': order.id}) }}">
+                        <a href="{{ path('order.print', {'id': order.id}) }}">
                             <i class="fa fa-print" aria-hidden="true"></i>
                             Печать
                         </a>
                     </div>
                     {% if is_granted('ROLE_ORDER_MODERATOR') %}
                         <div class="edit-button-link m-0 pt-1 text-nowrap">
-                            <a data-toggle="confirmation" href="{{ path('order_delete', {'id': order.id}) }}">
+                            <a data-toggle="confirmation" href="{{ path('order.delete', {'id': order.id}) }}">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
                                 Удалить
                             </a>

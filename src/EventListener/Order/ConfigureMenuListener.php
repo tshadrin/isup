@@ -40,7 +40,7 @@ class ConfigureMenuListener
                 ->setExtra('orderNumber', 2)
             ;
             $menu['Orders']->addChild('List', ['route' => 'order']);
-            $menu['Orders']->addChild('Add', ['route' => 'order_add']);
+            $menu['Orders']->addChild('Add', ['route' => 'order.add']);
         }
     }
 }

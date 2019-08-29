@@ -292,7 +292,7 @@
     <div class="user-info-block-inner pt-2 pb-2 pl-3 pr-3">
     <h4>Действия</h4>
         <h5>Создание заявки</h5>
-    <form  method="POST" action="{{  path('order_add_from_user') }}">
+    <form  method="POST" action="{{  path('order.add_from_user') }}">
         <input type="hidden" name="create" value="full">
         <input type="hidden" name="id" value="{{ user.id }}">
         <div class="form-row">
