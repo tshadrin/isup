@@ -13,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Status
 {
+    const STATUS_COMPLETE = 'complete';
+    const STATUS_CANSEL = 'cansel';
+
     /**
      * Идентификатор статуса
      * @var int
@@ -80,6 +83,16 @@ class Status
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function isComplete(): bool
+    {
+        return self::STATUS_COMPLETE === $this->name;
+    }
+
+    public function isCansel(): bool
+    {
+        return self::STATUS_CANSEL === $this->name;
     }
 
     /**

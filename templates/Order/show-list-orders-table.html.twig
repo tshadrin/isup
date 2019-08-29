@@ -1,6 +1,7 @@
 {% if app.session.get('hide_block_today_orders') is defined and app.session.get('hide_block_today_orders') == true %}
     {% set hbto = true %}
 {% endif %}
+{% set token = csrf_token('delete') %}
 {% if app.session.get('hide_block_previlous_orders') is defined and app.session.get('hide_block_previlous_orders') == true %}
     {% set hbpo = true %}
 {% endif %}
@@ -125,10 +126,12 @@
                     </div>
                     {% if is_granted('ROLE_ORDER_MODERATOR') %}
                         <div class="edit-button-link m-0 pt-1 text-nowrap">
-                            <a data-toggle="confirmation" href="{{ path('order.delete', {'id': order.id}) }}">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                Удалить
-                            </a>
+                            <form action="{{ path('order.delete', {'order_id': order.id }) }}" class="delete-order-form" method="post">
+                                <input type="hidden" name="token" value="{{ token }}" />
+                                <button type="submit" class="btn btn-sm btn-danger" data-toggle="confirmation">
+                                    <i class="fa fa-trash" aria-hidden="true"></i> Удалить
+                                </button>
+                            </form>
                         </div>
                     {% endif %}
                 </td>

@@ -28,7 +28,7 @@ class ConfigureMenuListener
                 ['route' =>'search.by.data'],
                 ['route' =>'utm5_passport_edit'],
                 ['pattern' => '/^search.+/'],
-                ['pattern' => '/^order_add_from_user/'],
+                ['pattern' => '/^order.add_from_user/'],
             ])
         ;
     }

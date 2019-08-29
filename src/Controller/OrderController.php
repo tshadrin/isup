@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Order\Order;
+use App\Repository\Order\OrderRepository;
 use App\Form\{ Order\OrderForm, Rows, RowsForm };
 use App\ReadModel\Orders\ShowList\{ Filter, OrdersFetcher };
 use App\Repository\UTM5\PassportRepository;
 use App\Service\{ Order\OrderService, Order\ShowList, UTM5\UTM5DbService };
+use PHPUnit\Util\Json;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request, Session\Session };
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +29,7 @@ class OrderController extends AbstractController
     const DEFAULT_ROWS_ON_PAGE = 30;
 
     /**
-     * @Route("", name="", methods={"GET"}, options={"expose": true})
+     * @Route("", name="", methods={"GET"})
      */
     public function orders(Request $request, Session $session, ShowList\Handler $handler): Response
     {
@@ -59,6 +63,59 @@ class OrderController extends AbstractController
         );
     }
 
+    /**
+     * @IsGranted("ROLE_ORDER_MODERATOR")
+     * @Route("/{order_id}/delete", name=".delete", methods={"POST"}, requirements={"order_id": "\d+"})
+     * @ParamConverter("order", options={"id" = "order_id"})
+     */
+    public function delete(Order $order, Request $request, OrderRepository $orderRepository, TranslatorInterface $translator): RedirectResponse
+    {
+        if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
+            return $this->redirectToRoute('order');
+        }
+
+        try {
+            $order->delete($this->getUser());
+            $orderRepository->save($order);
+            $orderRepository->flush();
+            $this->addFlash('notice', $translator->trans('Order %id% deleted', ["%id%" => $order->getId()]));
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $translator->trans(
+                "Error deleting order: %error%",
+                ["%error%" => $translator->trans($e->getMessage())]
+            ));
+        }
+        return $this->redirectToRoute("order");
+    }
+
+    /**
+     * @IsGranted("ROLE_ORDER_MODERATOR")
+     * @Route("/{order_id}/delete/ajax", name=".delete.ajax", methods={"POST"}, requirements={"order_id": "\d+"})
+     * @ParamConverter("order", options={"id" = "order_id"})
+     */
+    public function deleteAjax(Order $order, Request $request, OrderRepository $orderRepository, TranslatorInterface $translator): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
+            return $this->json(['result' => "error", "message" => "Invalid csrf token"]);
+        }
+
+        try {
+            $order->delete($this->getUser());
+            $orderRepository->save($order);
+            $orderRepository->flush();
+
+            return $this->json([
+                'result' => 'success',
+                'message' => $translator->trans('Order %id% deleted', ["%id%" => $order->getId(),]),
+            ]);
+        } catch (\DomainException $e) {
+            return $this->json([
+                'result' => 'error',
+                'message' =>  $translator->trans("Error deleting order: %error%", ["%error%" => $translator->trans($e->getMessage()),]),
+            ]);
+        }
+
+    }
 
     /**
      * @return RedirectResponse|Response
@@ -118,26 +175,6 @@ class OrderController extends AbstractController
                     ['type' => 'id', 'value' => $order->getUtmId(),]);
         }
         return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
-    }
-
-    /**
-     * @Route("/{id}/delete", name=".delete", methods={"GET"}, requirements={"id": "\d+"})
-     */
-    public function delete(int $id, OrderService $orderService,
-                           AuthorizationCheckerInterface $authorizationChecker,
-                           TranslatorInterface $translator): RedirectResponse
-    {
-        try {
-            if ($authorizationChecker->isGranted('ROLE_ORDER_MODERATOR')) {
-                $order_id = $orderService->deleteOrder($id);
-                $this->addFlash('notice', $translator->trans('delete_order.success', ["%id%" => $order_id]));
-            } else {
-                $this->addFlash('notice', 'Недостаточно прав на удаление заявки.');
-            }
-        } catch (\DomainException $e) {
-            $this->addFlash('error', $e->getMessage());
-        }
-        return $this->redirectToRoute("order");
     }
 
     /**

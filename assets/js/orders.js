@@ -51,4 +51,37 @@ jQuery(document).ready(function() {
         );
         setTimeout(function() { jQuery('.dynamic-flash').fadeOut('slow') },5000);
     });
+
+    jQuery('.delete-order-form').submit(function(e) {
+        $form = jQuery(this);
+        jQuery.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action') + '/ajax',
+            data: $form.serialize()
+        }).done(function(data) {
+            var tr = jQuery($form).parents('tr').first();
+            if(data.result === 'success') {
+                var alert_class = 'alert-success';
+                jQuery(tr).fadeOut('slow');
+            } else if (data.result === 'error') {
+                var alert_class = 'alert-danger';
+            }
+            jQuery(tr).after(
+                '<tr class="dynamic-flash">\n' +
+                '    <td colspan="8">\n' +
+                '        <div class="alert ' + alert_class + ' m-0" role="alert">\n' +
+                data.message +
+                '            <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '                <span aria-hidden="true">&times;</span>\n' +
+                '            </button>\n' +
+                '        </div>' +
+                '    </td>' +
+                '</tr>'
+            );
+            setTimeout(function() { jQuery('.dynamic-flash').fadeOut('slow') },7000);
+        }).fail(function() {
+            console.log('fail');
+        });
+        e.preventDefault();
+    });
 });

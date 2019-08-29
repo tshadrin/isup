@@ -23,7 +23,7 @@
     {% if order.emptyPassport %}
         <p><h3>{{ 'Need to update client passport data'|trans }}</h3></p>
     {% endif %}
-    <p><span><a href="{{ path('orders_index') }}">{{ 'order.print.back'|trans }}</a></span></p>
+    <p><span><a href="{{ path('order') }}">{{ 'order.print.back'|trans }}</a></span></p>
 </div>
 {{ encore_entry_script_tags('order-print') }}
 </body>

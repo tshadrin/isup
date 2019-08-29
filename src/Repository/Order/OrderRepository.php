@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Repository\Order;
 
+use App\Entity\Order\Order;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 
@@ -68,5 +69,15 @@ class OrderRepository extends EntityRepository
                                       AND o.isDeleted=0 
                                       ORDER BY o.created DESC")->getResult();
         return new ArrayCollection($result);
+    }
+
+    public function save(Order $order): void
+    {
+        $this->getEntityManager()->persist($order);
+    }
+
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
     }
 }

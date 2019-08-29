@@ -9,13 +9,12 @@ use App\Entity\UTM5\UTM5User;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Order
- * @package App\Entity\Order
  * @ORM\Entity(repositoryClass="App\Repository\Order\OrderRepository")
  * @ORM\Table(name="orders")
  */
 class Order
 {
+    const COMPLETED_DATE_FORMAT = "U";
     /**
      * Идентификатор заявки
      * @var int
@@ -415,5 +414,50 @@ class Order
     public function __toString(): string
     {
         return "{$this->id} - {$this->fullName}";
+    }
+
+    /**
+     * Удаление заявки
+     */
+    public function delete(User $user): void
+    {
+        if ($this->isEnableToDelete()) {
+            $this->isDeleted = true;
+            $this->completed = (new \DateTime())->format(self::COMPLETED_DATE_FORMAT);
+            $this->deletedId = $user;
+        }
+    }
+
+    /**
+     * Проверка возможности удаления заявки
+     */
+    private function isEnableToDelete(): bool
+    {
+        $status = $this->status;
+
+        if ($this->isStatusEnableToDelete()) {
+            if (($status->isComplete() && $this->isAssigned()) || $status->isCansel()) {
+                return true;
+            }
+            throw new \DomainException("Cannot delete a not assigned order");
+        }
+        throw new \DomainException("Сannot delete a order with this status");
+    }
+
+    /**
+     * Можно удалять заявку с таким статусом?
+     */
+    private function isStatusEnableToDelete(): bool
+    {
+        $status = $this->status;
+        return $status->isComplete() || $status->isCansel();
+    }
+
+    /**
+     * Заявка назначена?
+     */
+    private function isAssigned(): bool
+    {
+        return !is_null($this->executed);
     }
 }
