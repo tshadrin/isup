@@ -4,9 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Service\Payments\Qiwi\FilteredList;
 
-use App\Form\Phone\RowsForm;
+use App\Form\RowsForm;
 use App\ReadModel\Payments\Qiwi\PaymentsFetcher;
-use App\Repository\UTM5\PassportRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 

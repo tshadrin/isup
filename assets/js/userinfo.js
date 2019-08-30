@@ -1,4 +1,5 @@
-//autosize textarea lib
+import {orderDeleter, OrderMessager} from './OrderDeleter.class';
+import { HeaderMessager } from './HeaderMessager.class';
 const autosize = require('autosize');
 require('X-editable/dist/bootstrap3-editable/css/bootstrap-editable.css');
 require('X-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js');
@@ -71,10 +72,10 @@ jQuery(document).ready(function() {
     // Шаблон кнопок формы редактируемых полей
     jQuery.fn.editableform.buttons =
         '<button type="submit" class="btn btn-primary btn-sm btn-primary-sham ml-0">\n'+
-        '<i class="fas fa-check"></i>\n'+
+            '<i class="fas fa-check"></i>\n'+
         '</button>\n'+
         '<button type="button" class="btn btn-secondary btn-sm editable-cancel ml-0">\n'+
-        '<i class="fa fa-times"></i>\n'+
+            '<i class="fa fa-times"></i>\n'+
         '</button>\n';
 
     // Обработчик редактируемых полей форм
@@ -86,30 +87,23 @@ jQuery(document).ready(function() {
                 return response.message;
             }
             if(response.result === 'success') {
-                showMessageAfterHeader(prepareHeaderMessage(response.message));
+                HeaderMessager.showMessageAfterHeader(
+                    jQuery('header.main-header'),
+                    HeaderMessager.prepareHeaderMessage(response.message)
+                );
             }
         }
     });
-    function showMessageAfterHeader(message) {
-        var header = jQuery('header.main-header');
-        header.after(message);
-        setTimeout(function() { jQuery('.dynamic-flash').fadeOut('slow') },5000);
-    }
-    function prepareHeaderMessage(message) {
-        return '<div class="alert alert-success m-2 dynamic-flash" role="alert">\n' +
-            message +
-            '    <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
-            '        <span aria-hidden="true">&times;</span>\n' +
-            '    </button>\n' +
-            '</div>';
-    }
 
     // Обработчик редактируемых полей форм заявки
     var editable_order_field = jQuery('.x-editable-order');
     editable_order_field.editable({
         inputclass: 'form-control form-control-sm w-100',
         success: function (response, newValue) {
-            showMessageBelowOrder(jQuery(this), prepareOrderMessage(response.message));
+            OrderMessager.showMessageBelowOrder(
+                this,
+                OrderMessager.prepareOrderMessage(response.message)
+            );
         }
     });
     /**
@@ -117,25 +111,8 @@ jQuery(document).ready(function() {
      */
     editable_order_field.on('shown', function(e, editable) {
         if('textarea' === editable.options.type) {
-            var editable_order_field_textarea = jQuery('textarea');
-            editable_order_field_textarea.on('focus', function(){ autosize(editable_order_field_textarea); });
+            var editable_order_field_textarea = document.querySelector('textarea');
+            editable_order_field_textarea.addEventListener('focus', function(){ autosize(editable_order_field_textarea); });
         }
     });
-    function showMessageBelowOrder(elem, message) {
-        var tr = elem.parents('tr').first();
-        tr.after(message);
-        setTimeout(function() { jQuery('.dynamic-flash').fadeOut('slow') },3000);
-    }
-    function prepareOrderMessage(message) {
-        return '<tr class="dynamic-flash">\n' +
-            '    <td colspan="8">\n' +
-            '        <div class="alert alert-success m-0" role="alert">\n' +
-            message +
-            '            <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
-            '                <span aria-hidden="true">&times;</span>\n' +
-            '            </button>\n' +
-            '        </div>' +
-            '    </td>' +
-            '</tr>';
-    }
 });

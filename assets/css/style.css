@@ -590,10 +590,6 @@ table.orders-table input.del {
 }
 
 /* order/order-list */
-/*
-table.orders-table tr:hover textarea {
-    background-color: #aabcd1;
-}*/
 /* order/order-list */
 table.orders-table input.del:hover {
     background:#e6e6fa;

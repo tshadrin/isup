@@ -40,7 +40,7 @@ class PaymentsFetcher
             ->where("q.type = 'sb'");
 
         if ($filter->userId) {
-            $query->andWhere("p.account_id = :user_id")
+            $query->andWhere("p.user_id = :user_id")
                 ->setParameter(':user_id', $filter->userId);
         }
 

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Service\Sberbank\ListPayments;
 
 
-use App\Form\Phone\RowsForm;
+use App\Form\RowsForm;
 use App\ReadModel\Payments\Sberbank\PaymentsFetcher;
 use App\ReadModel\Payments\Sberbank\PaymentsLogFetcher;
 use Knp\Component\Pager\Pagination\PaginationInterface;
