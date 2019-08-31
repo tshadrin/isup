@@ -646,3 +646,12 @@ table.table-sham caption {
 .fa-check-square {
     font-size:1.3rem;
 }
+
+/**
+css3 fadeout
+ */
+.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 1s, opacity 1s linear;
+}

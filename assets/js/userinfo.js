@@ -1,5 +1,6 @@
-import {orderDeleter, OrderMessager} from './OrderDeleter.class';
 import { HeaderMessager } from './HeaderMessager.class';
+import {OrderMessager} from './OrderMessager.class';
+import {EditableTemplates} from './EditableTemplates.class';
 const autosize = require('autosize');
 require('X-editable/dist/bootstrap3-editable/css/bootstrap-editable.css');
 require('X-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js');
@@ -59,24 +60,8 @@ jQuery(document).ready(function() {
         e.preventDefault();
     });
 
-    // Шаблон формы редактируемых полей
-    jQuery.fn.editableform.template =
-        '<form class="form-inline editableform">\n' +
-            '<div class="row w-100 p-0 m-1">\n'+
-                '<div class="col-12 editable-input"></div>\n'+
-                '<div class="col-12 pt-1 editable-buttons text-nowrap text-left"></div>\n'+
-                '<div class="col-12 editable-error-block text-left"></div>\n'+
-            '</div>\n'+
-        '</form>\n';
-
-    // Шаблон кнопок формы редактируемых полей
-    jQuery.fn.editableform.buttons =
-        '<button type="submit" class="btn btn-primary btn-sm btn-primary-sham ml-0">\n'+
-            '<i class="fas fa-check"></i>\n'+
-        '</button>\n'+
-        '<button type="button" class="btn btn-secondary btn-sm editable-cancel ml-0">\n'+
-            '<i class="fa fa-times"></i>\n'+
-        '</button>\n';
+    jQuery.fn.editableform.template = EditableTemplates.getFormTemplate();
+    jQuery.fn.editableform.buttons = EditableTemplates.getButtonTemplate();
 
     // Обработчик редактируемых полей форм
     var editable_field =  jQuery('.x-editable');
@@ -88,7 +73,7 @@ jQuery(document).ready(function() {
             }
             if(response.result === 'success') {
                 HeaderMessager.showMessageAfterHeader(
-                    jQuery('header.main-header'),
+                    document.querySelector('header.main-header'),
                     HeaderMessager.prepareHeaderMessage(response.message)
                 );
             }

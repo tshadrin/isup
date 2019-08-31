@@ -15,7 +15,7 @@
             <li>
                 <div class="row pl-3">
                 <span>Мобильный телефон: &nbsp;</span>
-                <div class="x-editable"
+                <div class="x-editable {% if user.mobilePhone is empty %}passport-warn{% endif %}"
                      data-mode="inline"
                      data-type="text"
                      data-emptytext="нет данных"
@@ -29,7 +29,7 @@
             <li>
                 <div class="row pl-3">
                     <span>e-mail: &nbsp;</span>
-                    <div class="x-editable"
+                    <div class="x-editable {% if user.email is empty %}passport-warn{% endif %}"
                          data-mode="inline"
                          data-type="text"
                          data-emptytext="нет данных"

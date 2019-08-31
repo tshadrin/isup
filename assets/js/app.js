@@ -1,4 +1,5 @@
 global.jQuery = require('jquery');
+import {FadeOut} from './Fadeout.class';
 const routes = require('../../public/js/fos_js_routes.json');
 import Routing from '../../vendor/friendsofsymfony/jsrouting-bundle/Resources/public/js/router.min.js';
 Routing.setRoutingData(routes);
@@ -11,10 +12,9 @@ require('../css/style.css');
 require('../css/media.css');
 
 jQuery(document).ready(function() {
-    // Автоматическое скрытие уведомлений.
-    setTimeout(function() { jQuery('.alert-secondary').fadeOut('slow') },5000);
-    setTimeout(function() { jQuery('.alert-danger').fadeOut('slow')    },5000);
-    setTimeout(function() { jQuery('.alert-success').fadeOut('slow')   },5000);
+    FadeOut.bind('.alert-secondary', 5000);
+    FadeOut.bind('.alert-danger', 5000);
+    FadeOut.bind('.alert-success', 5000);
 
     // Подтверждение удаления записи.
     jQuery('[data-toggle="confirmation"]').confirmation({
