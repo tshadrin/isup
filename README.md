@@ -1,4 +1,4 @@
-###Установка
+### Установка
 `yarn encore production`
 
 `yarn install --production`
