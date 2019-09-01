@@ -69,7 +69,7 @@ class UTM5Controller extends AbstractController
     {
         $this->calEvents();
 
-       // try {
+        try {
             $search_result = $UTM5_db_service->search($value, $type);
             if($search_result instanceof UTM5User) {
                 try {
@@ -113,9 +113,9 @@ class UTM5Controller extends AbstractController
                 $paged_users->setCustomParameters(['align' => 'center', 'size' => 'small',]);
                 return $this->render('Utm/find.html.twig', ['searchType' => $type, 'users' => $paged_users, 'rows' => $rows]);
             }
-      //  } catch (\Exception $e) {
-       //     $this->addFlash('error', $e->getMessage());
-       // }
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
         return $this->render('Utm/find.html.twig');
     }
 
