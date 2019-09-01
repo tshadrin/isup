@@ -22,7 +22,7 @@
             <th>Комментарии</th>
         </tr>
         </thead>
-{% if isHidden is defined %}<tbody style="display: none;">{% else %}<tbody>{% endif %}
+        <tbody {{ isHidden is defined ? 'class="d-none"' }}>
         {% for payment in payments %}
         <tr>
             <td>{{ payment.amount }}</td>

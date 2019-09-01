@@ -66,7 +66,7 @@ class OrderDeleter
      */
     hideOrder(elem) {
         var tr = elem.closest('tr');
-        FadeOut.bindElement(tr);
+        FadeOut.bindElement(tr, 2000);
     }
 }
 export const orderDeleter = new OrderDeleter();
