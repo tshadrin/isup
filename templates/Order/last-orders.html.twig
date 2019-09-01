@@ -42,7 +42,7 @@
                              data-rows="0"
                              data-name="comment"
                              data-url="{{ path('order.change_editable_field') }}"
-                        ></div>
+                        >{{ order.comment|markdown }}</div>
                     {% else %}
                         {{ order.comment }}
                     {% endif %}

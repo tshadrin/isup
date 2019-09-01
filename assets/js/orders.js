@@ -14,11 +14,13 @@ jQuery(document).ready(function() {
     // Обработчик редактируемых полей форм
     let editable_field =  jQuery('.x-editable');
     editable_field.editable({
-        inputclass: 'form-control form-control-sm w-100'
+        inputclass: 'form-control form-control-sm w-100',
+        escape:false
     });
     //автоматически изменять размер textarea
     editable_field.on('shown', function(e, editable) {
         if('textarea' === editable.options.type) {
+            editable.input.$input.val(this.dataset.value);
             var editable_order_field_textarea = document.querySelector('textarea');
             editable_order_field_textarea.addEventListener(
                 'focus',
@@ -27,6 +29,8 @@ jQuery(document).ready(function() {
         }
     });
     editable_field.on('save', function(e, params) {
+        this.dataset.value = params.newValue;
+        params.newValue = params.response.newValue;
         OrderMessager.showMessageBelowOrder(
             this,
             OrderMessager.prepareOrderMessage(params.response.message)

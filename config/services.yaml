@@ -67,6 +67,7 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             $connection: '@doctrine.dbal.utm5_connection'
+    cebe\markdown\MarkdownExtra:
     Redis:
         class: Redis
         calls:

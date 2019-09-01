@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
 {
     const SWITCH_CHAIN_URI = 'idsw';
-    const SWITCH_URI = 'msw';
+    const SWITCH_URI = 'switch';
 
     /**
      * @var string
@@ -48,7 +48,7 @@ class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
      */
     public function getSwPage(string $switch): string
     {
-        return $this->getPage(self::SWITCH_URI, ['sw' => $switch]);
+        return $this->getPage(self::SWITCH_URI, ['switch' => $switch]);
     }
 
 

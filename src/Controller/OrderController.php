@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\Order\Order;
 use App\Entity\UTM5\UTM5User;
 use App\Repository\Order\OrderRepository;
+use cebe\markdown\MarkdownExtra;
 use App\Form\{ Order\OrderForm, Rows, RowsForm };
 use App\ReadModel\Orders\ShowList\{ Filter, OrdersFetcher };
 use App\Repository\UTM5\PassportRepository;
@@ -175,7 +176,7 @@ class OrderController extends AbstractController
                 return $this->redirectToRoute('order');
             if ($form['saveandback']->isCLicked())
                 return $this->redirectToRoute('search.by.data',
-                    ['type' => 'id', 'value' => $id,]);
+                    ['type' => 'id', 'value' => $UTM5User->getId(),]);
         }
         return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
     }
@@ -232,7 +233,7 @@ class OrderController extends AbstractController
      * @return JsonResponse|RedirectResponse
      * @Route("/ajax/change-editable-filed", name=".change_editable_field", methods={"POST"})
      */
-    public function changeEditableField(Request $request, OrderService $orderService): Response
+    public function changeEditableField(Request $request, OrderService $orderService, MarkdownExtra $markdownExtra): Response
     {
         try {
             if ($request->request->has('name') &&
@@ -259,7 +260,10 @@ class OrderController extends AbstractController
                             $request->request->getInt('pk'),
                             $request->request->get('value')
                         );
-                        $data = ['message' => 'Комментарий обновлен.'];
+                        $data = [
+                            'message' => 'Комментарий обновлен.',
+                            'newValue' => $markdownExtra->parse($request->request->get('value')),
+                            ];
                         break;
                     case 'executed':
                         $orderService->changeOrderExecuted(

@@ -68,11 +68,13 @@ jQuery(document).ready(function() {
     var editable_field =  jQuery('.x-editable');
     editable_field.editable({
         inputclass: 'form-control form-control-sm',
+        escape: false,
         success: function (response, newValue) {
             if(response.result === 'error') {
                 return response.message;
             }
             if(response.result === 'success') {
+                newValue = response.newValue;
                 HeaderMessager.showMessageAfterHeader(
                     document.querySelector('header.main-header'),
                     HeaderMessager.prepareHeaderMessage(response.message)
@@ -85,21 +87,25 @@ jQuery(document).ready(function() {
     var editable_order_field = jQuery('.x-editable-order');
     editable_order_field.editable({
         inputclass: 'form-control form-control-sm w-100',
-        success: function (response, newValue) {
-            OrderMessager.showMessageBelowOrder(
-                this,
-                OrderMessager.prepareOrderMessage(response.message)
-            );
-        }
+        escape:false
     });
     /**
      * автоматически раздвигать textarea
      */
     editable_order_field.on('shown', function(e, editable) {
         if('textarea' === editable.options.type) {
+            editable.input.$input.val(this.dataset.value);
             var editable_order_field_textarea = document.querySelector('textarea');
             editable_order_field_textarea.addEventListener('focus', function(){ autosize(editable_order_field_textarea); });
         }
+    });
+    editable_order_field.on('save', function(e, params) {
+        this.dataset.value = params.newValue;
+        params.newValue = params.response.newValue;
+        OrderMessager.showMessageBelowOrder(
+            this,
+            OrderMessager.prepareOrderMessage(params.response.message)
+        );
     });
     orderDeleter.setFormClass(".delete-order-form");
     orderDeleter.bind();
