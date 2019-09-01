@@ -25,34 +25,42 @@ jQuery(document).ready(function() {
         btnOkClass: 'h-100 d-flex align-items-center btn btn-sm btn-primary btn-confirmation-sham'
     });
 
-    // Показ или скрытие таблицы при клике.
-    jQuery('.show-hide-button').click(function(){
-        const plus_classes  = 'fa fa-plus';
-        const minus_classes = 'fa fa-minus';
 
-        var tbody = jQuery(this).parent().parent().children('tbody');
-        var thead = jQuery(this).parent().parent().children('thead');
-        var value = false;
+    const show_hide_buttons = document.querySelectorAll(".show-hide-button");
+    show_hide_buttons.forEach(function (e) {
+       e.addEventListener('click', function (event) {
+           const table  = this.closest('table');
+           const tbody = table.querySelector("tbody");
+           const thead = table.querySelector("thead");
+           const icon_classes = JSON.parse(this.dataset.iconclass);
+           const state = this.dataset.state;
+           const icon = this.querySelector('i');
 
-        if('none' === thead.css('display') && 'none' === tbody.css('display')) {
-            tbody.css('display', 'table-row-group');
-            thead.css('display', 'table-header-group');
-            jQuery(this).children('i').attr('class', minus_classes);
-        } else {
-            tbody.css('display', 'none');
-            thead.css('display', 'none');
-            jQuery(this).children('i').attr('class', plus_classes);
-            value = true;
-        }
+           var value = false;
+           if (state === 'visible') {
+               this.dataset.state = 'hidden';
+               icon.classList.remove(icon_classes.visible_class);
+               icon.classList.add(icon_classes.hidden_class);
+               tbody.classList.add('d-none');
+               thead.classList.add('d-none');
+               value = true;
+           } else if(state === 'hidden') {
+               this.dataset.state = 'visible';
+               icon.classList.remove(icon_classes.hidden_class);
+               icon.classList.add(icon_classes.visible_class);
+               tbody.classList.remove('d-none');
+               thead.classList.remove('d-none');
+           }
 
-        const hide_url = Routing.generate('ajax_showhide', {block_name: jQuery(this).attr('id'), value: value});
-
-        jQuery.get(hide_url, null, function (data, status) {
-            if ('success' === status) {
-                if (data.result && 'error' === data.result) {
-                    alert("Ошибка при изменении параметров.");
-                }
-            }
-        });
+           const hide_url = Routing.generate('ajax_showhide', {block_name: this.id, value: value});
+           let response = fetch(hide_url, {
+               method: "GET",
+           })
+               .then(response => response.json())
+               .then(function (data) {
+                   if(data.result  === 'error')
+                       alert("Ошибка при выполнении запроса.");
+               });
+       })
     });
 });

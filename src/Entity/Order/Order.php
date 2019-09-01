@@ -455,4 +455,9 @@ class Order
     {
         return !is_null($this->executed);
     }
+
+    public function isActual(): bool
+    {
+        return (new \Datetime())->modify("-2 days")->format("U") < $this->created->format("U");
+    }
 }

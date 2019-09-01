@@ -1,82 +1,102 @@
 {% if app.session.get('hide_block_last_orders') is defined and app.session.get('hide_block_last_orders') == true %}
-    {% set hblo = true %}
+    {% set isHidden = true %}
 {% endif %}
+{% set token = csrf_token('delete') %}
+{% trans_default_domain("orders") %}
 <div class="last-orders-container table-responsive-sm table-responsive">
     <table class="last-orders-table orders-table generic-table">
-        <caption class="pt-0 pb-0">Прошлые заявки<div class="show-hide-button" id="last_orders">
-                {% if hblo is defined %}
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                {% else %}
-                    <i class="fa fa-minus" aria-hidden="true"></i>
-                {% endif %}
+        <caption class="pt-0 pb-0">
+            {{ 'Previous orders'|trans }}
+            <div class="show-hide-button"
+                 id="last_orders"
+                 data-iconclass='{"visible_class":"fa-minus","hidden_class":"fa-plus"}'
+                 data-state="{{ isHidden is defined ? 'hidden': 'visible'}}">
+                <i class="fa {{ isHidden is defined ? 'fa-plus' : 'fa-minus' }}" aria-hidden="true"></i>
             </div>
         </caption>
-        {% if hblo is defined %}<thead style="display: none;">{% else %}<thead>{% endif %}
+        <thead {{ isHidden is defined ? 'class="d-none"' }}>
         <tr>
-            <th>Номер</th>
-            <th>Дата</th>
-            <th>Комментарий</th>
-            <th>Выполнил</th>
-            <th>Статус</th>
-            <th>Закрыл</th>
+            <th>{{ 'Number'|trans }}</th>
+            <th>{{ 'Creation date'|trans }}</th>
+            <th>{{ 'Comment'|trans }}</th>
+            <th>{{ 'Performed'|trans }}</th>
+            <th>{{ 'Status'|trans }}</th>
+            <th>{{ 'Closed'|trans }}</th>
         </tr>
         </thead>
 
-        {% if hblo is defined %}<tbody style="display: none;">{% else %}<tbody>{% endif %}
+
+        <tbody {{ isHidden is defined ? 'class="d-none"' }}>
         {% for order in orders %}
-        <tr {% if order.isDeleted == false %}class="open"{% endif %}>
-            <td>{{ order.id }}</td>
-            <td>{{ order.created|date('d-m-Y')}}</td>
-            <td>
-                {% if order.isDeleted == false %}
-                    <div class="x-editable-order"
-                         data-mode="inline"
-                         data-type="textarea"
-                         data-emptytext="комментарий не задан"
-                         data-value="{{ order.comment }}"
-                         data-pk="{{ order.id }}"
-                         data-rows="0"
-                         data-name="comment"
-                         data-url="{{ path('order.change_editable_field') }}"
-                    ></div>
-                {% else %}
-                    {{ order.comment }}
-                {% endif %}
-            </td>
-            <td>
-                {% if order.isDeleted == false %}
-                    <div class="x-editable-order"
-                         data-mode="inline"
-                         data-type="select"
-                         data-emptytext="Не назначена"
-                         data-value="{{ order.executed is not null ? order.executed.id : '' }}"
-                         data-pk="{{ order.id }}"
-                         data-name="executed"
-                         data-source="{{ path('order.get_employees') }}"
-                         data-url="{{ path('order.change_editable_field') }}"
-                    ></div>
-                {% else %}
-                    {{ order.executed is not empty?order.executed.fullName:'last_orders.no_data'|trans }}
-                {% endif %}
-            </td>
-            <td>
-                {% if order.isDeleted == false %}
-                    <div class="x-editable-order"
-                         data-mode="inline"
-                         data-type="select"
-                         data-value="{{ order.status.id }}"
-                         data-pk="{{ order.id }}"
-                         data-name="status"
-                         data-source="{{ path('order.get_statuses') }}"
-                         data-url="{{ path('order.change_editable_field') }}"
-                    ></div>
-                {% else %}
-                    {{ order.status }}
-                {% endif %}
-            </td>
-            <td>{{ order.isDeleted and order.deletedId is not empty?order.deletedId.fullName:'last_orders.no_data'|trans }}</td>
-        </tr>
+            <tr>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>{{ order.id }}</td>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>{{ order.created|date('d-m-Y')}}</td>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>
+                    {% if order.isDeleted == false %}
+                        <div class="x-editable-order"
+                             data-mode="inline"
+                             data-type="textarea"
+                             data-emptytext="комментарий не задан"
+                             data-value="{{ order.comment }}"
+                             data-pk="{{ order.id }}"
+                             data-rows="0"
+                             data-name="comment"
+                             data-url="{{ path('order.change_editable_field') }}"
+                        ></div>
+                    {% else %}
+                        {{ order.comment }}
+                    {% endif %}
+                </td>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>
+                    {% if order.isDeleted == false %}
+                        <div class="x-editable-order"
+                             data-mode="inline"
+                             data-type="select"
+                             data-emptytext="Не назначена"
+                             data-value="{{ order.executed is not null ? order.executed.id : '' }}"
+                             data-pk="{{ order.id }}"
+                             data-name="executed"
+                             data-source="{{ path('order.get_employees') }}"
+                             data-url="{{ path('order.change_editable_field') }}"
+                        ></div>
+                    {% else %}
+                        {{ order.executed is not empty?order.executed.fullName:'Nothing processed this order'|trans }}
+                    {% endif %}
+                </td>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>
+                    {% if order.isDeleted == false %}
+                        <div class="x-editable-order"
+                             data-mode="inline"
+                             data-type="select"
+                             data-value="{{ order.status.id }}"
+                             data-pk="{{ order.id }}"
+                             data-name="status"
+                             data-source="{{ path('order.get_statuses') }}"
+                             data-url="{{ path('order.change_editable_field') }}"
+                        ></div>
+                    {% else %}
+                        {{ order.status }}
+                    {% endif %}
+                </td>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>
+                    {% if order.isDeleted %}
+                        {{ order.deletedId is not null ? order.deletedId.fullName : 'No deleted user found'|trans }}
+                    {% else %}
+                        {% if is_granted('ROLE_ORDER_MODERATOR') %}
+                            <div class="edit-button-link m-0 pt-1 text-nowrap">
+                                <form action="{{ path('order.delete', {'order_id': order.id }) }}" class="delete-order-form" method="post">
+                                    <input type="hidden" name="token" value="{{ token }}" />
+                                    <button type="submit" class="btn btn-sm btn-danger" data-toggle="confirmation">
+                                        <i class="fa fa-trash" aria-hidden="true"></i> Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            {{ 'Order is actual'|trans }}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
         {% endfor %}
-        </tbody>
     </table>
 </div>

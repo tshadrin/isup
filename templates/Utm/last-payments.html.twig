@@ -1,19 +1,18 @@
 {% if app.session.get('hide_block_last_payments') is defined and app.session.get('hide_block_last_payments') == true %}
-    {% set hblp = true %}
+    {% set isHidden = true %}
 {% endif %}
 <div class="last-payments-container table-responsive-sm table-responsive">
     <table class="last-payments-table generic-table">
         <caption class="pt-0 pb-0">
             Последние платежи
-            <div class="show-hide-button" id="last_payments">
-                {% if hblp is defined  %}
-                    <i class="fa fa-plus" aria-hidden="true"></i>
-                {% else %}
-                    <i class="fa fa-minus" aria-hidden="true"></i>
-                {% endif %}
+            <div class="show-hide-button"
+                 id="last_payments"
+                 data-iconclass='{"visible_class":"fa-minus","hidden_class":"fa-plus"}'
+                 data-state="{{ isHidden is defined ? 'hidden': 'visible'}}">
+                <i class="fa {{ isHidden is defined ? 'fa-plus' : 'fa-minus' }}" aria-hidden="true"></i>
             </div>
         </caption>
-{% if hblp is defined %}<thead style="display: none;">{% else %}<thead>{% endif %}
+        <thead {{ isHidden is defined ? 'class="d-none"' }}>
         <tr>
             <th>Сумма</th>
             <th>Дата</th>
@@ -23,7 +22,7 @@
             <th>Комментарии</th>
         </tr>
         </thead>
-{% if hblp is defined %}<tbody style="display: none;">{% else %}<tbody>{% endif %}
+{% if isHidden is defined %}<tbody style="display: none;">{% else %}<tbody>{% endif %}
         {% for payment in payments %}
         <tr>
             <td>{{ payment.amount }}</td>

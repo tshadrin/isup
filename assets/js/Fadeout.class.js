@@ -12,12 +12,22 @@ class FadeOut
             let elements = document.querySelectorAll(block_class);
             if (elements.length > 0 ) {
                 elements.forEach(function (e) {
-                    e.classList.add(fadeout_class);
-                    e.addEventListener('transitionend', function () {
-                        this.style.display = "none";
-                    });
+                    FadeOut.bindElement(e, timeout, fadeout_class);
                 });
             }
+        }, timeout);
+    }
+    /**
+     * @param element
+     * @param timeout
+     * @param fadeout_class
+     */
+    static bindElement(element, timeout=3000, fadeout_class='hidden') {
+        setTimeout(function() {
+            element.classList.add(fadeout_class);
+            element.addEventListener('transitionend', function () {
+                this.style.display = "none";
+            });
         }, timeout);
     }
 }

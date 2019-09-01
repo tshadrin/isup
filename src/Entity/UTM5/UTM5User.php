@@ -824,4 +824,9 @@ class UTM5User
         });
         return $amount;
     }
+
+    public function hasIps(): bool
+    {
+        return !is_null($this->getIps());
+    }
 }

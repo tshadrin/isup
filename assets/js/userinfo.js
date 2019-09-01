@@ -1,4 +1,5 @@
 import { HeaderMessager } from './HeaderMessager.class';
+import {orderDeleter} from './OrderDeleter.class';
 import {OrderMessager} from './OrderMessager.class';
 import {EditableTemplates} from './EditableTemplates.class';
 const autosize = require('autosize');
@@ -100,4 +101,6 @@ jQuery(document).ready(function() {
             editable_order_field_textarea.addEventListener('focus', function(){ autosize(editable_order_field_textarea); });
         }
     });
+    orderDeleter.setFormClass(".delete-order-form");
+    orderDeleter.bind();
 });

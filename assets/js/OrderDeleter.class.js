@@ -1,6 +1,7 @@
 'use strict';
 
 import {OrderMessager} from './OrderMessager.class';
+import {FadeOut} from './Fadeout.class';
 
 /**
  * Удаляет заявку при отправке формы
@@ -22,21 +23,25 @@ class OrderDeleter
     }
 
     bind() {
-        let form = document.querySelector(this.form_class);
+        let forms = document.querySelectorAll(this.form_class);
         var myobject = this;
-        form.addEventListener("submit", function(event) {
-            let response = fetch(
-                this.action + '/ajax',
-                {
-                    method: this.method,
-                    body: new FormData(this)
-                })
-                .then(response => response.json())
-                .then(function(data) {
-                    myobject.handleOrderDelete(form, data);
-                });
-            event.preventDefault();
-        }, myobject);
+        if(forms.length > 0) {
+            forms.forEach(function (form) {
+                form.addEventListener("submit", function (event) {
+                    let response = fetch(
+                        this.action + '/ajax',
+                        {
+                            method: this.method,
+                            body: new FormData(this)
+                        })
+                        .then(response => response.json())
+                        .then(function (data) {
+                            myobject.handleOrderDelete(form, data);
+                        });
+                    event.preventDefault();
+                }, myobject);
+            });
+        }
     }
 
     /**
@@ -61,7 +66,7 @@ class OrderDeleter
      */
     hideOrder(elem) {
         var tr = elem.closest('tr');
-        setTimeout(function() { OrderMessager.fadeOut(tr) },5000);
+        FadeOut.bindElement(tr);
     }
 }
 export const orderDeleter = new OrderDeleter();
