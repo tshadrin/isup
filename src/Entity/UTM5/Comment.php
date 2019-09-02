@@ -11,7 +11,6 @@ use Exception;
 /**
  * Комментарий, базовый класс
  * Class Comment
- * @package Isup\Entity
  * @ORM\Entity()
  * @ORM\Table(name="comments")
  * @ORM\InheritanceType("SINGLE_TABLE")

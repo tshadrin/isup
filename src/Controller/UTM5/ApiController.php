@@ -80,16 +80,16 @@ class ApiController extends AbstractController
                 $field = $request->request->filter(
                     'name', [],
                     FILTER_VALIDATE_REGEXP,
-                    ['options' => ['regexp' => '/mobile_phone|email/',],]
+                    ['options' => ['regexp' => '/mobile_phone|email|additional_phone/',],]
                 );
                 switch ($field) {
                     case 'mobile_phone':
                         $phone_number =  mb_ereg_replace('\D+', '', $request->request->get('value'));
                         $phone_number_len = mb_strlen($phone_number);
-                        if(($phone_number_len < 10 && $phone_number_len > 0) || $phone_number_len > 11)
+                        if (($phone_number_len < 10 && $phone_number_len > 0) || $phone_number_len > 11)
                             return $this->json(['result' => 'error', 'message' => $translator->trans('Phone number must contains 10 digits'),]);
-                        if(11 === $phone_number_len) {
-                            if(mb_ereg_match('8[0-9]', $phone_number)) {
+                        if (11 === $phone_number_len) {
+                            if (mb_ereg_match('8[0-9]', $phone_number)) {
                                 $phone_number = mb_substr($phone_number, 1);
                                 $URFAService->editMobilePhone(
                                     $phone_number,
@@ -100,8 +100,8 @@ class ApiController extends AbstractController
                                 return $this->json(['result' => 'error', 'message' => $translator->trans('Incorrect phone number'),]);
                             }
                         }
-                        if(10 === $phone_number_len) {
-                            if(mb_ereg_match('[0-7,9]', $phone_number)) {
+                        if (10 === $phone_number_len) {
+                            if (mb_ereg_match('[0-7,9]', $phone_number)) {
                                 $URFAService->editMobilePhone(
                                     $phone_number,
                                     $request->request->getInt('pk')
@@ -111,7 +111,7 @@ class ApiController extends AbstractController
                                 return $this->json(['result' => 'error', 'message' => $translator->trans('Incorrect phone number'),]);
                             }
                         }
-                        if(0 === $phone_number_len) {
+                        if (0 === $phone_number_len) {
                             $URFAService->editMobilePhone(
                                 $request->request->get('value'),
                                 $request->request->getInt('pk')
@@ -124,9 +124,22 @@ class ApiController extends AbstractController
                             'value', [],
                             FILTER_VALIDATE_EMAIL
                         );
-                        if(false !== $email) {
+                        if (false !== $email) {
                             $URFAService->editEmail(
                                 $email,
+                                $request->request->getInt('pk')
+                            );
+                            return $this->json(['result' => 'success', 'message' => $translator->trans('Email updated')]);
+                        } else {
+                            return $this->json(['result' => 'error', 'message' => $translator->trans("Incorrect email")]);
+                        }
+                        break;
+                    case 'additional_phone':
+                        $additionalPhone =  mb_ereg_replace('\D+', '', $request->request->get('value'));
+                        $additionalPhoneLength = mb_strlen($additionalPhone);
+                        if (false !== $additionalPhone) {
+                            $URFAService->editAdditionalPhone(
+                                $additionalPhone,
                                 $request->request->getInt('pk')
                             );
                             return $this->json(['result' => 'success', 'message' => $translator->trans('Email updated')]);

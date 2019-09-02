@@ -11,6 +11,13 @@
                        data-target="#diagnostic-status"
                        href="{{ path('ssh_diagnostic', {'command':'ping', 'ip': user.ips.0, 'server': user.routers[0].ip} ) }}">arping</a>
                 </li>
+                {% if user.ips6 %}
+                    <li class="pl-2">
+                        <a class="diagnostic-command"
+                           data-target="#diagnostic-status"
+                           href="{{ path('ssh_diagnostic', {'command':'cip6', 'ip': user.ips6.wan, 'server': user.routers[0].ip} ) }}">Быстрая проверка IPv6</a>
+                    </li>
+                {% endif %}
                 <li class="pl-2">
                     <a class="diagnostic-command"
                        data-target="#diagnostic-status"

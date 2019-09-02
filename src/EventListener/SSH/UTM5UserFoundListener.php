@@ -35,11 +35,9 @@ class UTM5UserFoundListener
     public function onUTM5UserFound(UTM5UserFoundEvent $event): void
     {
         $user = $event->getUser();
-        if($user->hasIps()) {
-            $diagnostic = $this->templating->render('SSH/diagnostic.html.twig', ['user' => $user]);
-        } else {
-            $diagnostic = '';
-        }
+        $diagnostic = $user->hasIps() || $user->hasIps6() ?
+            $this->templating->render('SSH/diagnostic.html.twig', ['user' => $user]) :
+            '';
         $event->addResult('diagnostic', $diagnostic);
     }
 }

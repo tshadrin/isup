@@ -58,10 +58,11 @@ class GetUsersByIPList extends Command
                         $output[] = trim($ip);
                         try {
                             $user = $this->UTM5DbService->search(trim($ip), 'ip');
+                            $output[] = $user->getId();
                             $output[] = $user->getFullName();
                             $output[] = $user->getMobilePhone();
                             foreach($user->getTariffs() as $tariff) {
-                                $output[] = $tariff->getName();;
+                                $output[] = $tariff->getName();
                             }
                         } catch (\Exception $e) {
                             $output[] = $e->getMessage();

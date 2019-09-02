@@ -10,6 +10,7 @@ class UserPreparer
     const MANAGER_NOTES_FIELD_NAME = 'manager_notes';
     const LIFESTREAM_EMAIL_FIELD_NAME = 'lifestream_email';
     const REMIND_ME_FIELD_NAME = 'remind_me';
+    const ADDITIONAL_PHONE_FIELD_NAME = 'additional_phone';
     /**
      * Поля необходимые для выборки из бд
      */
@@ -256,6 +257,23 @@ class UserPreparer
                   AND uap.userid=:user_id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(':field', self::REMIND_ME_FIELD_NAME, ParameterType::STRING);
+        return $stmt;
+    }
+
+    /**
+     * @return Statement
+     * @throws DBALException
+     */
+    public function getAdditionalPhoneStmt(): Statement
+    {
+        $sql = "SELECT uap.value
+                FROM user_additional_params uap
+                    JOIN uaddparams_desc up
+                        ON up.paramid = uap.paramid
+                WHERE up.name = :field
+                  AND uap.userid=:user_id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':field', self::ADDITIONAL_PHONE_FIELD_NAME, ParameterType::STRING);
         return $stmt;
     }
 

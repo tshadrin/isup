@@ -75,10 +75,12 @@ class OrdersFetcher
                         ->setParameter(":start", (new \Datetime())->modify("-2 days")->format("Y-m-d"));
                     break;
                 case Filter::PRESET_CURRENT_USER:
-                    $queryBuilder->andWhere("o.user_id = :user")
+                    $queryBuilder->andWhere("o.executed = :user")
                         ->setParameter(":user", $this->currentUserId);
+                    break;
                 case Filter::PRESET_NOT_ASSIGNED:
                     $queryBuilder->andWhere("o.executed IS NULL");
+                    break;
             }
         }
 

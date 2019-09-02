@@ -42,7 +42,7 @@ class SSHController extends AbstractController
      * @param $command
      * @param SSHService $SSHService
      * @return JsonResponse
-     * @Route("/ssh/diagnostic/{server}/{ip}/{command}", name="ssh_diagnostic", methods={"GET"}, requirements={"command": "ping|kk|kkip|spd|itu|port"})
+     * @Route("/ssh/diagnostic/{server}/{ip}/{command}", name="ssh_diagnostic", methods={"GET"}, requirements={"command": "ping|kk|kkip|spd|itu|port|cip6"})
      */
     public function diagnostic($server, $ip, $command, SSHService $SSHService)
     {
@@ -57,6 +57,9 @@ class SSHController extends AbstractController
             $data = $diag->exec("kk {$ip}");
         if ("itu" == $command) {
             $data = $diag->exec("/usr/local/bin/check_traff {$ip}");
+        }
+        if ("cip6" == $command) {
+            $data = $diag->exec("/usr/sbin/cip2 {$ip}");
         }
         if ("turbo" == $command) {
             $data = $diag->exec("ipset -L TURBO | grep -w {$ip}");

@@ -16,6 +16,7 @@ class URFAService
     const PARAM_REGISTRATION = 6;
     const PARAM_AUTHORITYCODE = 7;
     const PARAM_BIRTHDAY = 8;
+    const PARAM_ADDITIONAL_PHONE = 10;
 
     /**
      * @var URFAClient_API
@@ -109,6 +110,22 @@ class URFAService
         $user = $this->getUserInfo($id);
         $user['mob_tel'] = $phone;
         $this->urfa->rpcf_edit_user_new($user);
+    }
+    /**
+     * @param string $phone
+     * @param int $id
+     */
+    public function editAdditionalPhone(string $additionalPhone, int $id): void
+    {
+        $user = $this->getUserInfo($id);
+        if (array_key_exists('parameters_size', $user)) {
+            foreach($user['parameters_count'] as $k => $parameter) {
+                if ($parameter['parameter_id'] === self::PARAM_ADDITIONAL_PHONE) {
+                    $user['parameters_count'][$k]['parameter_value'] = $additionalPhone;
+                }
+            }
+        }
+        $this->getUrfa()->rpcf_edit_user_new($user);
     }
 
     /**

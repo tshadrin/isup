@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace App\Controller\UTM5;
 
 use App\Collection\UTM5\UTM5UserCollection;
-use App\Entity\UTM5\{ UTM5User, Passport };
+use App\Repository\UTM5\UserFillingInDataRepository;
+use App\Entity\UTM5\{UserFillingInData, UTM5User, Passport};
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
 use App\Form\UTM5\{ PassportForm, PassportFormData, UTM5UserCommentForm };
@@ -202,7 +203,8 @@ class UTM5Controller extends AbstractController
      */
     public function editPassport(int $id, Request $request,
                                  UTM5DbService $UTM5DbService,
-                                 URFAService $URFAService)
+                                 URFAService $URFAService,
+                                 UserFillingInDataRepository $userFillingInDataRepository)
     {
         try {
             $user = $UTM5DbService->search((string)$id, 'id');
@@ -220,6 +222,8 @@ class UTM5Controller extends AbstractController
                 try {
                     $URFAService->editPassport($passport, $user->getId());
                     $this->addFlash("notice", "Data updated");
+                    $userFillingInData = new UserFillingInData($this->getUser(),$user->getId());
+                    $userFillingInDataRepository->save($userFillingInData);
                     if($form['saveandback']->isClicked()) {
                         return $this->redirectToRoute('search.by.data', ['value' => $user->getId(), 'type' => 'id']);
                     }

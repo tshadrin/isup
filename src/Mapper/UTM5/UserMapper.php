@@ -301,6 +301,24 @@ class UserMapper
         }
     }
 
+    public function getAdditionalPhone(int $user_id): ?string
+    {
+        try {
+            $stmt = $this->userPreparer->getAdditionalPhoneStmt();
+            $stmt->bindValue(':user_id', $user_id, ParameterType::INTEGER);
+            $stmt->execute();
+            if(1 === $stmt->rowCount()) {
+                return $stmt->fetch(FetchMode::COLUMN);
+            }
+            if($stmt->rowCount() > 1) {
+                throw new \DomainException($this->translator->trans("Too many results on remind me query"));
+            }
+            return null;
+        } catch (\Exception $e) {
+            throw new \DomainException($this->translator->trans("Get additional field query error: %message%", ['%message%' => $e->getMessage()]));
+        }
+    }
+
     /**
      * @param $user_id
      * @return bool
@@ -440,6 +458,9 @@ class UserMapper
         }
         if(!is_null($lifestreamLogin = $this->getLifestreamLogin($user->getId()))) {
             $user->setLifestreamLogin($lifestreamLogin);
+        }
+        if(!is_null($additionalPhone = $this->getAdditionalPhone($user->getId()))) {
+            $user->setAdditionalPhone($additionalPhone);
         }
         $user->setBlock($this->getBlock($user->getAccount()));
         $user->setGroups($this->groupRepository->findByUserId($user->getId()));
