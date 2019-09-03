@@ -21,7 +21,7 @@ class UserFetcher
 
     public function getUserByPhone(string $phone): array
     {
-        $query = "SELECT id, full_name FROM users WHERE mobile_telephone LIKE :phone";
+        $query = "SELECT id, full_name, actual_address, flat_number FROM users WHERE mobile_telephone LIKE :phone";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([':phone' => $phone]);
 

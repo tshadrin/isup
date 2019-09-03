@@ -162,7 +162,7 @@ class ApiController extends AbstractController
     /**
      * @Route("/api/register-call/{operator_num}/{callerid_num}", name="utm5.register_call", methods={"GET"})
      */
-    public function registerCall(string $operator_num,
+    public function registerCall(int $operator_num,
                                  string $callerid_num,
                                  Handler $handler): JsonResponse
     {

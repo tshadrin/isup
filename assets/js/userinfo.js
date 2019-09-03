@@ -87,6 +87,7 @@ jQuery(document).ready(function() {
     var editable_order_field = jQuery('.x-editable-order');
     editable_order_field.editable({
         inputclass: 'form-control form-control-sm w-100',
+        escape: false
     });
     /**
      * автоматически раздвигать textarea

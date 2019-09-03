@@ -114,6 +114,10 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
             $entityName: 'App\Entity\Statistics\LastPayment'
+    App\Repository\UserRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\User\User'
     App\Repository\UTM5\UserFillingInDataRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:

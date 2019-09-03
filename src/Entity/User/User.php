@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class User
  * @package App\Entity\User
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="userrs")
  */
 class User extends BaseUser
@@ -55,6 +55,28 @@ class User extends BaseUser
      * @ORM\Column(type="array", nullable=true)
      */
     protected $options = [];
+
+    /**
+     * @var int
+     * @ORM\Column(type="integer", nullable=true, name="internal_number")
+     */
+    protected $internalNumber;
+
+    /**
+     * @return int
+     */
+    public function getInternalNumber(): ?int
+    {
+        return $this->internalNumber;
+    }
+
+    /**
+     * @param int $internalNumber
+     */
+    public function setInternalNumber(?int $internalNumber): void
+    {
+        $this->internalNumber = $internalNumber;
+    }
 
     /**
      * @return string|null
@@ -189,4 +211,5 @@ class User extends BaseUser
     {
         return empty($this->getFullName())?'User':$this->getFullName();
     }
+
 }

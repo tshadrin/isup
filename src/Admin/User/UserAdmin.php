@@ -44,6 +44,7 @@ class UserAdmin extends AbstractAdmin
                 ]
             )
             ->add('bitrixId', TextType::class, ['required' => false,])
+            ->add('internalNumber', TextType::class, ['required' => false,])
             ->add('plainPassword', RepeatedType::class,
                 [
                     'required' => false,
@@ -78,6 +79,7 @@ class UserAdmin extends AbstractAdmin
             ->add('onWork')
             ->add('roles')
             ->add('bitrixId')
+            ->add('internalNumber')
         ;
     }
 
@@ -94,6 +96,7 @@ class UserAdmin extends AbstractAdmin
             ->add('onWork', null, ['editable' => true])
             ->add('last_login', 'datetime')
             ->add('bitrixId', null, ['editable' => true])
+            ->add('internalNumber', null, ['editable' => true])
             ->add('_action', null,
                 [
                     'actions' =>
@@ -122,6 +125,7 @@ class UserAdmin extends AbstractAdmin
             ->add('region')
             ->add('last_login', 'datetime')
             ->add('bitrix_id')
+            ->add('internalNumber')
         ;
     }
 

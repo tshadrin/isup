@@ -6,16 +6,12 @@ namespace App\Service\UTM5\CallRegister;
 
 class Command
 {
-    /**
-     * @var string
-     */
+    /** @var int  */
     public $operatorNumber;
-    /**
-     * @var string
-     */
+    /** @var string  */
     public $callerNumber;
 
-    public function __construct(string $operatorNumber, string $callerNumber)
+    public function __construct(int $operatorNumber, string $callerNumber)
     {
         $this->operatorNumber = $operatorNumber;
         $this->callerNumber = $callerNumber;

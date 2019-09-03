@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let centrifuge = new Centrifuge(url);
     centrifuge.setToken(token);
     centrifuge.subscribe('calls#' + user, function (message) {
-        toastr.success(message.data.message);
+        toastr.info(message.data.message, "<span  style=\"font-size:1.1rem;\">Входящий звонок</span>");
     });
     centrifuge.subscribe("calls", function(message) {
         toastr.info(message.data.message, "<span  style=\"font-size:1.1rem;\">Входящий звонок</span>");
