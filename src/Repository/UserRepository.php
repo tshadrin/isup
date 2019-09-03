@@ -9,9 +9,9 @@ use Doctrine\ORM\EntityRepository;
 
 class UserRepository extends EntityRepository
 {
-    public function findByInternalNumber(int $internalNumber): ?User
+    public function findByInternalNumber(int $internalNumber): array
     {
-        $user = $this->findOneBy(['internalNumber' => $internalNumber]);
-        return $user;
+        $users = $this->findBy(['internalNumber' => $internalNumber]);
+        return $users;
     }
 }

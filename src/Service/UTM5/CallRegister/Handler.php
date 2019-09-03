@@ -9,6 +9,7 @@ use App\Entity\User\User;
 use App\ReadModel\UTM5\UserFetcher;
 use App\Repository\UserRepository;
 use App\Service\UTM5\URFAService;
+use foo\bar;
 use phpcent\Client;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -70,23 +71,23 @@ class Handler
     public function handle(Command $command): void
     {
         $this->command = $command;
-        $user = $this->getUser();
+        $users = $this->getUsers();
 
         try {
             $this->userFields = $this->getUTM5UserData();
-            $this->publish($user->getId(), $this->renderUserCard());
+            $this->publish($users, $this->renderUserCard());
         } catch(\DomainException $e) {
-            $this->publish($user->getId(), $this->renderNoUserCard());
+            $this->publish($users, $this->renderNoUserCard());
         }
     }
 
-    private function getUser(): User
+    private function getUsers(): array
     {
-        $user = $this->userRepository->findByInternalNumber($this->command->operatorNumber);
-        if (is_null($user)) {
+        $users = $this->userRepository->findByInternalNumber($this->command->operatorNumber);
+        if (count($users) === 0) {
             throw new NotFoundHttpException("User with internal number {$this->command->operatorNumber} not found.");
         }
-        return $user;
+        return $users;
     }
 
     private function getUTM5UserData(): array
@@ -97,9 +98,11 @@ class Handler
         return $data;
     }
 
-    private function publish(int $userId, string $message): void
+    private function publish(array $users, string $message): void
     {
-        $this->centrifugo->publish(self::CALL_CHANNEL_NAME. "#" . $userId, ['message'=> $message, 'title'=> $this->getTitle()]);
+        foreach ($users as $user) {
+            $this->centrifugo->publish(self::CALL_CHANNEL_NAME. "#" . $user->getId(), ['message'=> $message, 'title'=> $this->getTitle()]);
+        }
     }
 
     private function renderUserCard(): string
