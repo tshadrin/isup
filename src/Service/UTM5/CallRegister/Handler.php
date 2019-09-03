@@ -91,7 +91,7 @@ class Handler
 
     private function publish(int $userId, string $message): void
     {
-        $this->centrifugo->publish(self::CALL_CHANNEL_NAME. "#" . $userId, ['message'=> $message]);
+        $this->centrifugo->publish(self::CALL_CHANNEL_NAME. "#" . $userId, ['message'=> $message, 'title'=> $this->getTitle()]);
     }
 
     private function renderUserCard(): string
@@ -112,5 +112,9 @@ class Handler
             'callerNumber' => $this->command->callerNumber,
             'bitrixCardUrl' => "https://istranet.pro/crm/deal/list/?apply_filter=Y&with_preset=Y&FIND={{$this->command->callerNumber}}"
         ]);
+    }
+    private function getTitle(): string
+    {
+        return "<span  style=\"font-size:1.2rem;\">Входящий звонок</span>";
     }
 }
