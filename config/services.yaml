@@ -75,6 +75,11 @@ services:
               arguments:
                   - '%env(REDIS_HOST)%'
                   - '%env(REDIS_PORT)%'
+    phpcent\Client:
+      arguments:
+        - '%env(CENTRIFUGO_API_HOST)%/api'
+        - '%env(CENTRIFUGO_API_KEY)%'
+        - '%env(CENTRIFUGO_SECRET)%'
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
             - '@Redis'

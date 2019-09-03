@@ -10,6 +10,25 @@ require('bootstrap');
 require('bootstrap-confirmation2');
 require('../css/style.css');
 require('../css/media.css');
+require('../../node_modules/toastr/build/toastr.min.css');
+const toastr = require('toastr');
+toastr.options.timeOut = "50000";
+toastr.options.progressBar = true;
+const Centrifuge = require('centrifuge');
+document.addEventListener('DOMContentLoaded', function () {
+    let url = document.querySelector('meta[name=centrifugo-url]').getAttribute('content');
+    let user = document.querySelector('meta[name=centrifugo-user]').getAttribute('content');
+    let token = document.querySelector('meta[name=centrifugo-token]').getAttribute('content');
+    let centrifuge = new Centrifuge(url);
+    centrifuge.setToken(token);
+    centrifuge.subscribe('calls#' + user, function (message) {
+        toastr.success(message.data.message);
+    });
+    centrifuge.subscribe("calls", function(message) {
+        toastr.info(message.data.message, "<span  style=\"font-size:1.1rem;\">Входящий звонок</span>");
+    });
+    centrifuge.connect();
+});
 
 jQuery(document).ready(function() {
     FadeOut.bind('.alert-secondary', 5000);

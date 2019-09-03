@@ -29,8 +29,6 @@ jQuery(document).ready(function() {
         }
     });
     editable_field.on('save', function(e, params) {
-        this.dataset.value = params.newValue;
-        params.newValue = params.response.newValue;
         OrderMessager.showMessageBelowOrder(
             this,
             OrderMessager.prepareOrderMessage(params.response.message)

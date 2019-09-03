@@ -13,6 +13,7 @@
         "ext-redis": "*",
         "ext-ssh2": "*",
         "cebe/markdown": "^1.2",
+        "centrifugal/phpcent": "^3.0",
         "friendsofsymfony/jsrouting-bundle": "^2.3",
         "friendsofsymfony/user-bundle": "^2.1",
         "k-shym/urfa-client": "dev-sham-fix",

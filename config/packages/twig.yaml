@@ -3,3 +3,5 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     form_themes: ['override/bootstrap_4_layout.html.twig']
+    globals:
+        centrifugo_url: '%env(CENTRIFUGO_WSS_HOST)%/connection/websocket'

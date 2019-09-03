@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Controller\UTM5;
 
 use App\Collection\UTM5\UTM5UserCollection;
+use App\Kernel;
 use App\Repository\UTM5\UserFillingInDataRepository;
+use phpcent\Client;
 use App\Entity\UTM5\{UserFillingInData, UTM5User, Passport};
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
@@ -126,7 +128,6 @@ class UTM5Controller extends AbstractController
      */
     public function searchDefault(): Response
     {
-        $this->calEvents();
         return $this->render('Utm/find.html.twig');
     }
 

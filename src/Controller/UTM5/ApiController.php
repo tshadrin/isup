@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace App\Controller\UTM5;
 
+use App\Service\UTM5\CallRegister\Command;
+use App\Service\UTM5\CallRegister\Handler;
 use App\Service\UTM5\URFAService;
 use Exception;
+use phpcent\Client;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, Request };
@@ -154,5 +157,17 @@ class ApiController extends AbstractController
         } catch (Exception $e) {
             return $this->json(['result' => 'error', 'message' => $e->getMessage(),]);
         }
+    }
+
+    /**
+     * @Route("/api/register-call/{operator_num}/{callerid_num}", name="utm5.register_call", methods={"GET"})
+     */
+    public function registerCall(string $operator_num,
+                                 string $callerid_num,
+                                 Handler $handler): JsonResponse
+    {
+        $command = new Command($operator_num, $callerid_num);
+        $handler->handle($command);
+        return $this->json(["result" => "success"]);
     }
 }
