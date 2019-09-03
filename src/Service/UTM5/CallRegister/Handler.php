@@ -19,36 +19,25 @@ use Symfony\Component\Templating\EngineInterface;
 class Handler
 {
     const CALL_CHANNEL_NAME = 'calls';
-    /**
-     * @var Client
-     */
+    /** @var Client  */
     private $centrifugo;
-    /**
-     * @var UserFetcher
-     */
+    /** @var UserFetcher  */
     private $userFetcher;
-    /**
-     * @var UrlGeneratorInterface
-     */
+    /** @var UrlGeneratorInterface  */
     private $urlGenerator;
-    /**
-     * @var TokenStorageInterface
-     */
+    /** @var TokenStorageInterface  */
     private $tokenStorage;
-    /**
-     * @var UserRepository
-     */
+    /** @var UserRepository  */
     private $userRepository;
-    /**
-     * @var EngineInterface
-     */
+    /** @var EngineInterface  */
     private $templating;
-    private $command;
-    private $userFields;
-    /**
-     * @var URFAService
-     */
+    /** @var URFAService  */
     private $URFAService;
+    /** @var Command */
+    private $command;
+    /** @var array */
+    private $userFields;
+
 
     public function __construct(Client $centrifugo,
                                 UserFetcher $userFetcher,
@@ -59,7 +48,7 @@ class Handler
                                 URFAService $URFAService)
     {
         $this->centrifugo = $centrifugo;
-        $this->centrifugo->setSafety(false); //нужно только для теста (
+        $this->centrifugo->setSafety(false); //нужно для dev версии (
         $this->userFetcher = $userFetcher;
         $this->urlGenerator = $urlGenerator;
         $this->tokenStorage = $tokenStorage;
@@ -75,30 +64,30 @@ class Handler
 
         try {
             $this->userFields = $this->getUTM5UserData();
-            $this->publish($users, $this->renderUserCard());
+            $this->publishMessage($users, $this->renderUserCard());
         } catch(\DomainException $e) {
-            $this->publish($users, $this->renderNoUserCard());
+            $this->publishMessage($users, $this->renderNoUserCard());
         }
     }
 
     private function getUsers(): array
     {
         $users = $this->userRepository->findByInternalNumber($this->command->operatorNumber);
-        if (count($users) === 0) {
+        if (0 === count($users)) {
             throw new NotFoundHttpException("User with internal number {$this->command->operatorNumber} not found.");
         }
         return $users;
     }
 
-    private function getUTM5UserData(): array
+    private function getUTM5UserData(): \ArrayObject
     {
         $data = $this->userFetcher->getUserByPhone(mb_substr($this->command->callerNumber, 2));
-        if(!empty($data['flat_number']))
-            $data['actual_address'] .= " - {$data['flat_number']}";
+        $data->actual_address .= !empty($data->flat_number) ? " - {$data->flat_number}": "";
+        $data->setFlags(\ArrayObject::ARRAY_AS_PROPS);
         return $data;
     }
 
-    private function publish(array $users, string $message): void
+    private function publishMessage(array $users, string $message): void
     {
         foreach ($users as $user) {
             $this->centrifugo->publish(self::CALL_CHANNEL_NAME. "#" . $user->getId(), ['message'=> $message, 'title'=> $this->getTitle()]);
@@ -109,11 +98,11 @@ class Handler
     {
         return $this->templating->render("widget/register-call/user-card.html.twig", [
                 'callerNumber' => $this->command->callerNumber,
-                'userId' => $this->userFields['id'],
-                'userAddress' => $this->userFields['actual_address'],
-                'userFullName' => $this->userFields['full_name'],
-                'userRequirementPayment' => $this->URFAService->getRequirementPaymentForUser($this->userFields['basic_account']),
-                'monCardUrl' => $this->urlGenerator->generate("search.by.data", ["value" => $this->userFields['id'], "type" => 'id']),
+                'userId' => $this->userFields->id,
+                'userAddress' => $this->userFields->actual_address,
+                'userFullName' => $this->userFields->full_name,
+                'userRequirementPayment' => $this->URFAService->getRequirementPaymentForUser($this->userFields->basic_account),
+                'monCardUrl' => $this->urlGenerator->generate("search.by.data", ["value" => $this->userFields->id, "type" => 'id']),
                 'bitrixCardUrl' => "https://istranet.pro/crm/deal/list/?apply_filter=Y&with_preset=Y&FIND={{$this->command->callerNumber}}",
             ]
         );

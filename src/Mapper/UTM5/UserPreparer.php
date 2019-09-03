@@ -133,7 +133,7 @@ class UserPreparer
                     INNER JOIN accounts a
                         ON a.id = u.basic_account
                 WHERE u.is_deleted=0
-                  AND u.mobile_telephone LIKE :mobile_telephone";
+                  AND replace(replace(replace(replace(u.mobile_telephone, '(', ''), ')', ''), '-', ''), ' ', '') LIKE :mobile_telephone";
         return $this->connection->prepare($sql);
     }
     /**
