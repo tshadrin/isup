@@ -1,8 +1,10 @@
 <div style="font-size:1rem;">
     <p>{{ callerNumber }}</p>
     <p>
+        Пользователь {{ userId }}<br>
+        Рекомендуемый платеж {{ userRequirementPayment }}
         {{ userFullName }}<br>
-        {{ userAddress }}
+        {{ userAddress }}<br>
     </p>
     <a class="bg-success" href="{{ monCardUrl }}">Отрыть карточку клиента</a><br>
     <a class="bg-info" target="_blank" href="{{ bitrixCardUrl }}">Открыть карточку в bitrix24</a>
