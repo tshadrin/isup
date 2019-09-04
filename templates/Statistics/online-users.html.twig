@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% if searchType is not defined %}
+    {% set searchType = 'none' %}
+{% endif %}
+{% block title %}
+    Количество пользователей онлайн на серверах по часам
+{% endblock %}
+
+{% block context %}
+    Количество пользователей онлайн на серверах по часам
+{% endblock %}
+
+
+
+{% block body %}
+    <div class="row m-0 pt-2">
+    {% for server, data in graphData %}
+        <div class="col-lg-6 col-md-12 pb-3">
+            <canvas class="graph" data-server="{{ server }}" data-labels="{{ data.hours }}" data-counts="{{ data.counts }}" style="background: white;" width="280" height="100"></canvas>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('statistics') }}
+{% endblock %}

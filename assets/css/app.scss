@@ -1,0 +1,9 @@
+$dropdown-link-active-bg: transparent;
+$dropdown-link-hover-bg: transparent;
+$font-family-base: Open Sans,Frutiger,Calibri,Myriad Pro,Myriad,sans-serif;
+$body-bg:  #1d2d44;
+@import "~bootstrap/scss/bootstrap";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+@import "~toastr/toastr";
+@import "media.css";
+@import "style.css";

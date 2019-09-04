@@ -11,7 +11,7 @@ Encore
     .addEntry('order-print', './assets/js/print-order.js')
     .addEntry('userinfo', './assets/js/userinfo.js')
     .addEntry('vlans', './assets/js/vlans.js')
-    .addEntry('bitrix', './assets/js/bitrix.js')
+    .addEntry('statistics', './assets/js/statistics.js')
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
     .enableSourceMaps(!Encore.isProduction())

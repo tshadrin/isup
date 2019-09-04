@@ -7,12 +7,12 @@ use Webmozart\Assert\Assert;
 
 class Command
 {
-    /** @var string  */
+    /** @var int  */
     public $server;
     /** @var int  */
     public $count;
 
-    public function __construct(string $server, int $count)
+    public function __construct(int $server, int $count)
     {
         Assert::notEmpty($server);
         Assert::notEmpty($count);

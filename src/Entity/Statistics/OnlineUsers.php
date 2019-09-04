@@ -24,8 +24,8 @@ class OnlineUsers
      */
     private $date;
     /**
-     * @var string
-     * @ORM\Column(type="string", length=50)
+     * @var int
+     * @ORM\Column(type="integer", length=50)
      */
     private $server;
     /**
@@ -34,7 +34,7 @@ class OnlineUsers
      */
     private $count;
 
-    public function __construct(\DateTime $date, string $server, int $count)
+    public function __construct(\DateTime $date, int $server, int $count)
     {
         $this->date = $date;
         $this->server = $server;
