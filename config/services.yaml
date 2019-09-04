@@ -114,6 +114,14 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
             $entityName: 'App\Entity\Statistics\LastPayment'
+    App\Repository\Statistics\PaymentRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Statistics\Payment'
+    App\Repository\Statistics\OnlineUsersRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\Statistics\OnlineUsers'
     App\Repository\UserRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
@@ -122,10 +130,6 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
             $entityName: 'App\Entity\UTM5\UserFillingInData'
-    App\Repository\Statistics\PaymentRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Statistics\Payment'
     App\Repository\Vlan\VlanRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
