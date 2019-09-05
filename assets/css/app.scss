@@ -2,6 +2,8 @@ $dropdown-link-active-bg: transparent;
 $dropdown-link-hover-bg: transparent;
 $font-family-base: Open Sans,Frutiger,Calibri,Myriad Pro,Myriad,sans-serif;
 $body-bg:  #1d2d44;
+$link-hover-color: #007bff;
+$nav-pills-link-active-bg: #3b97e3;
 @import "~bootstrap/scss/bootstrap";
 @import "~@fortawesome/fontawesome-free/css/all.min.css";
 @import "~toastr/toastr";

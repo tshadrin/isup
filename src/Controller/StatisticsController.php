@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\ReadModel\Statistics\OnlineUsersFetcher;
 use App\Service\PaymentStatistics\MonthPayments;
 use App\Service\Statistics\OnlineUsers;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -13,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/statistics", name="statistic")
+ * @Route("/statistics", name="statistics")
  */
 class StatisticsController extends AbstractController
 {
@@ -24,14 +23,6 @@ class StatisticsController extends AbstractController
     {
         $command = new MonthPayments\Command(1,2017);
         $handler->handle($command);
-    }
-
-    /**
-     * @Route("/month-connected-users", name=".month-conntected-users", methods={"GET"})
-     */
-    public function getConnectedUsers(Request $request ): Response
-    {
-
     }
 
     /**
@@ -59,32 +50,21 @@ class StatisticsController extends AbstractController
     }
 
     /**
-     * @Route("/show/online-users", name=".online-users.show", methods={"GET"})
+     * @Route("/show/online-users", name=".show.online-users", methods={"GET"})
      * @IsGranted("ROLE_SUPPORT")
      */
-    public function showOnlineUsers(OnlineUsersFetcher $onlineUsersFetcher, \Redis $redis): Response
+    public function showOnlineUsers(OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
     {
-        if($redis->exists('daily_graphs')) {
-            $graphData = (array)json_decode($redis->get('daily_graphs'));
-        } else {
-            $online_users_records = $onlineUsersFetcher->getOnlineUsersForLastDay();
-
-            for ($i = 0; $i < count($online_users_records); $i++) {
-                $formatted_data[$online_users_records[$i]['server']][] = $online_users_records[$i];
-            }
-            $graphData = [];
-            foreach ($formatted_data as $server => $data) {
-                $graphData[$server]['hours'] = [];
-                $graphData[$server]['counts'] = [];
-                foreach ($data as $datum) {
-                    $graphData[$server]['hours'][] = $datum['hour'];
-                    $graphData[$server]['counts'][] = $datum['count'];
-                }
-                $graphData[$server]['hours'] = implode(", ", $graphData[$server]['hours']);
-                $graphData[$server]['counts'] = implode(", ", $graphData[$server]['counts']);
-            }
-            $redis->set('daily_graphs', json_encode($graphData), 600);
-        }
+        $graphData = $onlineUsersService->getOnlineUsersForLastDay();
         return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData,]);
+    }
+    /**
+     * @Route("/show/online-users-hourly", name=".show.online-users-hourly", methods={"GET"})
+     * @IsGranted("ROLE_SUPPORT")
+     */
+    public function showOnlineUsersHourly(OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
+    {
+        $graphData = $onlineUsersService->getOnlineUsersForLastFourHours();
+        return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData, 'hourly'=>true]);
     }
 }

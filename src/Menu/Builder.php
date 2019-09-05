@@ -106,6 +106,15 @@ class Builder
         if ($authorizationChecker->isGranted('ROLE_ADMIN')) {
             $menu['Control']->addChild('admin', ['route' => 'sonata_admin_redirect']);
         }
+        if ($authorizationChecker->isGranted('ROLE_SUPPORT')) {
+            $menu['Control']->addChild('Statistics', ['route' => 'statistics.show.online-users', 'childrenAttributes' => ['class' => 'nav nav-pills']]);
+            $menu['Control']['Statistics']->setExtra('routes', [
+                ['route' => 'statistics'],
+                ['pattern' => '/^statistics\..*/'],
+            ]);
+            $menu['Control']['Statistics']->addChild('Online Users Day', ['route' => 'statistics.show.online-users']);
+            $menu['Control']['Statistics']->addChild('Online Users 4 Hours', ['route' => 'statistics.show.online-users-hourly']);
+        }
         if ($authorizationChecker->isGranted('ROLE_SMS_ADMINISTRATOR')) {
             $menu['Control']->addChild('admin_sms', ['route' => 'admin_app_sms_smstemplate_list']);
         }

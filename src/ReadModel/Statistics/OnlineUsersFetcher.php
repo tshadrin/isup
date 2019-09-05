@@ -6,7 +6,6 @@ namespace App\ReadModel\Statistics;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
-use http\Encoding\Stream\Inflate;
 
 class OnlineUsersFetcher
 {
@@ -20,34 +19,14 @@ class OnlineUsersFetcher
         $this->connection = $connection;
     }
 
-    public function getDailyStatistics(): array
-    {
-
-    }
-
-    public function getServersAndRecordsCountForLastDay(): array
-    {
-        $query = "SELECT count(count) as records_count, server
-                  FROM online_users_statistics
-                  WHERE date
-                      BETWEEN STR_TO_DATE(:past_date, \"%Y-%m-%d %H\")
-                      AND STR_TO_DATE(:current_date, \"%Y-%m-%d %H\")
-                  GROUP BY server
-                  ORDER BY server";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute([
-            ":past_date" => $this->getYesterdayDateWithHourString(),
-            ":current_date" => $this->getCurrentDateWithHourString()
-        ]);
-        return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
-    }
     public function getOnlineUsersForLastDay(): array
     {
-        $query = "SELECT date_format(date,\"%H\") as hour,server,count
+        $query = "SELECT date_format(date,\"%H\") as hour, server, count
                   FROM online_users_statistics
                   WHERE date
                       BETWEEN STR_TO_DATE(:past_date, \"%Y-%m-%d %H\")
                       AND STR_TO_DATE(:current_date, \"%Y-%m-%d %H\")
+                      AND date_format(date,\"%i\") = 0
                   ORDER BY server, date";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([
@@ -56,6 +35,7 @@ class OnlineUsersFetcher
         ]);
         return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
     }
+
     private function getCurrentDateWithHourString(): string
     {
         return (new \DateTime())
@@ -69,5 +49,41 @@ class OnlineUsersFetcher
             ->setTime((int)(new \DateTime())->format("H"),0,0)
             ->modify("-1 day")
             ->format("Y-m-d H");
+    }
+
+    public function getOnlineUsersForLastFourHours(): array
+    {
+        $query = "SELECT date_format(date,\"%H:%i\") as hour, server, count
+                  FROM online_users_statistics
+                  WHERE date
+                      BETWEEN STR_TO_DATE(:past_date, \"%Y-%m-%d %H:%i\")
+                      AND STR_TO_DATE(:current_date, \"%Y-%m-%d %H:%i\")
+                  ORDER BY server, date";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute([
+            ":past_date" => $this->getDateFourHoursAgoWithHoursString(),
+            ":current_date" => $this->getCurrentDateWithMinutesString()
+        ]);
+        return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
+    }
+    private function getCurrentDateWithMinutesString(): string
+    {
+        return (new \DateTime())
+            ->setTime(
+                (int)(new \DateTime())->format("H"),
+                intdiv((int)(new \DateTime())->format("i"), 10) * 10,
+                0)
+            ->format("Y-m-d H:i");
+    }
+    private function getDateFourHoursAgoWithHoursString(): string
+    {
+        return (new \DateTime())
+            ->setTime(
+                (int)(new \DateTime())->format("H"),
+                intdiv((int)(new \DateTime())->format("i"), 10) * 10,
+                0
+            )
+            ->modify("-4 hours")
+            ->format("Y-m-d H:i");
     }
 }

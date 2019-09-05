@@ -24,7 +24,11 @@ class Handler
     public function handle(Command $command): void
     {
         $date = new \DateTime();
-        $date->setTime((int)$date->format("H"), 0, 0);
+        $date->setTime(
+            (int)$date->format("H"),
+            intdiv((int)$date->format("i"),10)*10,
+            0
+        );
         $onlineUsers = new OnlineUsers($date, $command->server, $command->count);
         $this->onlineUsersRepository->save($onlineUsers);
         $this->onlineUsersRepository->flush();
