@@ -1,6 +1,7 @@
 import Chart from 'chart.js';
 
 document.addEventListener("DOMContentLoaded", function () {
+    //stream-page
     const graphs = document.querySelectorAll("canvas.graph");
     graphs.forEach(function (graph) {
         const context = graph.getContext('2d');

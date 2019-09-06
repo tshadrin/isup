@@ -14,6 +14,19 @@ const Centrifuge = require('centrifuge');
 
 toastr.options.timeOut = "50000";
 toastr.options.progressBar = true;
+var arrow = document.getElementById("arrow");
+document.body.onscroll = function(e){
+    if(pageYOffset >=70){
+        arrow.hidden= document.getElementById("arrow").hidden = false;
+    }
+    else{
+        arrow.hidden =true;
+    }
+};
+arrow.onclick = function(e){
+    window.scrollTo(0,0);
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     let url = document.querySelector('meta[name=centrifugo-url]').getAttribute('content');
     let user = document.querySelector('meta[name=centrifugo-user]').getAttribute('content');
