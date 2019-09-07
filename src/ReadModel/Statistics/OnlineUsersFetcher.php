@@ -19,7 +19,7 @@ class OnlineUsersFetcher
         $this->connection = $connection;
     }
 
-    public function getOnlineUsersForLastDay(): array
+    public function getOnlineUsersCountForLastDay(): array
     {
         $query = "SELECT date_format(date,\"%H\") as hour, server, count
                   FROM online_users_statistics
@@ -51,7 +51,7 @@ class OnlineUsersFetcher
             ->format("Y-m-d H");
     }
 
-    public function getOnlineUsersForLastFourHours(): array
+    public function getOnlineUsersCountForLastFourHours(): array
     {
         $query = "SELECT date_format(date,\"%H:%i\") as hour, server, count
                   FROM online_users_statistics

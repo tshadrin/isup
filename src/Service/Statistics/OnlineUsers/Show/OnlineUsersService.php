@@ -8,13 +8,9 @@ use App\ReadModel\Statistics\OnlineUsersFetcher;
 
 class OnlineUsersService
 {
-    /**
-     * @var OnlineUsersFetcher
-     */
+    /** @var OnlineUsersFetcher  */
     private $onlineUsersFetcher;
-    /**
-     * @var \Redis
-     */
+    /** @var \Redis  */
     private $redis;
 
     public function __construct(OnlineUsersFetcher $onlineUsersFetcher, \Redis $redis)
@@ -23,76 +19,125 @@ class OnlineUsersService
         $this->redis = $redis;
     }
 
+    /**
+     * Возвращает данные по онлайн пользователям за последние сутки
+     * @return array
+     */
     public function getOnlineUsersForLastDay(): array
     {
-        if($this->redis->exists('daily_graphs')) {
-            $graphData = (array)json_decode($this->redis->get('daily_graphs'));
-        } else {
-            $onlineUsersRecords = $this->onlineUsersFetcher->getOnlineUsersForLastDay();
-            $groupByServerData = $this->groupByServer($onlineUsersRecords);
-            $groupByServerData['Summary'] = $this->getSummaryData($groupByServerData);
-            $graphData = $this->formatDataToGraph($groupByServerData);
-
-            $this->redis->set('daily_graphs', json_encode($graphData), 600);
-        }
-        return $graphData;
+        return $this->cache("daily_graphs", function() {
+            $onlineUsersCount = $this->onlineUsersFetcher->getOnlineUsersCountForLastDay();
+            return  $this->prepareOnlineUsersCountData($onlineUsersCount);
+        });
     }
 
-    private function getSummaryData(array $graphData): array
+    /**
+     * Возвращает данные по онлайн пользователям за последние четыре часа
+     * @return array
+     */
+    public function getOnlineUsersForLastFourHours(): array
     {
-        $summary = [];
-        foreach ($graphData as $graphDatum) {
-            foreach ($graphDatum as $item) {
-                $summary[] = ['hour' => $item['hour'], 'count' => 0,];
-            }
-            break;
+        return $this->cache("hourly_graphs", function() {
+            $onlineUsersCount = $this->onlineUsersFetcher->getOnlineUsersCountForLastFourHours();
+            return $this->prepareOnlineUsersCountData($onlineUsersCount);
+        }, 300);
+    }
+
+    /**
+     * Возвращает данные из кэша или кэширует данные возвращаемые функцией $getData
+     * @param string $key
+     * @param callable $getData
+     * @return array
+     */
+    private function cache(string $key, callable $getData, int $timeout=600): array
+    {
+        if($this->redis->exists($key)) {
+            $data = (array)json_decode($this->redis->get($key));
+        } else {
+            $data = $getData();
+            $this->redis->set($key, json_encode($data), $timeout);
         }
-        foreach ($graphData as $graphDatum) {
-            for ($i = 0; $i < count($graphDatum); $i++) {
-                if ($graphDatum[$i]['hour'] === $summary[$i]['hour']) {
-                    $summary[$i]['count'] += $graphDatum[$i]['count'];
+        return $data;
+    }
+
+    /**
+     * Обрабатывает данные для отображения на графике
+     * @param array $rawData
+     * @return array
+     */
+    private function prepareOnlineUsersCountData(array $rawData): array
+    {
+        $onlineUsersCountGroupedByServer = $this->groupUsersCountDataByServer($rawData);
+        $onlineUsersCountGroupedByServer['Summary'] = $this->calculateSummaryOnlineUsersCount($onlineUsersCountGroupedByServer);
+        return $this->formatDataToGraph($onlineUsersCountGroupedByServer);
+    }
+
+    /**
+     * Группирует данные пользователей по серверам
+     * @param array $onlineUsersCount
+     * @return array
+     */
+    private function groupUsersCountDataByServer(array $onlineUsersCount): array
+    {
+        $groupedOnlineUsersCount = [];
+        for ($i = 0; $i < count($onlineUsersCount); $i++) {
+            $groupedOnlineUsersCount[$onlineUsersCount[$i]['server']][] = $onlineUsersCount[$i];
+        }
+        return $groupedOnlineUsersCount;
+    }
+
+    /**
+     * Подсчитывает общее количество онлайн пользователей на всех серверах
+     * @param array $onlineUsersCountGroupedByServer
+     * @return array
+     */
+    private function calculateSummaryOnlineUsersCount(array $onlineUsersCountGroupedByServer): array
+    {
+        $summary = $this->initSummary($onlineUsersCountGroupedByServer);
+
+        foreach ($onlineUsersCountGroupedByServer as $onlineUsersCountForOneServer) {
+            for ($i = 0; $i < count($onlineUsersCountForOneServer); $i++) {
+                if ($onlineUsersCountForOneServer[$i]['hour'] === $summary[$i]['hour']) {
+                    $summary[$i]['count'] += $onlineUsersCountForOneServer[$i]['count'];
                 }
             }
         }
         return $summary;
     }
 
-    private function groupByServer(array $onlineUsers): array
+    /**
+     * Инициализирует суммарный массив
+     * @param array $onlineUsersCountGroupedByServer
+     * @return array
+     */
+    private function initSummary(array $onlineUsersCountGroupedByServer): array
     {
-        $groupByServerData = [];
-        for ($i = 0; $i < count($onlineUsers); $i++) {
-            $groupByServerData[$onlineUsers[$i]['server']][] = $onlineUsers[$i];
+        $summary = [];
+        foreach ($onlineUsersCountGroupedByServer as $onlineUsersCountForOneServer) {
+            foreach ($onlineUsersCountForOneServer as $item) {
+                $summary[] = ['hour' => $item['hour'], 'count' => 0,];
+            }
+            break;
         }
-        return $groupByServerData;
+        return $summary;
     }
 
-    private function formatDataToGraph(array $groupByServerData): array
+    /**
+     * Форматирует данные для графиков
+     * @param array $onlineUsersCountGroupedByServer
+     * @return array
+     */
+    private function formatDataToGraph(array $onlineUsersCountGroupedByServer): array
     {
         $graphData = [];
-        foreach ($groupByServerData as $server => $data) {
-            $graphData[$server]['hours'] = [];
-            $graphData[$server]['counts'] = [];
-            foreach ($data as $datum) {
-                $graphData[$server]['hours'][] = $datum['hour'];
-                $graphData[$server]['counts'][] = $datum['count'];
+        foreach ($onlineUsersCountGroupedByServer as $server => $onlineUsersCountForOneServer) {
+            $graphData[$server] = ['hours' => [], 'counts' => [],];
+            foreach ($onlineUsersCountForOneServer as $data) {
+                $graphData[$server]['hours'][] = $data['hour'];
+                $graphData[$server]['counts'][] = $data['count'];
             }
             $graphData[$server]['hours'] = implode(", ", $graphData[$server]['hours']);
             $graphData[$server]['counts'] = implode(", ", $graphData[$server]['counts']);
-        }
-        return $graphData;
-    }
-
-    public function getOnlineUsersForLastFourHours(): array
-    {
-        if($this->redis->exists('hourly_graphs')) {
-            $graphData = (array)json_decode($this->redis->get('hourly_graphs'));
-        } else {
-            $onlineUsersRecords = $this->onlineUsersFetcher->getOnlineUsersForLastFourHours();
-            $groupByServerData = $this->groupByServer($onlineUsersRecords);
-            $groupByServerData['Summary'] = $this->getSummaryData($groupByServerData);
-            $graphData = $this->formatDataToGraph($groupByServerData);
-
-            $this->redis->set('hourly_graphs', json_encode($graphData), 300);
         }
         return $graphData;
     }
