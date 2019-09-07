@@ -1,5 +1,7 @@
 FROM php:7.2-cli
 
+COPY ./php/default.ini /usr/local/etc/php/php.ini
+
 # библиотеки нужны для компиляции расширений
 RUN apt-get update && apt-get install -y zlib1g-dev zip libssh2-1-dev libssh2-1
 

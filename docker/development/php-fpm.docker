@@ -10,4 +10,6 @@ RUN apt-get update && apt-get install -y libssh2-1-dev libssh2-1 \
     &&  docker-php-ext-enable redis \
     &&  rm -rf /tmp/pear
 
+COPY ./php/default.ini /usr/local/etc/php/php.ini
+
 WORKDIR /app
