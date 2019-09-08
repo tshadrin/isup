@@ -21,6 +21,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "bootstrap-datepicker": "^1.9.0",
     "chart.js": "^2.8.0"
   }
 }

@@ -10,7 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\Order\OrderRepository")
- * @ORM\Table(name="orders")
+ * @ORM\Table(name="orders",  indexes={@ORM\Index(name="createddeletedstatus", columns={"created","is_deleted","status_id"}),
+ *     @ORM\Index(name="utm_id", columns={"utm_id"})})
  */
 class Order
 {

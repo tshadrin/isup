@@ -1,6 +1,21 @@
 import Chart from 'chart.js';
+require('bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css');
+require('bootstrap-datepicker');
+require('bootstrap-datepicker/js/locales/bootstrap-datepicker.ru');
+
 
 document.addEventListener("DOMContentLoaded", function () {
+    const input = jQuery('input[name="date"]');
+    input.datepicker({
+        language: "ru",
+        autoclose: true,
+        todayHighlight: true,
+        format: "dd-mm-yyyy"
+    });
+    input.on("change", function (event) {
+        this.form.submit();
+    });
+
     //stream-page
     const graphs = document.querySelectorAll("canvas.graph");
     graphs.forEach(function (graph) {
@@ -14,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 datasets: [{
                     label: 'Пользователи онлайн',
                     data: counts,
-                    //backgroundColor: 'rgb(255, 99, 132)'
                     backgroundColor: graph.dataset.hourly?'rgb(255, 99, 132)':'rgb(56, 140, 17)'
                 }//next dataset in {}
                 ]

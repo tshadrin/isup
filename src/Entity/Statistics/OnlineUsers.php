@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\Statistics\OnlineUsersRepository")
- * @ORM\Table(name="online_users_statistics")
+ * @ORM\Table(name="online_users_statistics", indexes={@ORM\Index(name="date", columns={"date"})})
  */
 class OnlineUsers
 {

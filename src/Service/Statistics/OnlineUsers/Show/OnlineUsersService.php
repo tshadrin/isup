@@ -31,6 +31,17 @@ class OnlineUsersService
         });
     }
 
+    public function getGraphDataForDay(ForDayCommand $command): array
+    {
+        $date = \DateTimeImmutable::createFromFormat("!d-m-Y", $command->date);
+
+        return $this->cache("{$command->date}_graphs", function() use ($date) {
+            $onlineUsersCount = $this->onlineUsersFetcher->getForDay($date);
+            $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
+            return $this->prepareOnlineUsersCountData($aggregateData);
+        });
+    }
+
     /**
      * Возвращает данные по онлайн пользователям за последние четыре часа
      * @return array
@@ -73,13 +84,49 @@ class OnlineUsersService
     }
 
     /**
+     * Данные должны быть отсортированы по серверу и дате
+     * @param array $rawData
+     * @return array
+     */
+    private function aggregateOnlineUsersCountPerHour(array $rawData): array
+    {
+        $aggregatedData = $tmp = [];
+        for ($i = 0; $i < count($rawData); $i++) {
+            if ($rawData[$i]['minutes'] === "00") {
+                if (count($tmp) > 0) {
+                    $aggregatedData[] = $this->aggregateCount($tmp);
+                    $tmp = [];
+                }
+            }
+            $tmp[] = $rawData[$i];
+        }
+        return $aggregatedData;
+    }
+
+    /**
+     * Аггрегирование количества пользователей в переданном массиве
+     * @param array $arrayToAggregate
+     * @return array
+     */
+    private function aggregateCount(array $arrayToAggregate): array
+    {
+        $aggregatedCount = 0;
+        for ($i = 0; $i < $count = count($arrayToAggregate); $i++) {
+            $aggregatedCount += (int)$arrayToAggregate[$i]['count'];
+            if ($i === $count - 1) {
+                $arrayToAggregate[0]['count'] = (int)$aggregatedCount / count($arrayToAggregate);
+            }
+        }
+        return $arrayToAggregate[0];
+    }
+
+    /**
      * Группирует данные пользователей по серверам
      * @param array $onlineUsersCount
      * @return array
      */
     private function groupUsersCountDataByServer(array $onlineUsersCount): array
     {
-        $groupedOnlineUsersCount = [];
         for ($i = 0; $i < count($onlineUsersCount); $i++) {
             $groupedOnlineUsersCount[$onlineUsersCount[$i]['server']][] = $onlineUsersCount[$i];
         }

@@ -59,6 +59,16 @@ class StatisticsController extends AbstractController
         return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData,]);
     }
     /**
+     * @Route("/show/online-users-for-day", name=".show.online-for-day", methods={"GET"})
+     * @IsGranted("ROLE_SUPPORT")
+     */
+    public function showOnlineUsersForDay(Request $request, OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
+    {
+        $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", ''));
+        $graphData = $onlineUsersService->getGraphDataForDay($command);
+        return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData,]);
+    }
+    /**
      * @Route("/show/online-users-hourly", name=".show.online-users-hourly", methods={"GET"})
      * @IsGranted("ROLE_SUPPORT")
      */

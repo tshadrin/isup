@@ -28,6 +28,18 @@
     {% set menu = knp_menu_get('main') %}
     {{ knp_menu_render(menu['Control']['Statistics'],  {'currentAsLink': true, 'currentClass': 'active', 'template': "widget\\tab-menu\\menu.html.twig"}) }}
     </div>
+    <form method="GET" action="{{ path('statistics.show.online-for-day') }}">
+        <div class="row pl-3 pt-2 pb-2">
+            <div class="col-2">
+                <div class="input-group date">
+                    <input name="date" type="text" class="form-control">
+                    <div class="input-group-append">
+                        <div class="input-group-text "><i class="fas fa-calendar-alt"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
     <div class="row m-0 pt-2">
     {% for server, data in graphData %}
         <div class="col-lg-6 col-md-12 pb-3">
@@ -41,3 +53,8 @@
     {{ parent() }}
     {{ encore_entry_script_tags('statistics') }}
 {% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('statistics') }}
+{% endblock %}
+
