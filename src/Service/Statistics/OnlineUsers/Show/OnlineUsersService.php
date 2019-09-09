@@ -27,7 +27,8 @@ class OnlineUsersService
     {
         return $this->cache("daily_graphs", function() {
             $onlineUsersCount = $this->onlineUsersFetcher->getOnlineUsersCountForLastDay();
-            return  $this->prepareOnlineUsersCountData($onlineUsersCount);
+            $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
+            return  $this->prepareOnlineUsersCountData($aggregateData);
         });
     }
 
@@ -62,12 +63,12 @@ class OnlineUsersService
      */
     private function cache(string $key, callable $getData, int $timeout=600): array
     {
-        if($this->redis->exists($key)) {
-            $data = (array)json_decode($this->redis->get($key));
-        } else {
+        //if($this->redis->exists($key)) {
+        //    $data = (array)json_decode($this->redis->get($key));
+        //} else {
             $data = $getData();
             $this->redis->set($key, json_encode($data), $timeout);
-        }
+        //}
         return $data;
     }
 
@@ -92,7 +93,7 @@ class OnlineUsersService
     {
         $aggregatedData = $arrayToAggregate = [];
         for ($i = 0; $i < $count = count($rawData); $i++) {
-            if ($rawData[$i]['minutes'] === "0" || $i === $count - 1) {
+            if ($rawData[$i]['minutes'] === "0") {
                 if (count($arrayToAggregate) > 0) {
                     $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
                     $arrayToAggregate = [];
@@ -100,6 +101,7 @@ class OnlineUsersService
             }
             $arrayToAggregate[] = $rawData[$i];
         }
+        $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
         return $aggregatedData;
     }
 
@@ -163,7 +165,7 @@ class OnlineUsersService
         $summary = [];
         foreach ($onlineUsersCountGroupedByServer as $onlineUsersCountForOneServer) {
             foreach ($onlineUsersCountForOneServer as $item) {
-                $summary[] = ['hour' => $item['hour'], 'count' => 0,];
+                $summary[] = ['hour' => $item['hour'], 'count' => 0, 'max' => 0];
             }
             break;
         }
@@ -179,10 +181,16 @@ class OnlineUsersService
     {
         $graphData = [];
         foreach ($onlineUsersCountGroupedByServer as $server => $onlineUsersCountForOneServer) {
-            $graphData[$server] = ['hours' => [], 'counts' => [],];
+            $graphData[$server] = ['hours' => [], 'counts' => [], 'max' => 0, 'min' => 100000];
             foreach ($onlineUsersCountForOneServer as $data) {
                 $graphData[$server]['hours'][] = $data['hour'];
                 $graphData[$server]['counts'][] = $data['count'];
+                if ($data['count'] > $graphData[$server]['max']) {
+                    $graphData[$server]['max'] = $data['count'];
+                }
+                if($data['count'] < $graphData[$server]['min']) {
+                    $graphData[$server]['min'] = $data['count'];
+                }
             }
             $graphData[$server]['hours'] = implode(", ", $graphData[$server]['hours']);
             $graphData[$server]['counts'] = implode(", ", $graphData[$server]['counts']);

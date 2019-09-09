@@ -58,6 +58,7 @@ class StatisticsController extends AbstractController
         $graphData = $onlineUsersService->getOnlineUsersForLastDay();
         return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData,]);
     }
+
     /**
      * @Route("/show/online-users-for-day", name=".show.online-for-day", methods={"GET"})
      * @IsGranted("ROLE_SUPPORT")
@@ -65,13 +66,43 @@ class StatisticsController extends AbstractController
     public function showOnlineUsersForDay(Request $request, OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
     {
         try {
-            $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", ''));
+            $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", (new \DateTime())->format("d-m-Y")));
             $graphData = $onlineUsersService->getGraphDataForDay($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             $this->addFlash("error", $e->getMessage());
         }
         return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData ?? [],]);
     }
+
+    /**
+ * @Route("/show/online-users-for-week", name=".show.online-for-week", methods={"GET"})
+ * @IsGranted("ROLE_SUPPORT")
+ */
+    public function showOnlineUsersForWeek(Request $request, OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
+    {
+        try {
+            $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", (new \DateTime())->format("d-m-Y")));
+            $graphData = $onlineUsersService->getGraphDataForDay($command);
+        } catch (\DomainException | \InvalidArgumentException $e) {
+            $this->addFlash("error", $e->getMessage());
+        }
+        return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData ?? [],]);
+    }
+    /**
+     * @Route("/show/online-users-for-month", name=".show.online-for-month", methods={"GET"})
+     * @IsGranted("ROLE_SUPPORT")
+     */
+    public function showOnlineUsersForMonth(Request $request, OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
+    {
+        try {
+            $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", (new \DateTime())->format("d-m-Y")));
+            $graphData = $onlineUsersService->getGraphDataForDay($command);
+        } catch (\DomainException | \InvalidArgumentException $e) {
+            $this->addFlash("error", $e->getMessage());
+        }
+        return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData ?? [],]);
+    }
+
     /**
      * @Route("/show/online-users-hourly", name=".show.online-users-hourly", methods={"GET"})
      * @IsGranted("ROLE_SUPPORT")

@@ -113,7 +113,10 @@ class Builder
                 ['pattern' => '/^statistics\..*/'],
             ]);
             $menu['Control']['Statistics']->addChild('Online Users Day', ['route' => 'statistics.show.online-users']);
-            $menu['Control']['Statistics']->addChild('Online Users 4 Hours', ['route' => 'statistics.show.online-users-hourly']);
+            $menu['Control']['Statistics']->addChild('Online Users 6 Hours', ['route' => 'statistics.show.online-users-hourly']);
+            $menu['Control']['Statistics']->addChild('Online Users For Selected Day', ['route' => 'statistics.show.online-for-day']);
+            $menu['Control']['Statistics']->addChild('Online Users For Selected Week', ['route' => 'statistics.show.online-for-week']);
+            $menu['Control']['Statistics']->addChild('Online Users For Selected Month', ['route' => 'statistics.show.online-for-month']);
         }
         if ($authorizationChecker->isGranted('ROLE_SMS_ADMINISTRATOR')) {
             $menu['Control']->addChild('admin_sms', ['route' => 'admin_app_sms_smstemplate_list']);

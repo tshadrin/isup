@@ -25,7 +25,7 @@ class OnlineUsersFetcher
      */
     public function getOnlineUsersCountForLastDay(): array
     {
-        $query = "SELECT HOUR(date) as hour, server, count
+        $query = "SELECT HOUR(date) as hour, MINUTE(date) as minutes, server, count
                   FROM online_users_statistics
                   WHERE date
                       BETWEEN STR_TO_DATE(:past_date, \"%Y-%m-%d %H\")
@@ -116,7 +116,7 @@ class OnlineUsersFetcher
                 intdiv((int)(new \DateTime())->format("i"), 10) * 10,
                 0
             )
-            ->modify("-4 hours")
+            ->modify("-6 hours")
             ->format("Y-m-d H:i");
     }
 }

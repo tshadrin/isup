@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 {% block title %}
-    Количество пользователей онлайн
+    Количество устройств онлайн
 {% endblock %}
 {% block context %}
-    Количество пользователей онлайн
+    Количество устройств онлайн
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -28,22 +28,55 @@
     {% set menu = knp_menu_get('main') %}
     {{ knp_menu_render(menu['Control']['Statistics'],  {'currentAsLink': true, 'currentClass': 'active', 'template': "widget\\tab-menu\\menu.html.twig"}) }}
     </div>
-    <form method="GET" action="{{ path('statistics.show.online-for-day') }}">
-        <div class="row pl-3 pt-2 pb-2">
-            <div class="col-2">
+    <div class="row">
+        <div class="auto">
+            <form class="form-inline" method="GET" action="{{ path('statistics.show.online-for-day') }}">
+                <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1" for="month">Выберите день</label>
                 <div class="input-group date">
                     <input name="date" type="text" class="form-control">
                     <div class="input-group-append">
                         <div class="input-group-text "><i class="fas fa-calendar-alt"></i></div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
-    </form>
+        <div class="col-auto">
+            <form class="form-inline" method="GET" action="{{ path('statistics.show.online-for-week') }}">
+                <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1" for="month">Выберите неделю</label>
+                <div class="input-group date">
+                    <input name="week" type="text" class="form-control">
+                    <div class="input-group-append">
+                        <div class="input-group-text "><i class="fas fa-calendar-alt"></i></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="auto">
+            <form class="form-inline" method="GET" action="{{ path('statistics.show.online-for-month') }}">
+                <div class="input-group date">
+                    <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1" for="month">Выберите месяц</label>
+                    <input name="month" type="text" class="form-control">
+                    <div class="input-group-append">
+                        <div class="input-group-text "><i class="fas fa-calendar-alt"></i></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="row m-0 pt-2">
     {% for server, data in graphData %}
         <div class="col-lg-6 col-md-12 pb-3">
-            <canvas {{ hourly is defined? 'data-hourly="true"'}} class="graph" data-server="{{ server|trans }}" data-labels="{{ data.hours }}" data-counts="{{ data.counts }}" style="background: rgb(230,230,230);" width="280" height="100"></canvas>
+            <canvas {{ hourly is defined? 'data-hourly="true"'}}
+                    class="graph"
+                    data-label="{{ 'Пользователи онлайн' }}"
+                    data-server="{{ server|trans }}"
+                    data-max="{{ data.max }}"
+                    data-min="{{ data.min }}"
+                    data-labels="{{ data.hours }}"
+                    data-counts="{{ data.counts }}"
+                    style="background: rgb(230,230,230);"
+                    width="280"
+                    height="100"></canvas>
         </div>
     {% endfor %}
     </div>

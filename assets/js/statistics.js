@@ -1,29 +1,60 @@
 import Chart from 'chart.js';
-import Vue from 'vue';
-import DatePicker from "./components/DatePicker";
 
-require('bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css');
-require('bootstrap-datepicker');
-require('bootstrap-datepicker/js/locales/bootstrap-datepicker.ru');
-
-Vue.component('date-picker', {
-    delimiters: ['${', '}'],
-    render: h => h(DatePicker)
-});
-var app = new Vue({
-    el: '#app',
-    delimiters: ['${', '}'],
-});
+require('moment');
+require('jquery-date-range-picker/src/daterangepicker.scss');
+require('jquery-date-range-picker');
 
 document.addEventListener("DOMContentLoaded", function () {
-    const input = jQuery('input[name="date"]');
-    input.datepicker({
-        language: "ru",
-        autoclose: true,
-        todayHighlight: true,
-        format: "dd-mm-yyyy"
+    jQuery('input[name="date"]')
+        .dateRangePicker({
+        autoClose: true,
+        singleDate : true,
+        showShortcuts: false,
+        singleMonth: true,
+        startOfWeek: 'monday',
+        format: 'DD-MM-YYYY',
+        language: 'ru',
+        time: {
+            enabled: false
+        }
+    })
+        .bind('datepicker-change', function() {
+        this.form.submit();
     });
-    input.on("change", function (event) {
+
+    jQuery('input[name="week"]')
+        .dateRangePicker({
+        startOfWeek: 'monday',
+        format: 'DD-MM-YYYY',
+        language: 'ru',
+        autoClose: true,
+        batchMode: 'week',
+        separator : ' - ',
+        showShortcuts: false,
+        time: {
+            enabled: false
+        }
+    })
+        .bind('datepicker-change', function() {
+        this.form.submit();
+    });
+    jQuery('input[name="month"]')
+        .dateRangePicker({
+        autoClose: true,
+        singleDate : true,
+        batchMode: 'month',
+        showShortcuts: false,
+        singleMonth: true,
+        startOfWeek: 'monday',
+        format: 'MM-YYYY',
+        language: 'ru',
+        time: {
+            enabled: false
+        },
+        monthSelect: true,
+        yearSelect: true
+    })
+        .bind('datepicker-change', function() {
         this.form.submit();
     });
 
@@ -34,13 +65,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const labels = graph.dataset.labels.split(",");
         const counts = graph.dataset.counts.split(",");
         const myLineChart = new Chart(context, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Пользователи онлайн',
+                    label: graph.dataset.label,
                     data: counts,
-                    backgroundColor: graph.dataset.hourly?'rgb(255, 99, 132)':'rgb(56, 140, 17)'
+                    backgroundColor: Color(graph.dataset.hourly?'rgb(255, 99, 132)':'rgb(56, 140, 17)').alpha(0.5).rgbString(),
+                    borderColor: graph.dataset.hourly?'rgb(255, 99, 132)':'rgb(56, 140, 17)'
                 }//next dataset in {}
                 ]
             },
@@ -53,10 +85,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     display: true,
                     text: "Сервер " + graph.dataset.server
                 },
+                elements: {
+                    line: {
+                        lineTension: 0.000001
+                    }
+                },
                 scales: {
                     yAxes: [{
                         ticks: {
-                            beginAtZero: graph.dataset.hourly?false:true,
+                            max: Math.round(graph.dataset.max * 1.03 / 10) * 10,
+                            min: Math.round(graph.dataset.min * 0.97/ 10) * 10
                         }
                     }]
                 }
