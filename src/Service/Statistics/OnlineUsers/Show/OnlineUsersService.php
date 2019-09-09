@@ -90,15 +90,15 @@ class OnlineUsersService
      */
     private function aggregateOnlineUsersCountPerHour(array $rawData): array
     {
-        $aggregatedData = $tmp = [];
-        for ($i = 0; $i < count($rawData); $i++) {
-            if ($rawData[$i]['minutes'] === "00") {
-                if (count($tmp) > 0) {
-                    $aggregatedData[] = $this->aggregateCount($tmp);
-                    $tmp = [];
+        $aggregatedData = $arrayToAggregate = [];
+        for ($i = 0; $i < $count = count($rawData); $i++) {
+            if ($rawData[$i]['minutes'] === "0" || $i === $count - 1) {
+                if (count($arrayToAggregate) > 0) {
+                    $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
+                    $arrayToAggregate = [];
                 }
             }
-            $tmp[] = $rawData[$i];
+            $arrayToAggregate[] = $rawData[$i];
         }
         return $aggregatedData;
     }
@@ -114,7 +114,8 @@ class OnlineUsersService
         for ($i = 0; $i < $count = count($arrayToAggregate); $i++) {
             $aggregatedCount += (int)$arrayToAggregate[$i]['count'];
             if ($i === $count - 1) {
-                $arrayToAggregate[0]['count'] = (int)$aggregatedCount / count($arrayToAggregate);
+                $arrayToAggregate[0]['count'] = intval($aggregatedCount / count($arrayToAggregate));
+
             }
         }
         return $arrayToAggregate[0];

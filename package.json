@@ -6,7 +6,9 @@
     "autosize": "https://github.com/jackmoore/autosize.git",
     "bootstrap": "^4.3.1",
     "bootstrap-confirmation2": "^4.1.0",
+    "bootstrap-datepicker": "^1.9.0",
     "centrifuge": "^2.2.1",
+    "chart.js": "^2.8.0",
     "core-js": "^3.0.0",
     "expose-loader": "^0.7.5",
     "jquery": "^3.4.0",
@@ -16,12 +18,11 @@
     "sass-loader": "^7.1.0",
     "script-loader": "webpack-contrib/script-loader",
     "toastr": "^2.1.4",
+    "vue": "^2.6.10",
+    "vue-loader": "^15.7.1",
+    "vue-template-compiler": "^2.6.10",
     "webpack-notifier": "^1.6.0"
   },
   "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "bootstrap-datepicker": "^1.9.0",
-    "chart.js": "^2.8.0"
-  }
+  "private": true
 }

@@ -1,8 +1,19 @@
 import Chart from 'chart.js';
+import Vue from 'vue';
+import DatePicker from "./components/DatePicker";
+
 require('bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css');
 require('bootstrap-datepicker');
 require('bootstrap-datepicker/js/locales/bootstrap-datepicker.ru');
 
+Vue.component('date-picker', {
+    delimiters: ['${', '}'],
+    render: h => h(DatePicker)
+});
+var app = new Vue({
+    el: '#app',
+    delimiters: ['${', '}'],
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     const input = jQuery('input[name="date"]');

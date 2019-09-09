@@ -12,6 +12,7 @@ Encore
     .addEntry('userinfo', './assets/js/userinfo.js')
     .addEntry('vlans', './assets/js/vlans.js')
     .addEntry('statistics', './assets/js/statistics.js')
+    .enableVueLoader()
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
     .enableSourceMaps(!Encore.isProduction())
