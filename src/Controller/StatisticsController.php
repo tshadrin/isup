@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\ReadModel\DateIntervalTransformer;
 use App\Service\PaymentStatistics\MonthPayments;
 use App\Service\Statistics\OnlineUsers;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -55,7 +56,7 @@ class StatisticsController extends AbstractController
      */
     public function showOnlineUsers(OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
     {
-        $graphData = $onlineUsersService->getOnlineUsersForLastDay();
+        $graphData = $onlineUsersService->getForLastDayGraphData();
         return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData,]);
     }
 
@@ -67,7 +68,7 @@ class StatisticsController extends AbstractController
     {
         try {
             $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", (new \DateTime())->format("d-m-Y")));
-            $graphData = $onlineUsersService->getGraphDataForDay($command);
+            $graphData = $onlineUsersService->getForSelectedDayGraphData($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             $this->addFlash("error", $e->getMessage());
         }
@@ -80,9 +81,17 @@ class StatisticsController extends AbstractController
  */
     public function showOnlineUsersForWeek(Request $request, OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
     {
+        $transformer = DateIntervalTransformer::factory();
+        $interval = $transformer->reverseTransform(
+            $request->query->get("week", $transformer->transform([
+                    (new \DateTimeImmutable())->modify("last monday"),
+                    (new \DateTimeImmutable())->modify("last monday")->modify("+1 week")])
+            )
+        );
         try {
-            $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", (new \DateTime())->format("d-m-Y")));
-            $graphData = $onlineUsersService->getGraphDataForDay($command);
+            $command = new OnlineUsers\Show\ForWeekCommand($interval);
+
+            //$graphData = $onlineUsersService->getForSelectedDayGraphData($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             $this->addFlash("error", $e->getMessage());
         }
@@ -96,7 +105,7 @@ class StatisticsController extends AbstractController
     {
         try {
             $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", (new \DateTime())->format("d-m-Y")));
-            $graphData = $onlineUsersService->getGraphDataForDay($command);
+            $graphData = $onlineUsersService->getForSelectedDayGraphData($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             $this->addFlash("error", $e->getMessage());
         }
@@ -109,7 +118,7 @@ class StatisticsController extends AbstractController
      */
     public function showOnlineUsersHourly(OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
     {
-        $graphData = $onlineUsersService->getOnlineUsersForLastFourHours();
+        $graphData = $onlineUsersService->getForLastHoursGraphData();
         return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData, 'hourly'=>true]);
     }
 }

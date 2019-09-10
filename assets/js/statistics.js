@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     })
         .bind('datepicker-change', function() {
-        this.form.submit();
+            this.form.submit();
     });
     jQuery('input[name="month"]')
         .dateRangePicker({

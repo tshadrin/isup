@@ -299,6 +299,12 @@ services:
         tags:
             - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'orders' }
         public: true
+    admin.typical_problem:
+        class: 'App\Admin\Order\TypicalProblemAdmin'
+        arguments: [~, App\Entity\Order\TypicalProblem, ~]
+        tags:
+            - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'Typical Problems' }
+        public: true
     admin.vlan:
         class: 'App\Admin\Vlan\VlanAdmin'
         arguments: [~, App\Entity\Vlan\Vlan, ~]

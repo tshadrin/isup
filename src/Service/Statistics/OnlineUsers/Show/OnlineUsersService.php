@@ -20,37 +20,39 @@ class OnlineUsersService
     }
 
     /**
-     * Возвращает данные по онлайн пользователям за последние сутки
-     * @return array
+     * Данные для графиков за последние сутки
      */
-    public function getOnlineUsersForLastDay(): array
+    public function getForLastDayGraphData(): array
     {
         return $this->cache("daily_graphs", function() {
-            $onlineUsersCount = $this->onlineUsersFetcher->getOnlineUsersCountForLastDay();
+            $onlineUsersCount = $this->onlineUsersFetcher->getForLastDay();
             $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
             return  $this->prepareOnlineUsersCountData($aggregateData);
         });
     }
-
-    public function getGraphDataForDay(ForDayCommand $command): array
+    /**
+     * Данные для графиков за выбранный день
+     */
+    public function getForSelectedDayGraphData(ForDayCommand $command): array
     {
         $date = \DateTimeImmutable::createFromFormat("!d-m-Y", $command->date);
 
         return $this->cache("{$command->date}_graphs", function() use ($date) {
-            $onlineUsersCount = $this->onlineUsersFetcher->getForDay($date);
+            $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
             $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
             return $this->prepareOnlineUsersCountData($aggregateData);
         });
     }
-
     /**
-     * Возвращает данные по онлайн пользователям за последние четыре часа
-     * @return array
+     * Возвращает данные для графиков за последние несколько часов
      */
-    public function getOnlineUsersForLastFourHours(): array
+    public function getForLastHoursGraphData(): array
     {
         return $this->cache("hourly_graphs", function() {
-            $onlineUsersCount = $this->onlineUsersFetcher->getOnlineUsersCountForLastFourHours();
+            $onlineUsersCount = $this->onlineUsersFetcher->getForLastHours();
+            for ($i = 0; $i < count($onlineUsersCount); $i++) {
+                $onlineUsersCount[$i]['hour'] = $onlineUsersCount[$i]['hm'];
+            }
             return $this->prepareOnlineUsersCountData($onlineUsersCount);
         }, 300);
     }
@@ -63,12 +65,12 @@ class OnlineUsersService
      */
     private function cache(string $key, callable $getData, int $timeout=600): array
     {
-        //if($this->redis->exists($key)) {
-        //    $data = (array)json_decode($this->redis->get($key));
-        //} else {
+        if($this->redis->exists($key)) {
+            $data = (array)json_decode($this->redis->get($key));
+        } else {
             $data = $getData();
             $this->redis->set($key, json_encode($data), $timeout);
-        //}
+        }
         return $data;
     }
 
@@ -107,8 +109,6 @@ class OnlineUsersService
 
     /**
      * Аггрегирование количества пользователей в переданном массиве
-     * @param array $arrayToAggregate
-     * @return array
      */
     private function aggregateCount(array $arrayToAggregate): array
     {
@@ -125,8 +125,6 @@ class OnlineUsersService
 
     /**
      * Группирует данные пользователей по серверам
-     * @param array $onlineUsersCount
-     * @return array
      */
     private function groupUsersCountDataByServer(array $onlineUsersCount): array
     {
@@ -138,8 +136,6 @@ class OnlineUsersService
 
     /**
      * Подсчитывает общее количество онлайн пользователей на всех серверах
-     * @param array $onlineUsersCountGroupedByServer
-     * @return array
      */
     private function calculateSummaryOnlineUsersCount(array $onlineUsersCountGroupedByServer): array
     {
@@ -157,8 +153,6 @@ class OnlineUsersService
 
     /**
      * Инициализирует суммарный массив
-     * @param array $onlineUsersCountGroupedByServer
-     * @return array
      */
     private function initSummary(array $onlineUsersCountGroupedByServer): array
     {
@@ -174,8 +168,6 @@ class OnlineUsersService
 
     /**
      * Форматирует данные для графиков
-     * @param array $onlineUsersCountGroupedByServer
-     * @return array
      */
     private function formatDataToGraph(array $onlineUsersCountGroupedByServer): array
     {

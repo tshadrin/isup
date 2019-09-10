@@ -10,6 +10,8 @@ use Doctrine\DBAL\FetchMode;
 
 class OnlineUsersFetcher
 {
+    const LAST_HOURS_COUNT = "-6 hours";
+
     /** @var Connection  */
     private $connection;
 
@@ -23,92 +25,51 @@ class OnlineUsersFetcher
      * @return array
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function getOnlineUsersCountForLastDay(): array
+    public function getForLastDay(): array
     {
-        $query = "SELECT HOUR(date) as hour, MINUTE(date) as minutes, server, count
-                  FROM online_users_statistics
-                  WHERE date
-                      BETWEEN STR_TO_DATE(:past_date, \"%Y-%m-%d %H\")
-                      AND STR_TO_DATE(:current_date, \"%Y-%m-%d %H\")
-                      AND date_format(date,\"%i\") = 0
-                  ORDER BY server, date";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute([
-            ":past_date" => $this->getYesterdayDateWithHourString(),
-            ":current_date" => $this->getCurrentDateWithHourString()
-        ]);
-        return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
+        return $this->getByDateInterval($this->getLastDayDateStart(), $this->getLastDayDateEnd());
     }
-
-    private function getYesterdayDateWithHourString(): string
+    private function getLastDayDateStart(): \DateTime
     {
         return (new \DateTime())
             ->setTime((int)(new \DateTime())->format("H"),0,0)
-            ->modify("-1 day")->format("Y-m-d H");
+            ->modify("-1 day");
     }
-
-    private function getCurrentDateWithHourString(): string
+    private function getLastDayDateEnd(): \DateTime
     {
         return (new \DateTime())
-            ->setTime((int)(new \DateTime())->format("H"),0,0)
-            ->format("Y-m-d H");
+            ->setTime((int)(new \DateTime())->format("H"),0,0);
     }
-
 
     /**
      * Данные за выбранный день
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function getForDay(\DateTimeImmutable $date): array
+    public function getForSelectedDay(\DateTimeImmutable $date): array
+    {
+        return $this->getByDateInterval(
+            $this->getSelectedDayDateStart($date),
+            $this->getSelectedDayDateEnd($date)
+        );
+    }
+    private function getSelectedDayDateStart(\DateTimeImmutable $date): \DateTime
     {
         $timezone = new \DateTimeZone("Europe/Moscow");
-        $past = \DateTime::createFromFormat("U", (string)$date->getTimestamp())
-            ->setTimezone($timezone)->format("Y-m-d H:i:s");
-        $current = \DateTime::createFromFormat("U", (string)$date->getTimestamp())
-            ->setTimezone($timezone)->modify("+1 day")->modify('-1 second')->format("Y-m-d H:i:s");
-
-        $query = "SELECT HOUR(date) as hour, MINUTE(date) as minutes, server, count
-                  FROM online_users_statistics
-                  WHERE date
-                      BETWEEN STR_TO_DATE(:past_date, \"%Y-%m-%d %H:%i:%s\")
-                      AND STR_TO_DATE(:current_date, \"%Y-%m-%d %H:%i:%s\")
-                  ORDER BY server, date";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute([
-            ":past_date" => $past,
-            ":current_date" => $current
-        ]);
-        if($stmt->rowCount() === 0) {
-            throw new \DomainException("Records not found");
-        }
-        return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
+        return  \DateTime::createFromFormat("U", (string)$date->getTimestamp())
+            ->setTimezone($timezone);
+    }
+    private function getSelectedDayDateEnd(\DateTimeImmutable $date): \DateTime
+    {
+        $timezone = new \DateTimeZone("Europe/Moscow");
+        return \DateTime::createFromFormat("U", (string)$date->getTimestamp())
+            ->setTimezone($timezone)->modify("+1 day")->modify('-1 second');
     }
 
-    public function getOnlineUsersCountForLastFourHours(): array
+    public function getForLastHours(): array
     {
-        $query = "SELECT date_format(date,\"%H:%i\") as hour, server, count
-                  FROM online_users_statistics
-                  WHERE date
-                      BETWEEN STR_TO_DATE(:past_date, \"%Y-%m-%d %H:%i\")
-                      AND STR_TO_DATE(:current_date, \"%Y-%m-%d %H:%i\")
-                  ORDER BY server, date";
-        $stmt = $this->connection->prepare($query);
-        $stmt->execute([
-            ":past_date" => $this->getDateFourHoursAgoWithHoursString(),
-            ":current_date" => $this->getCurrentDateWithMinutesString()
-        ]);
-        return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
+        return $this->getByDateInterval($this->getLastHoursDateStart(),$this->getLastHoursDateEnd());
     }
-    private function getCurrentDateWithMinutesString(): string
-    {
-        return (new \DateTime())
-            ->setTime(
-                (int)(new \DateTime())->format("H"),
-                intdiv((int)(new \DateTime())->format("i"), 10) * 10,
-                0)
-            ->format("Y-m-d H:i");
-    }
-    private function getDateFourHoursAgoWithHoursString(): string
+    private function getLastHoursDateStart(): \DateTime
     {
         return (new \DateTime())
             ->setTime(
@@ -116,7 +77,33 @@ class OnlineUsersFetcher
                 intdiv((int)(new \DateTime())->format("i"), 10) * 10,
                 0
             )
-            ->modify("-6 hours")
-            ->format("Y-m-d H:i");
+            ->modify(self::LAST_HOURS_COUNT);
+    }
+    private function getLastHoursDateEnd(): \DateTime
+    {
+        return (new \DateTime())
+            ->setTime(
+                (int)(new \DateTime())->format("H"),
+                intdiv((int)(new \DateTime())->format("i"), 10) * 10,
+                0);
+    }
+
+    private function getByDateInterval(\Datetime $start, \Datetime $end): array
+    {
+        $query = "SELECT HOUR(date) as hour, MINUTE(date) as minutes, date_format(date,\"%H:%i\") as hm, server, count
+                  FROM online_users_statistics
+                  WHERE date
+                      BETWEEN STR_TO_DATE(:start, \"%Y-%m-%d %H:%i:%s\")
+                      AND STR_TO_DATE(:end, \"%Y-%m-%d %H:%i:%s\")
+                  ORDER BY server, date";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute([
+            ":start" => $start->format("Y-m-d H:i:s"),
+            ":end" => $end->format("Y-m-d H:i:s")
+        ]);
+        if($stmt->rowCount() === 0) {
+            throw new \DomainException("Records not found");
+        }
+        return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
     }
 }
