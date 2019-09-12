@@ -12,6 +12,7 @@ Encore
     .addEntry('userinfo', './assets/js/userinfo.js')
     .addEntry('vlans', './assets/js/vlans.js')
     .addEntry('statistics', './assets/js/statistics.js')
+    .addEntry('payments_statistics', './assets/js/payments_statistics.js')
     .enableVueLoader()
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()

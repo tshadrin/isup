@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Количество устройств онлайн
+{% endblock %}
+{% block context %}
+    Количество устройств онлайн
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="row p-0 m-0 pb-2">
+    {% set menu = knp_menu_get('main') %}
+        {#{{ knp_menu_render(menu['Control']['Statistics'],  {'currentAsLink': true, 'currentClass': 'active', 'template': "widget\\tab-menu\\menu.html.twig"}) }}#}
+    </div>
+    <div class="row m-0 pt-2">
+        {% for month, data in graphData %}
+            <div class="col-lg-6 col-md-12 pb-3">
+                <canvas class="graph"
+                        data-count_label="{{ 'Количество платежей' }}"
+                        data-sum_label="{{ 'Сумма платежей' }}"
+                        data-server="{{ month|trans }}"
+                        data-labels='{{ data.servers }}'
+                        data-counts="{{ data.counts }}"
+                        data-sums="{{ data.sums }}"
+                        style="background: rgb(230,230,230);"
+                        width="280"
+                        height="100"></canvas>
+            </div>
+            <div class="col-lg-6 col-md-12 pb-3">
+                <canvas data-hourly="true" class="graph"
+                        data-count_label="{{ 'Сумма платежей' }}"
+                        data-sum_label="{{ 'Сумма платежей' }}"
+                        data-server="{{ month|trans }}"
+                        data-labels='{{ data.servers }}'
+                        data-counts="{{ data.sums }}"
+                        style="background: rgb(230,230,230);"
+                        width="280"
+                        height="100"></canvas>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('payments_statistics') }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('payments_statistics') }}
+{% endblock %}
+

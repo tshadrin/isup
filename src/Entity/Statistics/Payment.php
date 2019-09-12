@@ -9,7 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Class Payment
  * @package App\Entity\Statistics
  * @ORM\Entity(repositoryClass="App\Repository\Statistics\PaymentRepository")
- * @ORM\Table(name="payment_statistics")
+ * @ORM\Table(name="payment_statistics",
+ *     indexes={@ORM\Index(name="date", columns={"date"}),
+ *     @ORM\Index(name="dateamount", columns={"date","amount"})})
  */
 class Payment
 {

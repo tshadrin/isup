@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\ReadModel\DateIntervalTransformer;
-use App\Service\PaymentStatistics\MonthPayments;
+use App\Service\PaymentStatistics\MonthlyPayments\PaymentsService;
 use App\Service\Statistics\OnlineUsers;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,15 +17,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class StatisticsController extends AbstractController
 {
-    /**
-     * @Route("/month-payments", name=".month-paymetns", methods={"GET"})
-     */
-    public function getMonthPayments(Request $request, MonthPayments\Handler $handler): Response
-    {
-        $command = new MonthPayments\Command(1,2017);
-        $handler->handle($command);
-    }
-
     /**
     #!/bin/sh
     COUNTS=`/arhiv/arhiv/remote_exec 'arp -en -i eth1 |grep ether|grep -Ev "172\.1[7-9]|172\.2[0-1]"|wc -l' | grep -v ssh`
@@ -120,5 +111,15 @@ class StatisticsController extends AbstractController
     {
         $graphData = $onlineUsersService->getForLastHoursGraphData();
         return $this->render("Statistics/online-users.html.twig", ['graphData' => $graphData, 'hourly'=>true]);
+    }
+
+    /**
+     * @Route("/show/payments-by-server", name=".show.payments-by-server", methods={"GET"})
+     * @IsGranted("ROLE_SUPPORT")
+     */
+    public function showMonthlyPaymentsByServer(PaymentsService $paymentService): Response
+    {
+        $graphData = $paymentService->getMonthlyForLastYearGraphData();
+        return $this->render("Statistics/payments.html.twig", ['graphData' => $graphData,]);
     }
 }

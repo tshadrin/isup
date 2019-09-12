@@ -140,6 +140,9 @@ services:
     App\ReadModel\Statistics\OnlineUsersFetcher:
         bind:
             $connection: '@doctrine.dbal.default_connection'
+    App\ReadModel\Statistics\MonthlyPaymentsFetcher:
+        bind:
+            $connection: '@doctrine.dbal.default_connection'
     App\ReadModel\Payments\NetPay\PaymentsFetcher:
         bind:
             $connection: '@doctrine.dbal.newlk_connection'
