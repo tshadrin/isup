@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Command\Statistics;
 
-use \App\Service\PaymentStatistics\AddStatistic;
+use App\Service\Statistics\Payments\Add;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,11 +23,11 @@ class AddPaymentsCommand extends Command
 
     protected static $defaultName = "statistics:add-paymetns";
     /**
-     * @var AddStatistic\Handler
+     * @var Add\Handler
      */
     private $handler;
 
-    public function __construct(AddStatistic\Handler $handler, string $name = null)
+    public function __construct(Add\Handler $handler, string $name = null)
     {
         parent::__construct($name);
         $this->handler = $handler;
@@ -39,7 +39,7 @@ class AddPaymentsCommand extends Command
         $this->output = $output;
         $month = $this->getMonth();
         $year = $this->getYear();
-        $command = new AddStatistic\Command($month, $year);
+        $command = new Add\Command($month, $year);
         $this->handler->handle($command);
 
     }

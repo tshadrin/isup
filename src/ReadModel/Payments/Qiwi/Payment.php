@@ -14,10 +14,16 @@ class Payment
     public const STATUS_FISCAL = 1;
     public const STATUS_NOT_FISCAL =0;
 
+    /** @var int */
     public $id;
+    /** @var string */
     public $login;
+    /** @var string */
     public $command;
+    /** @var double */
     public $sum;
+    /** @var string */
     public $payDate;
+    /** @var string */
     public $requestDate;
 }

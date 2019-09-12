@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\PaymentStatistics\AddLastPaymentDate;
+namespace App\Service\Statistics\Payments\AddLastPaymentDate;
 
 
 use App\Entity\Statistics\LastPayment;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\ReadModel\DateIntervalTransformer;
-use App\Service\PaymentStatistics\MonthlyPayments\PaymentsService;
 use App\Service\Statistics\OnlineUsers;
+use App\Service\Statistics\Payments\Monthly\PaymentsService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

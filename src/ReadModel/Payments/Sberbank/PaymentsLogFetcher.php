@@ -11,13 +11,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentsLogFetcher
 {
-    /**
-     * @var Connection
-     */
+    /** @var Connection  */
     private $connection;
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
 
     public function __construct(Connection $connection, TranslatorInterface $translator)
@@ -26,10 +22,6 @@ class PaymentsLogFetcher
         $this->translator = $translator;
     }
 
-    /**
-     * @param int $transaction
-     * @return array
-     */
     public function getByTransaction(int $transaction): array
     {
         $result = $this->connection->createQueryBuilder()
@@ -48,8 +40,6 @@ class PaymentsLogFetcher
     }
 
     /**
-     * @param int $transaction
-     * @return int
      * @throws \Doctrine\DBAL\DBALException
      */
     public function getCountPaymentLogRows(int $transaction): int
@@ -64,6 +54,5 @@ class PaymentsLogFetcher
             throw new \DomainException("Not found payment data in log");
         }
         return (int)$stmt->fetchColumn();
-
     }
 }

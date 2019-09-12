@@ -41,9 +41,6 @@ class Order
     /** @var bool  */
     public $emptyPassport = false;
 
-    /**
-     * @return bool
-     */
     public function isUtm5Order(): bool
     {
         return !is_null($this->utm_id);

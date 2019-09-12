@@ -7,16 +7,10 @@ namespace App\ReadModel\Payments\Sberbank\Filter;
 
 class Filter
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     public $userId;
-    /**
-     * @var int
-     */
+    /** @var int */
     public $transaction;
-    /**
-     * @var \DateTimeImmutable[]
-     */
+    /** @var \DateTimeImmutable[] */
     public $interval;
 }

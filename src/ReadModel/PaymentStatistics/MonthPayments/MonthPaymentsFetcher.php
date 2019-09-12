@@ -5,19 +5,15 @@ namespace App\ReadModel\PaymentStatistics\MonthPayments;
 
 
 use Doctrine\DBAL\Connection;
-use phpDocumentor\Reflection\Types\Mixed_;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MonthPaymentsFetcher
 {
     const DATE_FORMAT = "U";
-    /**
-     * @var Connection
-     */
+    
+    /** @var Connection  */
     private $connection;
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
 
     public function __construct(Connection $connection, TranslatorInterface $translator)
@@ -27,8 +23,6 @@ class MonthPaymentsFetcher
     }
 
     /**
-     * @param int $transaction
-     * @return int
      * @throws \Doctrine\DBAL\DBALException
      */
     public function getCountPaymetsByMonth(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
@@ -63,8 +57,6 @@ class MonthPaymentsFetcher
     }
 
     /**
-     * @param int $transaction
-     * @return int
      * @throws \Doctrine\DBAL\DBALException
      */
     public function getSumPaymetsByMonth(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
@@ -99,8 +91,6 @@ class MonthPaymentsFetcher
     }
 
     /**
-     * @param int $transaction
-     * @return int
      * @throws \Doctrine\DBAL\DBALException
      */
     public function getPaymetsByMonth(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array

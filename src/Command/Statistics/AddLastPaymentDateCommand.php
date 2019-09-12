@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Command\Statistics;
 
-use App\Service\PaymentStatistics\AddLastPaymentDate;
+use App\Service\Statistics\Payments\AddLastPaymentDate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

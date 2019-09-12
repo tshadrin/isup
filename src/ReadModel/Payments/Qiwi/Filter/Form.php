@@ -14,10 +14,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Form extends AbstractType
 {
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('userId', SearchType::class, [
@@ -62,9 +58,6 @@ class Form extends AbstractType
         $builder->get('interval')->addModelTransformer(DateIntervalTransformer::factory());
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

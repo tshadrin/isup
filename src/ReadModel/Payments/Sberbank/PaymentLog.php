@@ -7,28 +7,16 @@ namespace App\ReadModel\Payments\Sberbank;
 
 class PaymentLog
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $date;
-    /**
-     * @var string
-     */
+    /** @var string */
     public $ip;
-    /**
-     * @var string
-     */
+    /** @var string */
     public $in_data;
-    /**
-     * @var string
-     */
+    /** @var string */
     public $out_data;
-    /**
-     * @var int
-     */
+    /** @var string */
     public $err_code;
-    /**
-     * @var string
-     */
+    /** @var string */
     public $err_text;
 }

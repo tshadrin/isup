@@ -21,7 +21,14 @@ class Filter
     public $text;
     /**
      * @var string
-     * @Assert\Choice({Filter::PRESET_ISTRA, Filter::PRESET_DEDOVSK, Filter::PRESET_ACTUAL, Filter::PRESET_OUTDATE, Filter::PRESET_CURRENT_USER, Filter::PRESET_NOT_ASSIGNED})
+     * @Assert\Choice({
+     *     Filter::PRESET_ISTRA,
+     *     Filter::PRESET_DEDOVSK,
+     *     Filter::PRESET_ACTUAL,
+     *     Filter::PRESET_OUTDATE,
+     *     Filter::PRESET_CURRENT_USER,
+     *     Filter::PRESET_NOT_ASSIGNED
+     *     })
      */
     public $preset;
     /** @var Status */

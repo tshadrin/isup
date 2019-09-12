@@ -8,17 +8,8 @@ use Symfony\Component\Form\{ AbstractType, FormBuilderInterface };
 use Symfony\Component\Form\Extension\Core\Type\{ NumberType, TextType };
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Class PaymentFilterForm
- * @package App\Form\SberbankReport
- */
 class Form extends AbstractType
 {
-    /**
-     * Создание формы для поиска платежей
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('userId', NumberType::class, [
@@ -62,10 +53,6 @@ class Form extends AbstractType
         $builder->get('interval')->addModelTransformer(DateIntervalTransformer::factory());
     }
 
-    /**
-     * Стандартные параметры формы
-     * @param OptionsResolver $resolver
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

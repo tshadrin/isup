@@ -19,6 +19,7 @@ class MonthlyPaymentsFetcher
     {
         $this->connection = $connection;
     }
+
     public function getCountByServerForLastYearMonthly():array
     {
         $startDate = (new\DateTimeImmutable())->modify("-1 year");

@@ -9,9 +9,7 @@ use Doctrine\DBAL\FetchMode;
 
 class UserFetcher
 {
-    /**
-     * @var Connection
-     */
+    /** @var Connection  */
     private $connection;
 
     public function __construct(Connection $connection)

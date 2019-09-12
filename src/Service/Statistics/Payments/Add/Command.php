@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\PaymentStatistics\AddStatistic;
+namespace App\Service\Statistics\Payments\Add;
 
 use Webmozart\Assert\Assert;
 

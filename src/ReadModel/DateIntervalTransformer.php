@@ -10,9 +10,7 @@ use Symfony\Component\Form\CallbackTransformer;
 class DateIntervalTransformer extends CallbackTransformer
 {
     const DATES_DELIMITER = ' - ';
-    /**
-     * @return DateIntervalTransformer
-     */
+
     public static function factory(): self
     {
         return new self(

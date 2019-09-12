@@ -7,16 +7,10 @@ namespace App\ReadModel\Payments\NetPay\Filter;
 
 class Filter
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     public $status;
-    /**
-     * @var \DateTimeImmutable[]
-     */
-    public $interval;
-    /**
-     * @var int
-     */
+    /** @var int */
     public $userId;
+    /** @var \DateTimeImmutable[] */
+    public $interval;
 }

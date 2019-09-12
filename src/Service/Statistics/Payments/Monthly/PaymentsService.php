@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\PaymentStatistics\MonthlyPayments;
+namespace App\Service\Statistics\Payments\Monthly;
 
 
 use App\ReadModel\Statistics\MonthlyPaymentsFetcher;

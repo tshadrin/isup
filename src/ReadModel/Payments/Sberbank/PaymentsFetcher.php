@@ -12,13 +12,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PaymentsFetcher
 {
     const RECORDS_LIMIT = 2000;
-    /**
-     * @var Connection
-     */
+    /** @var Connection  */
     private $connection;
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
 
     public function __construct(Connection $connection, TranslatorInterface $translator)
@@ -27,10 +23,6 @@ class PaymentsFetcher
         $this->translator = $translator;
     }
 
-    /**
-     * @param Filter $filter
-     * @return array
-     */
     public function getFilteredPayments(Filter $filter): array
     {
         $query = $this->connection->createQueryBuilder()
