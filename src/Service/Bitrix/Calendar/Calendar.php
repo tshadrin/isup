@@ -6,7 +6,8 @@ namespace App\Service\Bitrix\Calendar;
 use DateTimeImmutable;
 use Exception;
 use om\IcalParser;
-
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 
 /**
@@ -21,15 +22,18 @@ class Calendar implements CalendarInterface
      * @var array
      */
     private $parameters;
+    /** @var CacheInterface  */
+    private $redis;
 
 
     /**
      * BitirixCalService constructor.
      * @param array $parameters
      */
-    public function __construct(array $parameters)
+    public function __construct(array $parameters, CacheInterface $redis)
     {
         $this->parameters = $parameters;
+        $this->redis = $redis;
     }
 
     /**
@@ -38,21 +42,24 @@ class Calendar implements CalendarInterface
      */
     public function getActualEvents(): array
     {
-        $events = [];
         $calendar = $this->getCalendar();
-        $currentDate = new DateTimeImmutable();
 
-        foreach ($calendar->getSortedEvents() as $event) {
-            if ($currentDate > $event['DTSTART'] &&
-                $currentDate < $event['DTEND']) {
-                $events[] = [
-                    'title' => $event['SUMMARY'],
-                    'description' => $event['DESCRIPTION'],
+        return $this->redis->get("calendar", function (ItemInterface $item) use ($calendar) {
+            $item->expiresAfter(600);
+
+            $events = [];
+            $currentDate = new DateTimeImmutable();
+            foreach ($calendar->getSortedEvents() as $event) {
+                if ($currentDate > $event['DTSTART'] &&
+                    $currentDate < $event['DTEND']) {
+                    $events[] = [
+                        'title' => $event['SUMMARY'],
+                        'description' => $event['DESCRIPTION'],
                     ];
+                }
             }
-        }
-
-        return $events;
+            return $events;
+        });
     }
 
     /**

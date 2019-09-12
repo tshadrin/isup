@@ -128,6 +128,7 @@ class UTM5Controller extends AbstractController
      */
     public function searchDefault(): Response
     {
+        $this->calEvents();
         return $this->render('Utm/find.html.twig');
     }
 

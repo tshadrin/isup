@@ -197,13 +197,9 @@ services:
     App\Service\UTM5\BitrixRestService:
         bind:
             $parameters: '%bitrix%'
-    App\Service\Bitrix\Calendar\CachedCalendar:
-        bind:
-            $parameters: '%bitrix_cal%'
     App\Service\Bitrix\Calendar\Calendar:
         bind:
             $parameters: '%bitrix_cal%'
-    App\Service\Bitrix\Calendar\CalendarInterface: '@App\Service\Bitrix\Calendar\CachedCalendar'
     App\Service\SMS\smscSender:
         bind:
             $parameters: '%smsc%'
