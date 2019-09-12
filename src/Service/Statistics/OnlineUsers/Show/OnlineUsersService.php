@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Service\Statistics\OnlineUsers\Show;
 
 use App\ReadModel\Statistics\OnlineUsersFetcher;
-use App\Service\Cache\CacherInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -13,12 +12,12 @@ class OnlineUsersService
     /** @var OnlineUsersFetcher  */
     private $onlineUsersFetcher;
     /** @var RedisAdapter  */
-    private $redisAdapter;
+    private $redis;
 
-    public function __construct(OnlineUsersFetcher $onlineUsersFetcher, RedisAdapter $redisAdapter)
+    public function __construct(OnlineUsersFetcher $onlineUsersFetcher, RedisAdapter $redis)
     {
         $this->onlineUsersFetcher = $onlineUsersFetcher;
-        $this->redisAdapter = $redisAdapter;
+        $this->redis = $redis;
     }
 
     /**
@@ -26,7 +25,7 @@ class OnlineUsersService
      */
     public function getForLastDayGraphData(): array
     {
-        return $this->redisAdapter->get("daily_graphs", function(ItemInterface $item) {
+        return $this->redis->get("daily_graphs", function(ItemInterface $item) {
             $item->expiresAfter(600);
 
             $onlineUsersCount = $this->onlineUsersFetcher->getForLastDay();
@@ -42,7 +41,7 @@ class OnlineUsersService
     {
         $date = \DateTimeImmutable::createFromFormat("!d-m-Y", $command->date);
 
-        return $this->redisAdapter->get("{$command->date}_graphs", function(ItemInterface $item) use ($date) {
+        return $this->redis->get("{$command->date}_graphs", function(ItemInterface $item) use ($date) {
             $item->expiresAfter(600);
 
             $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
@@ -56,7 +55,7 @@ class OnlineUsersService
      */
     public function getForLastHoursGraphData(): array
     {
-        return $this->redisAdapter->get("hourly_graphs", function(ItemInterface $item) {
+        return $this->redis->get("hourly_graphs", function(ItemInterface $item) {
             $item->expiresAfter(300);
 
             $onlineUsersCount = $this->onlineUsersFetcher->getForLastHours();

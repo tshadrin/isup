@@ -6,6 +6,9 @@ namespace App\ReadModel\Statistics;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use function foo\func;
 
 class MonthlyPaymentsFetcher
 {
@@ -14,10 +17,13 @@ class MonthlyPaymentsFetcher
 
     /** @var Connection  */
     private $connection;
+    /** @var CacheInterface  */
+    private $pdo;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, CacheInterface $pdo)
     {
         $this->connection = $connection;
+        $this->pdo = $pdo;
     }
 
     public function getCountByServerForLastYearMonthly():array
@@ -33,7 +39,11 @@ class MonthlyPaymentsFetcher
                 (int)$startDate->format("Y") > self::MINIMAL_YEAR) {
                 $start = (\DateTime::createFromFormat("!Y-m", $startDate->format("Y-m")));
                 $end = (\DateTime::createFromFormat("!Y-m", $startDate->modify("+1 month")->format("Y-m")));
-                $payments[$startDate->format("M")] = $this->getByDateRange($start, $end->modify("-1 second"));
+                $payments[$startDate->format("M")] =
+                    $this->pdo->get("payments_{$startDate->format("Y_m")}", function (ItemInterface $item) use ($start, $end) {
+                        return  $this->getByDateRange($start, $end->modify("-1 second"));
+                    });
+
             }
             $startDate = $startDate->modify("+1 month");
         }

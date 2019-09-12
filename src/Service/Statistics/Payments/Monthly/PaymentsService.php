@@ -5,24 +5,27 @@ namespace App\Service\Statistics\Payments\Monthly;
 
 
 use App\ReadModel\Statistics\MonthlyPaymentsFetcher;
-use App\Service\Cache\CacherInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class PaymentsService
 {
     /** @var MonthlyPaymentsFetcher  */
     private $monthlyPaymentsFetcher;
     /** @var \Redis  */
-    private $redis;
+    private $pdo;
 
-    public function __construct(MonthlyPaymentsFetcher $monthlyPaymentsFetcher, CacherInterface $redis)
+    public function __construct(MonthlyPaymentsFetcher $monthlyPaymentsFetcher, CacheInterface $pdo)
     {
         $this->monthlyPaymentsFetcher = $monthlyPaymentsFetcher;
-        $this->redis = $redis;
+        $this->pdo = $pdo;
     }
 
     public function getMonthlyForLastYearGraphData(): array
     {
-        return $this->redis->cacheArray('payment_reports', function() {
+        return $this->pdo->get('payment_reports', function(ItemInterface $item) {
+            $item->expiresAfter(600);
+
             $payments = $this->monthlyPaymentsFetcher->getCountByServerForLastYearMonthly();
             return $this->formatDataToGraph($payments);
         });
