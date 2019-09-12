@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Service\Statistics\Payments\Add;
 
-
 use App\Collection\UTM5\RouterCollection;
 use App\Entity\Statistics\Payment;
 use App\ReadModel\PaymentStatistics\MonthPayments\MonthPaymentsFetcher;

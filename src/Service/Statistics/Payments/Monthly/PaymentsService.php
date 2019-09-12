@@ -5,6 +5,7 @@ namespace App\Service\Statistics\Payments\Monthly;
 
 
 use App\ReadModel\Statistics\MonthlyPaymentsFetcher;
+use App\Service\Cache\CacherInterface;
 
 class PaymentsService
 {
@@ -13,7 +14,7 @@ class PaymentsService
     /** @var \Redis  */
     private $redis;
 
-    public function __construct(MonthlyPaymentsFetcher $monthlyPaymentsFetcher, \Redis $redis)
+    public function __construct(MonthlyPaymentsFetcher $monthlyPaymentsFetcher, CacherInterface $redis)
     {
         $this->monthlyPaymentsFetcher = $monthlyPaymentsFetcher;
         $this->redis = $redis;
@@ -21,8 +22,10 @@ class PaymentsService
 
     public function getMonthlyForLastYearGraphData(): array
     {
-        $payments = $this->monthlyPaymentsFetcher->getCountByServerForLastYearMonthly();
-        return $this->formatDataToGraph($payments);
+        return $this->redis->cacheArray('payment_reports', function() {
+            $payments = $this->monthlyPaymentsFetcher->getCountByServerForLastYearMonthly();
+            return $this->formatDataToGraph($payments);
+        });
     }
 
     /**

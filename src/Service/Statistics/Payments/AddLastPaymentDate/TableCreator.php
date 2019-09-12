@@ -3,16 +3,13 @@ declare(strict_types=1);
 
 namespace App\Service\Statistics\Payments\AddLastPaymentDate;
 
-
 use App\Entity\Statistics\LastPayment;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 
 class TableCreator
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface  */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -20,6 +17,9 @@ class TableCreator
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @throws \Doctrine\ORM\Tools\ToolsException
+     */
     public function createLastPaymentDateTable(Command $command): void
     {
         $metadata = $this->entityManager->getClassMetadata(LastPayment::class);

@@ -3,20 +3,22 @@ declare(strict_types=1);
 
 namespace App\Service\Statistics\OnlineUsers\Show;
 
-
 use App\ReadModel\Statistics\OnlineUsersFetcher;
+use App\Service\Cache\CacherInterface;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class OnlineUsersService
 {
     /** @var OnlineUsersFetcher  */
     private $onlineUsersFetcher;
-    /** @var \Redis  */
-    private $redis;
+    /** @var RedisAdapter  */
+    private $redisAdapter;
 
-    public function __construct(OnlineUsersFetcher $onlineUsersFetcher, \Redis $redis)
+    public function __construct(OnlineUsersFetcher $onlineUsersFetcher, RedisAdapter $redisAdapter)
     {
         $this->onlineUsersFetcher = $onlineUsersFetcher;
-        $this->redis = $redis;
+        $this->redisAdapter = $redisAdapter;
     }
 
     /**
@@ -24,12 +26,15 @@ class OnlineUsersService
      */
     public function getForLastDayGraphData(): array
     {
-        return $this->cache("daily_graphs", function() {
+        return $this->redisAdapter->get("daily_graphs", function(ItemInterface $item) {
+            $item->expiresAfter(600);
+
             $onlineUsersCount = $this->onlineUsersFetcher->getForLastDay();
             $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
             return  $this->prepareOnlineUsersCountData($aggregateData);
         });
     }
+
     /**
      * Данные для графиков за выбранный день
      */
@@ -37,47 +42,33 @@ class OnlineUsersService
     {
         $date = \DateTimeImmutable::createFromFormat("!d-m-Y", $command->date);
 
-        return $this->cache("{$command->date}_graphs", function() use ($date) {
+        return $this->redisAdapter->get("{$command->date}_graphs", function(ItemInterface $item) use ($date) {
+            $item->expiresAfter(600);
+
             $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
             $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
             return $this->prepareOnlineUsersCountData($aggregateData);
         });
     }
+
     /**
      * Возвращает данные для графиков за последние несколько часов
      */
     public function getForLastHoursGraphData(): array
     {
-        return $this->cache("hourly_graphs", function() {
+        return $this->redisAdapter->get("hourly_graphs", function(ItemInterface $item) {
+            $item->expiresAfter(300);
+
             $onlineUsersCount = $this->onlineUsersFetcher->getForLastHours();
             for ($i = 0; $i < count($onlineUsersCount); $i++) {
                 $onlineUsersCount[$i]['hour'] = $onlineUsersCount[$i]['hm'];
             }
             return $this->prepareOnlineUsersCountData($onlineUsersCount);
-        }, 300);
-    }
-
-    /**
-     * Возвращает данные из кэша или кэширует данные возвращаемые функцией $getData
-     * @param string $key
-     * @param callable $getData
-     * @return array
-     */
-    private function cache(string $key, callable $getData, int $timeout=600): array
-    {
-        if($this->redis->exists($key)) {
-            $data = (array)json_decode($this->redis->get($key));
-        } else {
-            $data = $getData();
-            $this->redis->set($key, json_encode($data), $timeout);
-        }
-        return $data;
+        });
     }
 
     /**
      * Обрабатывает данные для отображения на графике
-     * @param array $rawData
-     * @return array
      */
     private function prepareOnlineUsersCountData(array $rawData): array
     {
