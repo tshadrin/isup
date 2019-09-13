@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service\Statistics\OnlineUsers\Show;
 
 use App\ReadModel\Statistics\OnlineUsersFetcher;
+use Symfony\Component\Cache\Adapter\PdoAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -13,11 +14,15 @@ class OnlineUsersService
     private $onlineUsersFetcher;
     /** @var RedisAdapter  */
     private $redis;
+    /** @var PdoAdapter  */
+    private $pdo;
 
-    public function __construct(OnlineUsersFetcher $onlineUsersFetcher, RedisAdapter $redis)
+    public function __construct(OnlineUsersFetcher $onlineUsersFetcher,
+                                RedisAdapter $redis, PdoAdapter $pdo)
     {
         $this->onlineUsersFetcher = $onlineUsersFetcher;
         $this->redis = $redis;
+        $this->pdo = $pdo;
     }
 
     /**
@@ -41,13 +46,19 @@ class OnlineUsersService
     {
         $date = \DateTimeImmutable::createFromFormat("!d-m-Y", $command->date);
 
-        return $this->redis->get("{$command->date}_graphs", function(ItemInterface $item) use ($date) {
-            $item->expiresAfter(600);
-
-            $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
-            $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
-            return $this->prepareOnlineUsersCountData($aggregateData);
-        });
+        if ($date->format("U") < (new \DateTime())->setTime(0,0,0)->format("U")) {
+            return $this->pdo->get("{$command->date}_graphs", function (ItemInterface $item) use ($date) {
+                $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
+                $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
+                return $this->prepareOnlineUsersCountData($aggregateData);
+            });
+        } else {
+            return $this->redis->get("{$command->date}_graphs", function (ItemInterface $item) use ($date) {
+                $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
+                $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
+                return $this->prepareOnlineUsersCountData($aggregateData);
+            });
+        }
     }
 
     /**

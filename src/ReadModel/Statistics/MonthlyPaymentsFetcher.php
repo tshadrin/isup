@@ -8,12 +8,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
-use function foo\func;
 
 class MonthlyPaymentsFetcher
 {
     const MINIMAL_YEAR = 2019;
-    const MINIMAL_MONTH = 4;
+    const MINIMAL_MONTH = 3;
 
     /** @var Connection  */
     private $connection;
