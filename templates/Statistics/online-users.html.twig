@@ -33,7 +33,7 @@
             <form class="form-inline" method="GET" action="{{ path('statistics.show.online-for-day') }}">
                 <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1" for="month">Выберите день</label>
                 <div class="input-group date">
-                    <input name="date" type="text" class="form-control">
+                    <input name="date" type="date" class="form-control">
                     <div class="input-group-append">
                         <div class="input-group-text "><i class="fas fa-calendar-alt"></i></div>
                     </div>
@@ -44,7 +44,7 @@
             <form class="form-inline" method="GET" action="{{ path('statistics.show.online-for-week') }}">
                 <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1" for="month">Выберите неделю</label>
                 <div class="input-group date">
-                    <input name="week" type="text" class="form-control">
+                    <input name="week" type="week" min="2018-W18" max="2018-W26" class="form-control">
                     <div class="input-group-append">
                         <div class="input-group-text "><i class="fas fa-calendar-alt"></i></div>
                     </div>
@@ -55,7 +55,7 @@
             <form class="form-inline" method="GET" action="{{ path('statistics.show.online-for-month') }}">
                 <div class="input-group date">
                     <label class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1" for="month">Выберите месяц</label>
-                    <input name="month" type="text" class="form-control">
+                    <input name="month" type="month" class="form-control">
                     <div class="input-group-append">
                         <div class="input-group-text "><i class="fas fa-calendar-alt"></i></div>
                     </div>
