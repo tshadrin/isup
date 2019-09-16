@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Service\Statistics\OnlineUsers\Show;
 
 use App\ReadModel\Statistics\OnlineUsersFetcher;
-use Symfony\Component\Cache\Adapter\PdoAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -14,99 +13,17 @@ class OnlineUsersService
     private $onlineUsersFetcher;
     /** @var RedisAdapter  */
     private $redis;
-    /** @var PdoAdapter  */
-    private $pdo;
+
 
     public function __construct(OnlineUsersFetcher $onlineUsersFetcher,
-                                RedisAdapter $redis, PdoAdapter $pdo)
+                                RedisAdapter $redis)
     {
         $this->onlineUsersFetcher = $onlineUsersFetcher;
         $this->redis = $redis;
-        $this->pdo = $pdo;
     }
 
     /**
-     * Данные для графиков за последние сутки
-     */
-    public function getForLastDayGraphData(): array
-    {
-        return $this->redis->get("daily_graphs", function(ItemInterface $item) {
-            $item->expiresAfter(600);
-
-            $onlineUsersCount = $this->onlineUsersFetcher->getForLastDay();
-            $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
-            return  $this->prepareOnlineUsersCountData($aggregateData);
-        });
-    }
-
-    /**
-     * Данные для графиков за выбранный день
-     */
-    public function getForSelectedDayGraphData(ForDayCommand $command): array
-    {
-        $date = \DateTimeImmutable::createFromFormat("!d-m-Y", $command->date);
-
-        if ($date->format("U") < (new \DateTime())->setTime(0,0,0)->format("U")) {
-            return $this->pdo->get("{$command->date}_graphs", function (ItemInterface $item) use ($date) {
-                $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
-                $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
-                return $this->prepareOnlineUsersCountData($aggregateData);
-            });
-        } else {
-            return $this->redis->get("{$command->date}_graphs", function (ItemInterface $item) use ($date) {
-                $item->expiresAfter(300);
-                $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
-                $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
-                return $this->prepareOnlineUsersCountData($aggregateData);
-            });
-        }
-    }
-
-    public function getForSelectedWeekGraphData(ForWeekCommand $command): array
-    {
-        $start = $command->interval[0];
-        $end = $command->interval[1]->setTime(23,59,59);
-
-        return $this->redis->get("{$start->format("W")}_graphs", function (ItemInterface $item) use ($start, $end) {
-            $item->expiresAfter(600);
-
-            $onlineUsersCount = $this->onlineUsersFetcher->getSelectedInterval($start, $end);
-            $aggregateData = $this->aggregateOnlineUsersCountPerSixHours($onlineUsersCount);
-
-            for ($i = 0; $i < count($aggregateData); $i++) {
-                $aggregateData[$i]['hour'] = "{$aggregateData[$i]['day']} - {$aggregateData[$i]['hm']}";
-            }
-
-            return $this->prepareOnlineUsersCountData($aggregateData);
-        });
-    }
-
-    /**
-     * Данные должны быть отсортированы по серверу и дате
-     * @param array $rawData
-     * @return array
-     */
-    private function aggregateOnlineUsersCountPerSixHours(array $rawData): array
-    {
-        $aggregatedData = $arrayToAggregate = [];
-        for ($i = 0; $i < $count = count($rawData); $i++) {
-            if ($rawData[$i]['hm'] === "00:00" ||
-                $rawData[$i]['hm'] === "06:00" ||
-                $rawData[$i]['hm'] === "12:00" ||
-                $rawData[$i]['hm'] === "18:00") {
-                if (count($arrayToAggregate) > 0) {
-                    $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
-                    $arrayToAggregate = [];
-                }
-            }
-            $arrayToAggregate[] = $rawData[$i];
-        }
-        $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
-        return $aggregatedData;
-    }
-
-    /**
-     * Возвращает данные для графиков за последние несколько часов
+     * Последние несколько часов
      */
     public function getForLastHoursGraphData(): array
     {
@@ -122,25 +39,88 @@ class OnlineUsersService
     }
 
     /**
-     * Обрабатывает данные для отображения на графике
+     * Последние сутки
      */
-    private function prepareOnlineUsersCountData(array $rawData): array
+    public function getForLastDayGraphData(): array
     {
-        $onlineUsersCountGroupedByServer = $this->groupUsersCountDataByServer($rawData);
-        $onlineUsersCountGroupedByServer['Summary'] = $this->calculateSummaryOnlineUsersCount($onlineUsersCountGroupedByServer);
-        return $this->formatDataToGraph($onlineUsersCountGroupedByServer);
+        return $this->redis->get("daily_graphs", function(ItemInterface $item) {
+            $item->expiresAfter(600);
+
+            $onlineUsersCount = $this->onlineUsersFetcher->getForLastDay();
+            $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
+            return  $this->prepareOnlineUsersCountData($aggregateData);
+        });
     }
 
     /**
-     * Данные должны быть отсортированы по серверу и дате
-     * @param array $rawData
-     * @return array
+     * Выбранный день
+     */
+    public function getForSelectedDayGraphData(ForDayCommand $command): array
+    {
+        $date = \DateTimeImmutable::createFromFormat("!d-m-Y", $command->date);
+
+        return $this->redis->get("{$command->date}_graphs", function (ItemInterface $item) use ($date) {
+            if ($date->format("U") >= (new \DateTime())->setTime(0,0,0)->format("U")) {
+                $item->expiresAfter(300);
+            }
+            $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
+            $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
+            return $this->prepareOnlineUsersCountData($aggregateData);
+        });
+    }
+
+    /** Выбраннуа неделя */
+    public function getForSelectedWeekGraphData(ForWeekCommand $command): array
+    {
+        $start = $command->interval[0];
+        $end = $command->interval[1]->setTime(23,59,59);
+
+        return $this->redis->get("{$start->format("W")}_{$start->format("Y")}_graphs", function (ItemInterface $item) use ($start, $end) {
+            if ($start->format("W") === (new \DateTime())->format("W")) {
+                $item->expiresAfter(600);
+            }
+
+            $onlineUsersCount = $this->onlineUsersFetcher->getSelectedInterval($start, $end);
+            $aggregateData = $this->aggregateOnlineUsersCountPerSixHours($onlineUsersCount);
+
+            for ($i = 0; $i < count($aggregateData); $i++) {
+                $aggregateData[$i]['hour'] = "{$aggregateData[$i]['day']} - {$aggregateData[$i]['hm']}";
+            }
+
+            return $this->prepareOnlineUsersCountData($aggregateData);
+        });
+    }
+
+    /**
+     * Аггрегация данных за час
      */
     private function aggregateOnlineUsersCountPerHour(array $rawData): array
     {
         $aggregatedData = $arrayToAggregate = [];
         for ($i = 0; $i < $count = count($rawData); $i++) {
             if ($rawData[$i]['minutes'] === "0") {
+                if (count($arrayToAggregate) > 0) {
+                    $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
+                    $arrayToAggregate = [];
+                }
+            }
+            $arrayToAggregate[] = $rawData[$i];
+        }
+        $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
+        return $aggregatedData;
+    }
+
+    /**
+     * Аггрегация данных за 6 часов
+     */
+    private function aggregateOnlineUsersCountPerSixHours(array $rawData): array
+    {
+        $aggregatedData = $arrayToAggregate = [];
+        for ($i = 0; $i < $count = count($rawData); $i++) {
+            if ($rawData[$i]['hm'] === "00:00" ||
+                $rawData[$i]['hm'] === "06:00" ||
+                $rawData[$i]['hm'] === "12:00" ||
+                $rawData[$i]['hm'] === "18:00") {
                 if (count($arrayToAggregate) > 0) {
                     $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
                     $arrayToAggregate = [];
@@ -166,6 +146,16 @@ class OnlineUsersService
             }
         }
         return $arrayToAggregate[0];
+    }
+
+    /**
+     * Обрабатывает данные для отображения на графике
+     */
+    private function prepareOnlineUsersCountData(array $rawData): array
+    {
+        $onlineUsersCountGroupedByServer = $this->groupUsersCountDataByServer($rawData);
+        $onlineUsersCountGroupedByServer['Summary'] = $this->calculateSummaryOnlineUsersCount($onlineUsersCountGroupedByServer);
+        return $this->formatDataToGraph($onlineUsersCountGroupedByServer);
     }
 
     /**
@@ -202,11 +192,8 @@ class OnlineUsersService
     private function initSummary(array $onlineUsersCountGroupedByServer): array
     {
         $summary = [];
-        foreach ($onlineUsersCountGroupedByServer as $onlineUsersCountForOneServer) {
-            foreach ($onlineUsersCountForOneServer as $item) {
-                $summary[] = ['hour' => $item['hour'], 'count' => 0, 'max' => 0];
-            }
-            break;
+        foreach ($onlineUsersCountGroupedByServer[array_key_first($onlineUsersCountGroupedByServer)] as $item) {
+            $summary[] = ['hour' => $item['hour'], 'count' => 0, 'max' => 0, 'min' => 100000];
         }
         return $summary;
     }
