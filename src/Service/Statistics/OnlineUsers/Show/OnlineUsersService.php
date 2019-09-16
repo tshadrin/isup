@@ -54,11 +54,55 @@ class OnlineUsersService
             });
         } else {
             return $this->redis->get("{$command->date}_graphs", function (ItemInterface $item) use ($date) {
+                $item->expiresAfter(300);
                 $onlineUsersCount = $this->onlineUsersFetcher->getForSelectedDay($date);
                 $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
                 return $this->prepareOnlineUsersCountData($aggregateData);
             });
         }
+    }
+
+    public function getForSelectedWeekGraphData(ForWeekCommand $command): array
+    {
+        $start = $command->interval[0];
+        $end = $command->interval[1]->setTime(23,59,59);
+
+        return $this->redis->get("{$start->format("W")}_graphs", function (ItemInterface $item) use ($start, $end) {
+            $item->expiresAfter(600);
+
+            $onlineUsersCount = $this->onlineUsersFetcher->getSelectedInterval($start, $end);
+            $aggregateData = $this->aggregateOnlineUsersCountPerSixHours($onlineUsersCount);
+
+            for ($i = 0; $i < count($aggregateData); $i++) {
+                $aggregateData[$i]['hour'] = "{$aggregateData[$i]['day']} - {$aggregateData[$i]['hm']}";
+            }
+
+            return $this->prepareOnlineUsersCountData($aggregateData);
+        });
+    }
+
+    /**
+     * Данные должны быть отсортированы по серверу и дате
+     * @param array $rawData
+     * @return array
+     */
+    private function aggregateOnlineUsersCountPerSixHours(array $rawData): array
+    {
+        $aggregatedData = $arrayToAggregate = [];
+        for ($i = 0; $i < $count = count($rawData); $i++) {
+            if ($rawData[$i]['hm'] === "00:00" ||
+                $rawData[$i]['hm'] === "06:00" ||
+                $rawData[$i]['hm'] === "12:00" ||
+                $rawData[$i]['hm'] === "18:00") {
+                if (count($arrayToAggregate) > 0) {
+                    $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
+                    $arrayToAggregate = [];
+                }
+            }
+            $arrayToAggregate[] = $rawData[$i];
+        }
+        $aggregatedData[] = $this->aggregateCount($arrayToAggregate);
+        return $aggregatedData;
     }
 
     /**

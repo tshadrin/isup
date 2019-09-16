@@ -75,14 +75,13 @@ class StatisticsController extends AbstractController
         $transformer = DateIntervalTransformer::factory();
         $interval = $transformer->reverseTransform(
             $request->query->get("week", $transformer->transform([
-                    (new \DateTimeImmutable())->modify("last monday"),
-                    (new \DateTimeImmutable())->modify("last monday")->modify("+1 week")])
+                    (new \DateTimeImmutable())->modify("monday this week"),
+                    (new \DateTimeImmutable())->modify("monday this week")->modify("+6 days")])
             )
         );
         try {
             $command = new OnlineUsers\Show\ForWeekCommand($interval);
-
-            //$graphData = $onlineUsersService->getForSelectedDayGraphData($command);
+            $graphData = $onlineUsersService->getForSelectedWeekGraphData($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             $this->addFlash("error", $e->getMessage());
         }

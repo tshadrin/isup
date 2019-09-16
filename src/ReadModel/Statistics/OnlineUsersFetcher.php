@@ -47,22 +47,9 @@ class OnlineUsersFetcher
      */
     public function getForSelectedDay(\DateTimeImmutable $date): array
     {
-        return $this->getByDateInterval(
-            $this->getSelectedDayDateStart($date),
-            $this->getSelectedDayDateEnd($date)
-        );
-    }
-    private function getSelectedDayDateStart(\DateTimeImmutable $date): \DateTime
-    {
-        $timezone = new \DateTimeZone("Europe/Moscow");
-        return  \DateTime::createFromFormat("U", (string)$date->getTimestamp())
-            ->setTimezone($timezone);
-    }
-    private function getSelectedDayDateEnd(\DateTimeImmutable $date): \DateTime
-    {
-        $timezone = new \DateTimeZone("Europe/Moscow");
-        return \DateTime::createFromFormat("U", (string)$date->getTimestamp())
-            ->setTimezone($timezone)->modify("+1 day")->modify('-1 second');
+        $start = \DateTime::createFromFormat("Y-m-d H:i:s", $date->format("Y-m-d H:i:s"));
+        $end = \DateTime::createFromFormat("Y-m-d H:i:s", $date->setTime(23,59,59)->format("Y-m-d H:i:s"));
+        return $this->getByDateInterval($start, $end);
     }
 
     public function getForLastHours(): array
@@ -88,9 +75,16 @@ class OnlineUsersFetcher
                 0);
     }
 
+    public function getSelectedInterval(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        $start = \DateTime::createFromFormat("Y-m-d H:i:s", $start->format("Y-m-d H:i:s"));
+        $end = \DateTime::createFromFormat("Y-m-d H:i:s", $end->format("Y-m-d H:i:s"));
+        return $this->getByDateInterval($start, $end);
+    }
+
     private function getByDateInterval(\Datetime $start, \Datetime $end): array
     {
-        $query = "SELECT HOUR(date) as hour, MINUTE(date) as minutes, date_format(date,\"%H:%i\") as hm, server, count
+        $query = "SELECT DAY(date) as day, HOUR(date) as hour, MINUTE(date) as minutes, date_format(date,\"%H:%i\") as hm, server, count
                   FROM online_users_statistics
                   WHERE date
                       BETWEEN STR_TO_DATE(:start, \"%Y-%m-%d %H:%i:%s\")
