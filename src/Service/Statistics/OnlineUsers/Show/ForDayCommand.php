@@ -7,13 +7,15 @@ use Webmozart\Assert\Assert;
 
 class ForDayCommand
 {
-    /** @var string */
-    public $date;
+    const DAY_FORMAT = "!d-m-Y";
+    /** @var \DateTimeImmutable|false  */
+    public $day;
 
-    public function __construct(string $date)
+    public function __construct(string $day)
     {
-        Assert::notEmpty($date);
-        Assert::regex($date, "{^[0-9]{2}-[0-9]{2}-[0-9]{4}$}");
-        $this->date = $date;
+        Assert::notEmpty($day);
+        Assert::regex($day, "{^[0-9]{2}-[0-9]{2}-[0-9]{4}$}");
+        $this->day = \DateTimeImmutable::createFromFormat(self::DAY_FORMAT, $day);
+        Assert::isInstanceOf($this->day, \DateTimeImmutable::class);
     }
 }

@@ -94,8 +94,8 @@ class StatisticsController extends AbstractController
     public function showOnlineUsersForMonth(Request $request, OnlineUsers\Show\OnlineUsersService $onlineUsersService): Response
     {
         try {
-            $command = new OnlineUsers\Show\ForDayCommand($request->query->get("date", (new \DateTime())->format("d-m-Y")));
-            $graphData = $onlineUsersService->getForSelectedDayGraphData($command);
+            $command = new OnlineUsers\Show\ForMonthCommand($request->query->get("month", (new \DateTime())->format("m-Y")));
+            $graphData = $onlineUsersService->getForSelectedMonthGraphData($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             $this->addFlash("error", $e->getMessage());
         }

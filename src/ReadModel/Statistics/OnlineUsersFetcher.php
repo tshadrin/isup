@@ -41,17 +41,6 @@ class OnlineUsersFetcher
             ->setTime((int)(new \DateTime())->format("H"),0,0);
     }
 
-    /**
-     * Данные за выбранный день
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public function getForSelectedDay(\DateTimeImmutable $date): array
-    {
-        $start = \DateTime::createFromFormat("Y-m-d H:i:s", $date->format("Y-m-d H:i:s"));
-        $end = \DateTime::createFromFormat("Y-m-d H:i:s", $date->setTime(23,59,59)->format("Y-m-d H:i:s"));
-        return $this->getByDateInterval($start, $end);
-    }
-
     public function getForLastHours(): array
     {
         return $this->getByDateInterval($this->getLastHoursDateStart(),$this->getLastHoursDateEnd());
@@ -75,14 +64,26 @@ class OnlineUsersFetcher
                 0);
     }
 
-    public function getSelectedInterval(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    private function getByDateInterval(\Datetime $start, \Datetime $end): array
     {
-        $start = \DateTime::createFromFormat("Y-m-d H:i:s", $start->format("Y-m-d H:i:s"));
-        $end = \DateTime::createFromFormat("Y-m-d H:i:s", $end->format("Y-m-d H:i:s"));
-        return $this->getByDateInterval($start, $end);
+        $query = "SELECT DAY(date) as day, HOUR(date) as hour, MINUTE(date) as minutes, date_format(date,\"%H:%i\") as hm, server, count
+                  FROM online_users_statistics
+                  WHERE date
+                      BETWEEN STR_TO_DATE(:start, \"%Y-%m-%d %H:%i:%s\")
+                      AND STR_TO_DATE(:end, \"%Y-%m-%d %H:%i:%s\")
+                  ORDER BY server, date";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute([
+            ":start" => $start->format("Y-m-d H:i:s"),
+            ":end" => $end->format("Y-m-d H:i:s")
+        ]);
+        if($stmt->rowCount() === 0) {
+            throw new \DomainException("Records not found");
+        }
+        return $stmt->fetchAll(FetchMode::ASSOCIATIVE);
     }
 
-    private function getByDateInterval(\Datetime $start, \Datetime $end): array
+    public function getByInterval(\DateTimeImmutable $start, \DateTimeImmutable $end): array
     {
         $query = "SELECT DAY(date) as day, HOUR(date) as hour, MINUTE(date) as minutes, date_format(date,\"%H:%i\") as hm, server, count
                   FROM online_users_statistics
