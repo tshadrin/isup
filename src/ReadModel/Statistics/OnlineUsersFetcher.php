@@ -10,8 +10,6 @@ use Doctrine\DBAL\FetchMode;
 
 class OnlineUsersFetcher
 {
-    const LAST_HOURS_COUNT = "-6 hours";
-
     /** @var Connection  */
     private $connection;
 

@@ -9,6 +9,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class OnlineUsersService
 {
+    const LAST_HOURS_COUNT = "-6 hours";
     /** @var OnlineUsersFetcher  */
     private $onlineUsersFetcher;
     /** @var RedisAdapter  */
