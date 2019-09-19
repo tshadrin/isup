@@ -28,12 +28,30 @@ class OnlineUsersService
         return $this->redis->get("hourly_graphs", function(ItemInterface $item) {
             $item->expiresAfter(300);
 
-            $onlineUsersCount = $this->onlineUsersFetcher->getForLastHours();
+            $onlineUsersCount = $this->onlineUsersFetcher->getByDateInterval($this->getLastHoursDateStart(), $this->getLastHoursDateEnd());
             for ($i = 0; $i < count($onlineUsersCount); $i++) {
                 $onlineUsersCount[$i]['hour'] = $onlineUsersCount[$i]['hm'];
             }
             return $this->prepareOnlineUsersCountData($onlineUsersCount);
         });
+    }
+    private function getLastHoursDateStart(): \DateTimeImmutable
+    {
+        return (new \DateTimeImmutable())
+            ->setTime(
+                (int)(new \DateTimeImmutable())->format("H"),
+                intdiv((int)(new \DateTimeImmutable())->format("i"), 10) * 10,
+                0
+            )
+            ->modify(self::LAST_HOURS_COUNT);
+    }
+    private function getLastHoursDateEnd(): \DateTimeImmutable
+    {
+        return (new \DateTimeImmutable())
+            ->setTime(
+                (int)(new \DateTimeImmutable())->format("H"),
+                intdiv((int)(new \DateTimeImmutable())->format("i"), 10) * 10,
+                0);
     }
 
     /** Последние сутки */
@@ -42,10 +60,21 @@ class OnlineUsersService
         return $this->redis->get("daily_graphs", function(ItemInterface $item) {
             $item->expiresAfter(600);
 
-            $onlineUsersCount = $this->onlineUsersFetcher->getForLastDay();
+            $onlineUsersCount = $this->onlineUsersFetcher->getByDateInterval($this->getLastDayDateStart(), $this->getLastDayDateEnd());
             $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
             return  $this->prepareOnlineUsersCountData($aggregateData);
         });
+    }
+    private function getLastDayDateStart(): \DateTimeImmutable
+    {
+        return (new \DateTimeImmutable())
+            ->setTime((int)(new \DateTimeImmutable())->format("H"),0,0)
+            ->modify("-1 day");
+    }
+    private function getLastDayDateEnd(): \DateTimeImmutable
+    {
+        return (new \DateTimeImmutable())
+            ->setTime((int)(new \DateTimeImmutable())->format("H"),0,0);
     }
 
     /** Выбранный день */
@@ -58,7 +87,7 @@ class OnlineUsersService
             if ($this->isCurrentDay($start)) {
                 $item->expiresAfter(300);
             }
-            $onlineUsersCount = $this->onlineUsersFetcher->getByInterval($start, $end);
+            $onlineUsersCount = $this->onlineUsersFetcher->getByDateInterval($start, $end);
             $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
             return $this->prepareOnlineUsersCountData($aggregateData);
         });
@@ -105,7 +134,7 @@ class OnlineUsersService
                 $item->expiresAfter(600);
             }
 
-            $onlineUsersCount = $this->onlineUsersFetcher->getByInterval($start, $end);
+            $onlineUsersCount = $this->onlineUsersFetcher->getByDateInterval($start, $end);
             $aggregateData = $this->aggregateOnlineUsersCountPerSixHours($onlineUsersCount);
 
             for ($i = 0; $i < count($aggregateData); $i++) {
@@ -153,7 +182,7 @@ class OnlineUsersService
                 $item->expiresAfter(1);
             }
 
-            $onlineUsersCount = $this->onlineUsersFetcher->getByInterval($start, $end);
+            $onlineUsersCount = $this->onlineUsersFetcher->getByDateInterval($start, $end);
             $aggregateData = $this->aggregateOnlineUsersCountPerDay($onlineUsersCount);
 
             for ($i = 0; $i < count($aggregateData); $i++) {
