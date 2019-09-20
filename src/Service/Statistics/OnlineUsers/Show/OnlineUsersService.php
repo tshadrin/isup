@@ -29,10 +29,15 @@ class OnlineUsersService
         return $this->redis->get("hourly_graphs", function(ItemInterface $item) {
             $item->expiresAfter(300);
 
-            $onlineUsersCount = $this->onlineUsersFetcher->getByDateInterval($this->getLastHoursDateStart(), $this->getLastHoursDateEnd());
+            $onlineUsersCount = $this->onlineUsersFetcher->getByDateInterval(
+                $this->getLastHoursDateStart(),
+                $this->getLastHoursDateEnd()
+            );
+
             for ($i = 0; $i < count($onlineUsersCount); $i++) {
                 $onlineUsersCount[$i]['hour'] = $onlineUsersCount[$i]['hm'];
             }
+
             return $this->prepareOnlineUsersCountData($onlineUsersCount);
         });
     }
@@ -82,7 +87,7 @@ class OnlineUsersService
     public function getForSelectedDayGraphData(ForDayCommand $command): array
     {
         $start = $command->day;
-        $end = $this->getEndOfDay($start);
+        $end = $start->setTime(23,59,59);
 
         return $this->redis->get("{$start->format("d_m_Y")}_graphs", function (ItemInterface $item) use ($start, $end) {
             if ($this->isCurrentDay($start)) {
@@ -92,13 +97,6 @@ class OnlineUsersService
             $aggregateData = $this->aggregateOnlineUsersCountPerHour($onlineUsersCount);
             return $this->prepareOnlineUsersCountData($aggregateData);
         });
-    }
-    private function getEndOfDay(\DateTimeImmutable $date): \DateTimeImmutable
-    {
-        return \DateTimeImmutable::createFromFormat(
-            "Y-m-d H:i:s",
-            $date->setTime(23,59,59)->format("Y-m-d H:i:s")
-        );
     }
     private function isCurrentDay(\DateTimeImmutable $date): bool
     {
@@ -281,7 +279,7 @@ class OnlineUsersService
                 if ($data['count'] > $graphData[$server]['max']) {
                     $graphData[$server]['max'] = $data['count'];
                 }
-                if($data['count'] < $graphData[$server]['min']) {
+                if ($data['count'] < $graphData[$server]['min']) {
                     $graphData[$server]['min'] = $data['count'];
                 }
             }

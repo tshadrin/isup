@@ -312,6 +312,12 @@ services:
         tags:
             - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'Typical Problems' }
         public: true
+    admin.typical_call:
+        class: 'App\Admin\Order\TypicalCallAdmin'
+        arguments: [~, App\Entity\UTM5\TypicalCall, ~]
+        tags:
+            - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'Typical Calls' }
+        public: true
     admin.vlan:
         class: 'App\Admin\Vlan\VlanAdmin'
         arguments: [~, App\Entity\Vlan\Vlan, ~]
