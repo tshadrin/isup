@@ -5,21 +5,24 @@ namespace App\Controller\UTM5;
 
 use App\Collection\UTM5\UTM5UserCollection;
 use App\Kernel;
+use App\Repository\UTM5\CallRepository;
+use App\Repository\UTM5\TypicalCallRepository;
 use App\Repository\UTM5\UserFillingInDataRepository;
 use phpcent\Client;
-use App\Entity\UTM5\{UserFillingInData, UTM5User, Passport};
+use App\Entity\UTM5\{Call, UserFillingInData, UTM5User, Passport};
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
-use App\Form\UTM5\{ PassportForm, PassportFormData, UTM5UserCommentForm };
+use App\Form\UTM5\{PassportForm, PassportFormData, TypicalCallForm, UTM5UserCommentForm};
 use App\Service\Bitrix\Calendar\CalendarInterface;
 use App\Service\Bot\Chain;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Service\UTM5\{ URFAService, UTM5DbService, UTM5UserCommentService };
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse };
+use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response, RedirectResponse};
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -58,7 +61,7 @@ class UTM5Controller extends AbstractController
      * @param EventDispatcherInterface $event_dispatcher
      * @param PaginatorInterface $paginator
      * @return Response
-     * @Route("/search/{type}/{value}/", name="search.by.data", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login|phone"})
+     * @Route("/search/{type}/{value}", name="search.by.data", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login|phone"})
      */
     public function search(string $type,
                            $value,
@@ -102,6 +105,9 @@ class UTM5Controller extends AbstractController
                 $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();
                 $template_data['searchType'] = $type;
+                $form = $this->createForm(TypicalCallForm::class);
+                $form->setData(['utm5_id' => $search_result->getId()]);
+                $template_data['callform'] = $form->createView();
                 return $this->render('Utm/find.html.twig', $template_data);
             }
             if($search_result instanceof UTM5UserCollection) {
@@ -129,7 +135,8 @@ class UTM5Controller extends AbstractController
     public function searchDefault(): Response
     {
         $this->calEvents();
-        return $this->render('Utm/find.html.twig');
+        $form = $this->createForm(TypicalCallForm::class);
+        return $this->render('Utm/find.html.twig', ['callform' => $form->createView()]);
     }
 
     /**
@@ -257,5 +264,34 @@ class UTM5Controller extends AbstractController
             $entityManager->flush();
         }
         return $this->redirect($request->getUri());
+    }
+
+    /**
+     * @Route("/search/add-call/ajax", name="search.add-call.ajax", methods={"POST"})
+     */
+    public function addCallAjax(Request $request, CallRepository $callRepository, TranslatorInterface $translator): JsonResponse
+    {
+        $form = $this->createForm(TypicalCallForm::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $call = new Call(new \DateTimeImmutable(), $data['call_type'], (int)$data['utm5_id'], $this->getUser());
+            $callRepository->save($call);
+            $callRepository->flush();
+            return $this->json(["result" => "success", "message" => $translator->trans("Call registered")]);
+        }
+        return $this->json(["result" => "success", "message" => $translator->trans("Call not registered")]);
+    }
+    /**
+     * @Route("/search/add-call", name="search.add-call", methods={"POST"})
+     */
+    public function addCall(Request $request): JsonResponse
+    {
+        $form = $this->createForm(TypicalCallForm::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->json($data = $form->getData());
+        }
+        return $this->json(["result" => "success"]);
     }
 }

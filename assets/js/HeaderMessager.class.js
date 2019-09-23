@@ -25,6 +25,14 @@ class HeaderMessager
                     </button>
                 </div>`;
     }
+    static prepareHeaderErrorMessage(message) {
+        return `<div class="alert alert-danger m-2 dynamic-flash" role="alert">
+                    ${message}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>`;
+    }
 }
 
 export { HeaderMessager };

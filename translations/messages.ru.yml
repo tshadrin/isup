@@ -352,4 +352,7 @@ Typical Problem List: 'Список типовых проблем'
 Typical Problems: 'Типовые проблемы'
 Typical Call List: 'Список типовых звонков'
 Typical Calls: 'Типовые звонки'
+Call type: 'Причина звонка'
+Call registered: "Звонок зарегистрирован"
+Call not registered: "Звонок не зарегистрирован"
 

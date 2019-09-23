@@ -98,4 +98,9 @@ class TypicalCall
     {
         $this->enabled = $enabled;
     }
+
+    public function __toString()
+    {
+        return $this->shortCut;
+    }
 }

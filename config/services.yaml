@@ -118,6 +118,14 @@ services:
             $entityName: 'App\Entity\Phone\Phone'
         calls:
             - method: setTranslator
+    App\Repository\UTM5\TypicalCallRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\UTM5\TypicalCall'
+    App\Repository\UTM5\CallRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        bind:
+            $entityName: 'App\Entity\UTM5\Call'
     App\Repository\Statistics\LastPaymentRepository:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
@@ -142,6 +150,7 @@ services:
         factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
         bind:
             $entityName: 'App\Entity\Vlan\Vlan'
+
     App\ReadModel\Orders\ShowList\OrdersFetcher:
         bind:
             $connection: '@doctrine.dbal.default_connection'

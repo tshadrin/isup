@@ -106,4 +106,25 @@ jQuery(document).ready(function() {
     });
     orderDeleter.setFormClass(".delete-order-form");
     orderDeleter.bind();
+
+    const callform = document.getElementById('typical_call_form_add');
+    callform.addEventListener('click', function(event) {
+        const form = this.closest('form');
+        let response = fetch(
+            form.action + '/ajax',
+            {
+                method: form.method,
+                body: new FormData(form)
+            })
+            .then(response => response.json())
+            .then(function (data) {
+                HeaderMessager.showMessageAfterHeader(
+                    document.querySelector('header.main-header'),
+                    data.result === 'success' ?
+                        HeaderMessager.prepareHeaderMessage(data.message) :
+                        HeaderMessager.prepareHeaderErrorMessage(data.message)
+                );
+            });
+        event.preventDefault();
+    });
 });

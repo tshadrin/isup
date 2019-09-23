@@ -18,20 +18,27 @@
 {% endblock %}
 
 {% block header %}
-<nav class="navbar navbar-dark bg-nav2 m-0 p-0">
+<nav class="navbar navbar-dark bg-nav2 m-0 p-0 justify-content-start">
     <form method="POST" action="{{ path('search') }}" class="form-inline">
-            <label for="type" class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1">Поиск по</label>
-                <select name="type" class="form-control form-control-sm m-1">
-                    <option value="id" {{ searchType == 'id' ? 'selected'}}>ID</option>
-                    <option value="fullname" {{ searchType == 'fullname' ? 'selected'}}>Фамилии</option>
-                    <option value="login" {{ searchType == 'login' ? 'selected'}}>Логину</option>
-                    <option value="ip" {{ searchType == 'ip' ? 'selected'}}>IP</option>
-                    <option value="address" {{ searchType == 'address' ? 'selected'}}>Адресу</option>
-                    <option value="phone" {{ searchType == 'phone' ? 'selected'}}>Номеру телефона</option>
-                </select>
-                <input type="text" name="value" required="required" class="form-control form-control-sm m-1" placeholder="введите для поиска...">
-                <button type="submit" value="Найти" id="search-button" class="btn btn-primary btn-sm btn-primary-sham m-1">Найти <i class="fa fa-search" aria-hidden="true"></i></button>
+        <label for="type" class="col-auto col-form-label col-form-label-sm text-light mt-1 mb-1 pr-1">Поиск по</label>
+        <select name="type" class="form-control form-control-sm m-1">
+            <option value="id" {{ searchType == 'id' ? 'selected'}}>ID</option>
+            <option value="fullname" {{ searchType == 'fullname' ? 'selected'}}>Фамилии</option>
+            <option value="login" {{ searchType == 'login' ? 'selected'}}>Логину</option>
+            <option value="ip" {{ searchType == 'ip' ? 'selected'}}>IP</option>
+            <option value="address" {{ searchType == 'address' ? 'selected'}}>Адресу</option>
+            <option value="phone" {{ searchType == 'phone' ? 'selected'}}>Номеру телефона</option>
+        </select>
+        <input type="text" name="value" required="required" class="form-control form-control-sm m-1" placeholder="введите для поиска...">
+        <button type="submit" value="Найти" id="search-button" class="btn btn-primary btn-sm btn-primary-sham m-1">Найти <i class="fa fa-search" aria-hidden="true"></i></button>
     </form>
+    {% if callform is defined %}
+    {{ form_start(callform, {'attr': {'class': 'form-inline pl-4', "action": path("search.add-call") }}) }}
+        {{ form_label(callform.call_type, null, {'label_attr': {'class': 'text-light'}}) }}
+        {{ form_widget(callform.call_type, {'attr': {'class': 'm-1 form-control-sm'}}) }}
+        {{ form_widget(callform.add) }}
+    {{ form_end(callform) }}
+    {% endif %}
 </nav>
 {% endblock %}
 

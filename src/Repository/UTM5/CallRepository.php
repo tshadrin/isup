@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace App\Repository\UTM5;
 
-use App\Entity\UTM5\TypicalCall;
+use App\Entity\UTM5\Call;
 use Doctrine\ORM\EntityRepository;
 
-class TypicalCallRepository extends EntityRepository
+class CallRepository extends EntityRepository
 {
-    public function save(TypicalCall $typicalCall): void
+    public function save(Call $call): void
     {
-        $this->getEntityManager()->persist($typicalCall);
+        $this->getEntityManager()->persist($call);
         $this->flush();
     }
 
