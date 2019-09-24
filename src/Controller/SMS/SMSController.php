@@ -91,7 +91,7 @@ class SMSController extends AbstractController
                         ];
                         $variableFetcher->replaceVariables($replacements);
                     } catch (\DomainException | \InvalidArgumentException $exception) {
-                        $this->addFlash("error", $exception->getMessage());
+                        $this->addFlash("error", "Sms send error: {$exception->getMessage()}");
                         return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
                     }
                 }
