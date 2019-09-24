@@ -8,6 +8,7 @@ use App\Form\SMS\SmsTemplateForm;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\VariableFetcher;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Request };
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class SMSController
  * @package App\Controller\SMS
+ * @Route("/sms", name="sms")
  */
 class SMSController extends AbstractController
 {
@@ -23,7 +25,7 @@ class SMSController extends AbstractController
      * @param Request $request
      * @param LoggerInterface $logger
      * @return JsonResponse
-     * @Route("/sms/send/{type}", defaults={"type": "modem"}, name="sms_send", methods={"GET", "PUT"}, requirements={"type": "smsc|modem|all"})
+     * @Route("/send/{type}", defaults={"type": "modem"}, name="_send", methods={"GET", "PUT"}, requirements={"type": "smsc|modem|all"})
      */
     public function sendSMS(string $type, Request $request, LoggerInterface $logger): JsonResponse
     {
@@ -68,7 +70,8 @@ class SMSController extends AbstractController
      * @param Request $request
      * @param SMSCSender $sender
      * @return RedirectResponse
-     * @Route("/sms/sendbytemplate", name="sms_sendtemplate", methods={"POST"})
+     * @Route("/sendbytemplate", name="_sendtemplate", methods={"POST"})
+     * @IsGranted("ROLE_SUPPORT")
      */
     public function sendSmsByTemplate(Request $request, SMSCSender $sender, VariableFetcher $variableFetcher, UTM5DbService $UTM5DbService): RedirectResponse
     {

@@ -32,9 +32,11 @@ class VariableFetcher
         if(!$this->hasVariables()) {
             return;
         }
+
         if(count(array_intersect_key($this->variables, $variables)) !== count($this->variables)) {
             throw new \InvalidArgumentException("Some variables not set");
         }
+
         $this->variables = array_merge($this->variables, array_intersect_key($variables, $this->variables));
         foreach ($this->variables as $name => $value) {
             $this->text = preg_replace('/\$\['.$name.'\]/', $value, $this->text);
