@@ -90,7 +90,7 @@ class SMSController extends AbstractController
                             'discount_date' => $utmUser->getDiscountDate(),
                         ];
                         $variableFetcher->replaceVariables($replacements);
-                    } catch (\DomainException $exception) {
+                    } catch (\DomainException | \InvalidArgumentException $exception) {
                         $this->addFlash("error", $exception->getMessage());
                         return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
                     }
