@@ -286,7 +286,7 @@ class OrderController extends AbstractController
     }
 
     /**
-     * @Route("/order", name=".rows", methods={"POST"})
+     * @Route("", name=".rows", methods={"POST"})
      */
     public function rowsPerPage(Request $request, Session $session): RedirectResponse
     {
