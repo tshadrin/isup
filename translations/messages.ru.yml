@@ -159,7 +159,7 @@ utm5_user_comment:
         comment: 'текст комментария...'
 #user
 Name: 'Имя'
-Description: 'Название'
+Description: 'Описание'
 show: 'Показать'
 edit: 'Редактировать'
 'Regions list': 'Список регионов'
@@ -347,7 +347,7 @@ Jun: 'Июнь'
 Jul: 'Июль'
 Aug: 'Август'
 #typical problem
-Short Cut: 'Краткое описание'
+Short Cut: 'Текст в списке'
 Typical Problem List: 'Список типовых проблем'
 Typical Problems: 'Типовые проблемы'
 Typical Call List: 'Список типовых звонков'
@@ -355,6 +355,7 @@ Typical Calls: 'Типовые звонки'
 Call type: 'Причина звонка'
 Call registered: "Звонок зарегистрирован"
 Call not registered: "Звонок не зарегистрирован"
+Typical Call Create: "Создать типовой звонок"
 Sms template help: |
     Вы можете использовать некоторые переменные, такие как:<br>
     $[login] - логин<br>

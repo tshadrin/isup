@@ -18,8 +18,8 @@ class TypicalCallAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper): void
     {
         $formMapper
-            ->add('description', TextareaType::class)
             ->add('shortCut')
+            ->add('description', TextareaType::class)
             ->add('enabled', CheckboxType::class, ['required' => false])
         ;
     }
