@@ -75,25 +75,24 @@ class SMSController extends AbstractController
         $form = $this->createForm(SmsTemplateForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
-            $smsTemplateData = $form->getData();
-            $variableFetcher->setText($smsTemplateData->getSmstemplate()->getMessage());
-
-            try {
-                $utmUser = $UTM5DbService->search((string)$smsTemplateData->getUtmId());
-                $vars = $variableFetcher->getVariables();
-                array_key_exists('login', $vars) ? $vars['login'] = $utmUser->getLogin() : '.';
-                array_key_exists('password', $vars) ? $vars['password'] = $utmUser->getPassword() : '';
-                array_key_exists('smotreshka_login', $vars) ? $vars['smotreshka_login'] = $utmUser->getLifestreamLogin() : '';
-                array_key_exists('balance', $vars) ? $vars['balance'] = $utmUser->getBalance() : '';
-                array_key_exists('req_payment', $vars) ? $vars['req_payment'] = $utmUser->getRequirementPayment() : '';
-                array_key_exists('discount_date', $vars) ? $vars['discount_date'] = $utmUser->getDiscountDate(): '';
-                $variableFetcher->replaceVariables($vars);
-            } catch (\DomainException $exception) {
-                $this->addFlash("error", $exception->getMessage());
-                return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
-            }
             if ($form->isValid()) {
-                $sender->send($smsTemplateData->getPhone(),$smsTemplateData->getSmsTemplate()->getMessage());
+                $smsTemplateData = $form->getData();
+                $variableFetcher->setText($smsTemplateData->getSmstemplate()->getMessage());
+                try {
+                    $utmUser = $UTM5DbService->search((string)$smsTemplateData->getUtmId());
+                    $vars = $variableFetcher->getVariables();
+                    array_key_exists('login', $vars) ? $vars['login'] = $utmUser->getLogin() : '.';
+                    array_key_exists('password', $vars) ? $vars['password'] = $utmUser->getPassword() : '';
+                    array_key_exists('smotreshka_login', $vars) ? $vars['smotreshka_login'] = $utmUser->getLifestreamLogin() : '';
+                    array_key_exists('balance', $vars) ? $vars['balance'] = $utmUser->getBalance() : '';
+                    array_key_exists('req_payment', $vars) ? $vars['req_payment'] = $utmUser->getRequirementPayment() : '';
+                    array_key_exists('discount_date', $vars) ? $vars['discount_date'] = $utmUser->getDiscountDate(): '';
+                    $variableFetcher->replaceVariables($vars);
+                } catch (\DomainException $exception) {
+                    $this->addFlash("error", $exception->getMessage());
+                    return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
+                }
+                $sender->send($smsTemplateData->getPhone(), $variableFetcher->getText());
                 $this->addFlash("notice", "Message sended");
             } else {
                 $errors = $form->getErrors(true);
