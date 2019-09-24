@@ -466,4 +466,15 @@ class UTM5User
     {
         $this->requirement_payment = $requirement_payment;
     }
+
+    public function getDiscountDate(): string
+    {
+        if (count($this->tariffs->toArray()) > 0) {
+            $tariff = $this->tariffs[array_key_first($this->tariffs->toArray())];
+            $discountPeriod = $tariff->getDiscountPeriod();
+            return $discountPeriod->getEnd()->format("d-m-Y");
+        } else {
+            throw new \DomainException("No active tariffs.");
+        }
+    }
 }

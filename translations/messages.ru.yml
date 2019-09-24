@@ -355,4 +355,12 @@ Typical Calls: 'Типовые звонки'
 Call type: 'Причина звонка'
 Call registered: "Звонок зарегистрирован"
 Call not registered: "Звонок не зарегистрирован"
+Sms template help: |
+    Вы можете использовать некоторые переменные, такие как:<br>
+    $[login] - логин<br>
+    $[password] - пароль<br>
+    $[smotreshka_login] - Логин в сервисе Смотрешка<br>
+    $[balance] - Баланс лицевого счета<br>
+    $[req_payment] - Рекомендуемый платеж<br>
+    $[discount_date] - Конец рассчетного периода
 

@@ -5,6 +5,8 @@ namespace App\Controller\SMS;
 
 use App\Service\SMS\smscSender;
 use App\Form\SMS\SmsTemplateForm;
+use App\Service\UTM5\UTM5DbService;
+use App\Service\VariableFetcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Request };
@@ -66,14 +68,30 @@ class SMSController extends AbstractController
      * @param Request $request
      * @param smscSender $sender
      * @return RedirectResponse
-     * @Route("/sms/sendbytemplate/", name="sms_sendtemplate", methods={"POST"})
+     * @Route("/sms/sendbytemplate", name="sms_sendtemplate", methods={"POST"})
      */
-    public function sendSmsByTemplate(Request $request, smscSender $sender): RedirectResponse
+    public function sendSmsByTemplate(Request $request, smscSender $sender, VariableFetcher $variableFetcher, UTM5DbService $UTM5DbService): RedirectResponse
     {
         $form = $this->createForm(SmsTemplateForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             $smsTemplateData = $form->getData();
+            $variableFetcher->setText($smsTemplateData->getSmstemplate()->getMessage());
+
+            try {
+                $utmUser = $UTM5DbService->search((string)$smsTemplateData->getUtmId());
+                $vars = $variableFetcher->getVariables();
+                array_key_exists('login', $vars) ? $vars['login'] = $utmUser->getLogin() : '.';
+                array_key_exists('password', $vars) ? $vars['password'] = $utmUser->getPassword() : '';
+                array_key_exists('smotreshka_login', $vars) ? $vars['smotreshka_login'] = $utmUser->getLifestreamLogin() : '';
+                array_key_exists('balance', $vars) ? $vars['balance'] = $utmUser->getBalance() : '';
+                array_key_exists('req_payment', $vars) ? $vars['req_payment'] = $utmUser->getRequirementPayment() : '';
+                array_key_exists('discount_date', $vars) ? $vars['discount_date'] = $utmUser->getDiscountDate(): '';
+                $variableFetcher->replaceVariables($vars);
+            } catch (\DomainException $exception) {
+                $this->addFlash("error", $exception->getMessage());
+                return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
+            }
             if ($form->isValid()) {
                 $sender->send($smsTemplateData->getPhone(),$smsTemplateData->getSmsTemplate()->getMessage());
                 $this->addFlash("notice", "Message sended");

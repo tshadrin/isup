@@ -23,7 +23,7 @@ class SmsTemplateAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper): void
     {
         $formMapper->add('name')
-            ->add('message', TextareaType::class)
+            ->add('message', TextareaType::class, ['help' => 'Sms template help'])
         ;
     }
 
