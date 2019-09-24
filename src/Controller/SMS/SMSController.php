@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller\SMS;
 
-use App\Service\SMS\smscSender;
+use App\Service\SMS\SMSCSender;
 use App\Form\SMS\SmsTemplateForm;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\VariableFetcher;
@@ -66,11 +66,11 @@ class SMSController extends AbstractController
 
     /**
      * @param Request $request
-     * @param smscSender $sender
+     * @param SMSCSender $sender
      * @return RedirectResponse
      * @Route("/sms/sendbytemplate", name="sms_sendtemplate", methods={"POST"})
      */
-    public function sendSmsByTemplate(Request $request, smscSender $sender, VariableFetcher $variableFetcher, UTM5DbService $UTM5DbService): RedirectResponse
+    public function sendSmsByTemplate(Request $request, SMSCSender $sender, VariableFetcher $variableFetcher, UTM5DbService $UTM5DbService): RedirectResponse
     {
         $form = $this->createForm(SmsTemplateForm::class);
         $form->handleRequest($request);
@@ -78,19 +78,22 @@ class SMSController extends AbstractController
             if ($form->isValid()) {
                 $smsTemplateData = $form->getData();
                 $variableFetcher->setText($smsTemplateData->getSmstemplate()->getMessage());
-                try {
-                    $utmUser = $UTM5DbService->search((string)$smsTemplateData->getUtmId());
-                    $vars = $variableFetcher->getVariables();
-                    array_key_exists('login', $vars) ? $vars['login'] = $utmUser->getLogin() : '.';
-                    array_key_exists('password', $vars) ? $vars['password'] = $utmUser->getPassword() : '';
-                    array_key_exists('smotreshka_login', $vars) ? $vars['smotreshka_login'] = $utmUser->getLifestreamLogin() : '';
-                    array_key_exists('balance', $vars) ? $vars['balance'] = $utmUser->getBalance() : '';
-                    array_key_exists('req_payment', $vars) ? $vars['req_payment'] = $utmUser->getRequirementPayment() : '';
-                    array_key_exists('discount_date', $vars) ? $vars['discount_date'] = $utmUser->getDiscountDate(): '';
-                    $variableFetcher->replaceVariables($vars);
-                } catch (\DomainException $exception) {
-                    $this->addFlash("error", $exception->getMessage());
-                    return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
+                if ($variableFetcher->hasVariables()) {
+                    try {
+                        $utmUser = $UTM5DbService->search((string)$smsTemplateData->getUtmId());
+                        $replacements = [ //all posible replacements
+                            'login' => $utmUser->getLogin(),
+                            'password' => $utmUser->getPassword(),
+                            'smotreshka_login' => $utmUser->getLifestreamLogin(),
+                            'balance' => $utmUser->getBalance(),
+                            'req_payment' => $utmUser->getRequirementPayment(),
+                            'discount_date' => $utmUser->getDiscountDate(),
+                        ];
+                        $variableFetcher->replaceVariables($replacements);
+                    } catch (\DomainException $exception) {
+                        $this->addFlash("error", $exception->getMessage());
+                        return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
+                    }
                 }
                 $sender->send($smsTemplateData->getPhone(), $variableFetcher->getText());
                 $this->addFlash("notice", "Message sended");
@@ -104,6 +107,7 @@ class SMSController extends AbstractController
         }
         return $this->redirectToRoute("search");
     }
+
 
     /**
      * @param string $phone

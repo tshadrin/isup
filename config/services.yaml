@@ -209,7 +209,7 @@ services:
     App\Service\Bitrix\Calendar\Calendar:
         bind:
             $parameters: '%bitrix_cal%'
-    App\Service\SMS\smscSender:
+    App\Service\SMS\SMSCSender:
         bind:
             $parameters: '%smsc%'
     App\Service\Zabbix\Notifier\ChatNotifier:

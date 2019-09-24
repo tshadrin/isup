@@ -5,7 +5,7 @@ namespace App\ReadModel\Orders\ShowList\Filter;
 
 use App\Entity\Intercom\Status;
 
-use App\Service\SMS\smscSender;
+use App\Service\SMS\SMSCSender;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class Filter

@@ -5,7 +5,7 @@ namespace App\Service\SMS;
 
 use Symfony\Component\HttpClient\CurlHttpClient;
 
-class smscSender implements SenderInterface
+class SMSCSender implements SenderInterface
 {
     /**
      * @var array

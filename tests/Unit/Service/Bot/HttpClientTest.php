@@ -13,9 +13,10 @@ use Symfony\Component\HttpClient\CurlHttpClient;
 
 class HttpClientTest extends KernelTestCase
 {
+
     const TEST_USER_ID = 419;
     const TEST_SWITCH_IP = '172.18.45.111';
-
+    /*
     public function testIdsw(): void
     {
         self::bootKernel();
@@ -39,7 +40,7 @@ class HttpClientTest extends KernelTestCase
         $page = $httpClient->getSwPage(self::TEST_SWITCH_IP);
         self::assertContains('DGS-3120-24SC Gigabit Ethernet Switch', $page);
     }
-
+*/
     public function testNotResolvedBotPath(): void
     {
         $httpClient = new HttpClient('http://testmon.istramete.rur', new CurlHttpClient());

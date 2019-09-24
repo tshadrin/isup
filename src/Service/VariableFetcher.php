@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-
 class VariableFetcher
 {
     const VARIABLE_PATTERN = '/\$\[[a-zA-z0-9]+\]/u';
@@ -12,11 +11,41 @@ class VariableFetcher
     /** @var string[] */
     private $variables;
 
+    public function __construct()
+    {
+        $this->text = "";
+        $this->variables = [];
+    }
+
+    public function getText(): string
+    {
+        return $this->text;
+    }
 
     public function setText(string $text): void
     {
         $this->text = $text;
     }
+
+    public function replaceVariables(array $variables): void
+    {
+        if(!$this->hasVariables()) {
+            return;
+        }
+        if(count(array_intersect_key($this->variables, $variables)) !== count($this->variables)) {
+            throw new \InvalidArgumentException("Some variables not set");
+        }
+        $this->variables = array_merge($this->variables, array_intersect_key($variables, $this->variables));
+        foreach ($this->variables as $name => $value) {
+            $this->text = preg_replace('/\$\['.$name.'\]/', $value, $this->text);
+        }
+    }
+
+    public function hasVariables(): bool
+    {
+        return !empty($this->getVariables());
+    }
+
     public function getVariables(): array
     {
         $matches = [];
@@ -26,18 +55,5 @@ class VariableFetcher
         }
         $this->variables = array_flip($matches[0]);
         return $this->variables;
-    }
-
-    public function replaceVariables(array $variables): void
-    {
-        $this->variables = $variables;
-        foreach ($variables as $name => $value) {
-            $this->text = preg_replace('/\$\['.$name.'\]/', $value, $this->text);
-        }
-    }
-
-    public function getText(): string
-    {
-        return $this->text;
     }
 }
