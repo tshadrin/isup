@@ -7,7 +7,6 @@ use App\Security\Voter\Bitrix\UserAccess;
 
 use App\Service\Bitrix\Calendar\CalendarInterface;
 use App\Service\Bitrix\User\Paycheck;
-use App\Service\Bitrix\User\{ Command, Handler };
 use App\Service\UTM5\{ BitrixRestService, URFAService };
 use DomainException;
 use InvalidArgumentException;
@@ -37,52 +36,24 @@ class BitrixController extends AbstractController
     }
 
     /**
-     * @return JsonResponse
-     * @Route("/bitrix-user-get", name=".get.user-by-phone", methods={"GET"})
-     */
-    public function getUserInfo(Request $request, Handler $handler): JsonResponse
-    {
-        try {
-            $command = new Command($request->query->get('phone'));
-
-            $userFields = $handler->handle($command);
-        } catch (DomainException | InvalidArgumentException $e) {
-            return $this->json(['result' => 'error', 'message' => $e->getMessage()]);
-        }
-
-        $response  = $this->json(['result' => 'success', 'data' => $userFields,]);
-        $response->headers->set('Access-Control-Allow-Origin', 'https://istranet.pro');
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET');
-        $response->headers->set('Access-Control-Allow-Headers',
-            'Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control');
-        return $response;
-    }
-
-    /**
-     * Создание пользователя у UTM5 на основании запросов из битрикс
-     * @param Request $request
-     * @param BitrixRestService $bitrix_rest_service
-     * @param URFAService $URFAService
-     * @param LoggerInterface $bitrixLogger
-     * @return JsonResponse
+     * Создание пользователя в UTM5 на основании запросов из битрикс
      * @IsGranted(UserAccess::CREATE, subject="request")
      * @Route("/bitrixcreateuser/", name=".add.user", methods={"POST"})
      */
     public function addUTM5User(Request $request,
-                                   BitrixRestService $bitrix_rest_service,
+                                   BitrixRestService $bitrixRestService,
                                    URFAService $URFAService,
                                    LoggerInterface $bitrixLogger): JsonResponse
     {
-        $command = new \App\Service\Bitrix\User\Create\Command($request->request->get('document_id'));
         if($request->request->has('document_id')) {
-            $bitrixLogger->info("Bitrix request", $request->request->get('document_id'));
+            $bitrixLogger->info("Bitrix create request", $request->request->get('document_id'));
             $did = $request->request->get('document_id');
-            $tmp_login = $did[2]; //DEAL_<NUM>
-            $deal_id = explode('_', $tmp_login); //DEAL <NUM>
-            $data = $bitrix_rest_service->getDeal($deal_id[1]); // данные о сделке ['address', 'id', 'name', 'phone', 'utm5_id']
-            $uid = $URFAService->addUser($tmp_login, $data['phone'], $data['address'], $data['name']);
-            $bitrix_rest_service->updateDeal($deal_id[1], ['UF_CRM_5B3A2EC6DC360' => $uid,]);
+            $login = $did[2]; //DEAL_<NUM>
+            [,$dealId] = explode('_', $did[2]); //DEAL_<NUM>
+            $data = $bitrixRestService->getDeal($dealId); // данные о сделке ['address', 'id', 'name', 'phone', 'utm5_id', 'status']
+            $uid = $URFAService->addUser($login, $data['phone'], $data['address'], $data['name']);
+            $bitrixRestService->updateDeal($dealId, [BitrixRestService::DEAL_UTM5_ID_FIELD => $uid,]);
+            $bitrixLogger->info('User created', ['uid' => $uid, $data]);
             return $this->json(["success" =>  'deal updated']);
         } else {
             $bitrixLogger->error('Переменная document_id не задана');
@@ -107,13 +78,12 @@ class BitrixController extends AbstractController
     {
         if($request->request->has('document_id')) {
             $did = $request->request->get('document_id');
-            $tmp_login = $did[2]; //DEAL_<NUM>
-            $deal_id = explode('_', $tmp_login); //DEAL <NUM>
-            $data = $bitrixRestService->getDeal($deal_id[1]); // данные о сделке ['address', 'id', 'name', 'phone', 'utm5_id']
-            $bitrixLogger->info("DATA DEAL", $data);
+            [,$dealId] = explode('_', $did[2]); //DEAL <NUM>
+            $data = $bitrixRestService->getDeal($dealId); // данные о сделке ['address', 'id', 'name', 'phone', 'utm5_id', 'status']
+            $bitrixLogger->info("Remove user with deal", $data);
             if(!empty($data['utm5_id'])) {
                 $uid = $URFAService->removeUser($data['utm5_id']);
-                $bitrixRestService->updateDeal($deal_id[1], ['UF_CRM_5B3A2EC6DC360' => 0,]);
+                $bitrixRestService->updateDeal($dealId, [BitrixRestService::DEAL_UTM5_ID_FIELD => 0,]);
                 $bitrixLogger->info("User {$data['utm5_id']} удален ", $uid);
             }
             return $this->json(['success' => 'user removed']);
@@ -137,7 +107,7 @@ class BitrixController extends AbstractController
     {
         try {
             $command = new Paycheck\Command($request->request->get('document_id', []));
-            $bitrixLogger->info("Deal info", $request->request->get('document_id', []));
+            $bitrixLogger->info("Check payments for deal", $request->request->get('document_id', []));
             if ($handler->handle($command)) {
                 $bitrixLogger->info("Deal updated");
                 return $this->json(['result' => 'success']);

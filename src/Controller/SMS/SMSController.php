@@ -132,6 +132,7 @@ class SMSController extends AbstractController
      */
     public function test(HttpClient $httpClient): Response
     {
+        dump($httpClient->getDeal(5095));
         dump($httpClient->getDealDataById(5095));
         exit;
     }

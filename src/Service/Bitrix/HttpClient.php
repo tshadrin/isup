@@ -69,28 +69,19 @@ class HttpClient
         $deal_contact_data = $this->getData(self::GET_CONTACT_COMMAND, ["ID" => $deal_data['CONTACT_ID'],]);
         $data['name'] = $deal_contact_data['NAME'];
         $data['phone'] = ltrim($deal_contact_data['PHONE'][0]['VALUE'], '+');
+        $data['status'] = $deal_data[self::DEAL_STATUS_FIELD];
         $this->logger->info("Результат запросов", $data);
         return $data;
     }
 
     public function getDealDataById(int $id): DealData
     {
-        $deal_data = $this->getData(self::GET_DEAL_COMMAND, ["ID" => $id]);
-        if ($this->isFieldFill(self::DEAL_STATUS_FIELD, $deal_data) &&
-            $this->isFieldFill(self::DEAL_UTM5_ID_FIELD, $deal_data)) {
-            return new DealData($id,
-                $deal_data[self::DEAL_STATUS_FIELD],
-                (int)$deal_data[self::DEAL_UTM5_ID_FIELD]
-            );
+        $deal = $this->getDeal($id);
+        if (!empty($deal['utm5_id']) && !empty($deal['status'])) {
+            return new DealData($id, $deal['status'], (int)$deal['utm5_id']);
         } else {
             throw new \DomainException("Not all required fields fill in deal");
         }
-    }
-
-    private function isFieldFill(string $field, array $dealData): bool
-    {
-        return
-            !array_key_exists($field, $dealData) || empty($dealData[$field]) ? false : true;
     }
 
     public function setDealWon(DealData $dealData): void
@@ -105,7 +96,7 @@ class HttpClient
         return $result;
     }
 
-    function sendToChat(Statement $statement): array
+    public function sendToChat(Statement $statement): array
     {
         $message = $statement->getMessage();
         $params = $statement->getParams();
