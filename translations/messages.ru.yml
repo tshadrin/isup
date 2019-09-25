@@ -364,4 +364,10 @@ Sms template help: |
     $[balance] - Баланс лицевого счета<br>
     $[req_payment] - Рекомендуемый платеж<br>
     $[discount_date] - Конец рассчетного периода
+Call Group: 'Группа'
+failure: 'Поломки'
+payment: 'Оплата'
+tv: 'ТВ'
+connection: 'Подключения'
+juridical: 'Юр. лица'
 

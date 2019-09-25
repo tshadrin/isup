@@ -26,6 +26,12 @@ class TypicalCall
     private $description;
 
     /**
+     * @var TypicalCallGroup
+     * @ORM\Column(type="typical_call_group", name="call_group", length=30, nullable=true)
+     */
+    private $callGroup;
+
+    /**
      * @var string
      * @ORM\Column(type="string", length=100, name="short_cut")
      */
@@ -102,5 +108,15 @@ class TypicalCall
     public function __toString()
     {
         return $this->shortCut;
+    }
+
+    public function getCallGroup(): ?TypicalCallGroup
+    {
+        return $this->callGroup;
+    }
+
+    public function setCallGroup(string $group): void
+    {
+        $this->callGroup = $group;
     }
 }

@@ -9,9 +9,20 @@ use App\Repository\UTM5\TypicalCallRepository;
 use Symfony\Component\Form\Extension\Core\Type\{ HiddenType, TextType, SubmitType };
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TypicalCallForm  extends AbstractType
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -21,6 +32,9 @@ class TypicalCallForm  extends AbstractType
         $builder->add('call_type',
             EntityType::class,
             [
+                'group_by' => function($typicalCall) {
+                    return !is_null($typicalCall->getCallGroup()) ? $this->translator->trans($typicalCall->getCallGroup()) : null;
+                },
                 'class' => TypicalCall::class,
                 'query_builder' => function (TypicalCallRepository $er) {
                     return $er->createQueryBuilder('tc')
@@ -42,15 +56,5 @@ class TypicalCallForm  extends AbstractType
                     ],
                 ]
             );
-    }
-
-    /**
-     * @param OptionsResolver $resolver
-     */
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        //$resolver->setDefaults([
-       //     'data_class' => '\App\Entity\UTM5\UTM5UserComment',
-        //]);
     }
 }

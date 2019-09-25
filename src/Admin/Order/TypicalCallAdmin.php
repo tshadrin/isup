@@ -3,14 +3,21 @@ declare(strict_types=1);
 
 namespace App\Admin\Order;
 
+use App\Entity\UTM5\TypicalCallGroup;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\{ DatagridMapper, ListMapper };
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Symfony\Component\Form\Extension\Core\Type\{CheckboxType, DateTimeType, TextareaType, TextType};
+use Symfony\Component\Form\Extension\Core\Type\{CheckboxType, ChoiceType, DateTimeType, TextareaType, TextType};
+use Symfony\Component\Form\ChoiceList\Loader\CallbackChoiceLoader;
 
 class TypicalCallAdmin extends AbstractAdmin
 {
+    public function __construct($code, $class, $baseControllerName)
+    {
+        parent::__construct($code, $class, $baseControllerName);
+    }
+
     /**
      * Настройка полей формы редактирования задачи
      * @param FormMapper $formMapper
@@ -20,6 +27,9 @@ class TypicalCallAdmin extends AbstractAdmin
         $formMapper
             ->add('shortCut')
             ->add('description', TextareaType::class)
+            ->add('callGroup', ChoiceType::class, ['required' => false, 'choice_loader' => new CallbackChoiceLoader(function() {
+                return TypicalCallGroup::getConstants();
+            }),])
             ->add('enabled', CheckboxType::class, ['required' => false])
         ;
     }
@@ -48,6 +58,7 @@ class TypicalCallAdmin extends AbstractAdmin
             ->add('description')
             ->add('shortCut')
             ->add('enabled')
+            ->add('callGroup','trans')
             ->add('_action', null,
                 [
                     'actions' =>

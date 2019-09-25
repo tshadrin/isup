@@ -25,6 +25,8 @@ doctrine:
                 driver:   pdo_mysql
                 url: '%env(resolve:NEWLK_DATABASE_URL)%'
                 charset:  UTF8
+        types:
+            typical_call_group: 'App\Entity\UTM5\TypicalCallGroupType'
         # configure these for your database server
         #driver: 'pdo_mysql'
         #server_version: '5.7'
