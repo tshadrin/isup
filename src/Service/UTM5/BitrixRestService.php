@@ -2,7 +2,6 @@
 
 namespace App\Service\UTM5;
 
-
 use App\Entity\Zabbix\Statement;
 use Psr\Log\LoggerInterface;
 
@@ -11,14 +10,18 @@ class BitrixRestService
     const GET_DEAL_COMMAND = 'crm.deal.get';
     const DEAL_UTM5_ID_FIELD = 'UF_CRM_5B3A2EC6DC360';
     const DEAL_STATUS_FIELD = 'STAGE_ID';
+    /** @var string  */
     private $rest_url;
+    /** @var LoggerInterface  */
     private $logger;
+    /** @var int */
     private $chat_id;
+    /** @var int  */
     private $channels_chat_id;
 
-    public function __construct(array $bitrixParameters, LoggerInterface $logger)
+    public function __construct(array $bitrixParameters, LoggerInterface $bitrixLogger)
     {
-        $this->logger = $logger;
+        $this->logger = $bitrixLogger;
         $this->rest_url = "{$bitrixParameters['path']}/{$bitrixParameters['user_id']}/{$bitrixParameters['key']}";
         $this->chat_id = $bitrixParameters['chat_id'];
         $this->channels_chat_id = $bitrixParameters['channels_chat_id'];

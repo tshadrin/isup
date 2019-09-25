@@ -1,9 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-
 namespace App\Service\Bot;
-
 
 use App\Service\Bot\Chain\IdswPageGetterInterface;
 use App\Service\Bot\Commutator\SwPageGetterInterface;
@@ -26,6 +24,7 @@ class HttpClient implements IdswPageGetterInterface, SwPageGetterInterface
      * @var HttpClientInterface
      */
     private $httpClient;
+
 
     public function __construct(string $botPath, HttpClientInterface $httpClient)
     {

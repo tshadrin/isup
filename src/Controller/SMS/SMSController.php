@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller\SMS;
 
+use App\Service\Bitrix\HttpClient;
 use App\Service\SMS\SMSCSender;
 use App\Form\SMS\SmsTemplateForm;
 use App\Service\UTM5\UTM5DbService;
@@ -10,7 +11,7 @@ use App\Service\VariableFetcher;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Request };
+use Symfony\Component\HttpFoundation\{JsonResponse, RedirectResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -122,5 +123,16 @@ class SMSController extends AbstractController
         if (0 !== $code) {
             throw new \DomainException("Ошибка при отправке сообщения через модем на номер {$phone}", 5);
         }
+    }
+
+    /**
+     * @param HttpClient $httpClient
+     * @return Response
+     * @Route("/one", name="_one", methods={"GET"})
+     */
+    public function test(HttpClient $httpClient): Response
+    {
+        dump($httpClient->getDealDataById(5095));
+        exit;
     }
 }
