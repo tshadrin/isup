@@ -16,9 +16,9 @@ class PaymentsLogFetcher
     /** @var TranslatorInterface  */
     private $translator;
 
-    public function __construct(Connection $connection, TranslatorInterface $translator)
+    public function __construct(Connection $sberbankConnection, TranslatorInterface $translator)
     {
-        $this->connection = $connection;
+        $this->connection = $sberbankConnection;
         $this->translator = $translator;
     }
 

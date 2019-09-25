@@ -11,15 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ParseNagios extends Command
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    protected static $defaultName="commutator:add-nagios-link";
+
+    /** @var EntityManagerInterface  */
     private $entityManager;
 
-    /**
-     * Папка с файлами отчетов
-     * @var mixed
-     */
+    /** @var string */
     private $files_dir;
 
     /**
@@ -27,9 +24,9 @@ class ParseNagios extends Command
      * @param string $files_dir
      * @param UTM5DbService $UTM5DbService
      */
-    public function __construct(array $parameters, EntityManagerInterface $entityManager)
+    public function __construct(array $addFirmParameters, EntityManagerInterface $entityManager)
     {
-        $this->files_dir = $parameters['files_dir'];
+        $this->files_dir = $addFirmParameters['files_dir'];
         parent::__construct();
         $this->entityManager = $entityManager;
     }

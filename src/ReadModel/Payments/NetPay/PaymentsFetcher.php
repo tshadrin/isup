@@ -20,9 +20,9 @@ class PaymentsFetcher
     /** @var TranslatorInterface  */
     private $translator;
 
-    public function __construct(Connection $connection, TranslatorInterface $translator)
+    public function __construct(Connection $newlkConnection, TranslatorInterface $translator)
     {
-        $this->connection = $connection;
+        $this->connection = $newlkConnection;
         $this->translator = $translator;
     }
 

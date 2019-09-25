@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace App\Repository\Intercom;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use App\Entity\Intercom\{ Status, Task, Type };
 use App\Entity\User\User;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -13,20 +14,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @package App\Repository\Intercom
  * @method Task find (integer $id)
  */
-class TaskRepository extends EntityRepository
+class TaskRepository extends ServiceEntityRepository
 {
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
 
-    /**
-     * @param TranslatorInterface $translator
-     */
-    public function setTranslator(TranslatorInterface $translator): void
+    public function __construct(ManagerRegistry $registry, TranslatorInterface $translator)
     {
+        parent::__construct($registry, Task::class);
         $this->translator = $translator;
     }
+
 
     /**
      * @return array

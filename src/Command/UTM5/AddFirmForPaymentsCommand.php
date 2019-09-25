@@ -16,6 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class AddFirmForPaymentsCommand extends Command
 {
+    protected static $defaultName = 'utm5:add-firm-for-payments';
     /**
      * @var string
      */
@@ -31,13 +32,13 @@ class AddFirmForPaymentsCommand extends Command
 
     /**
      * AddFirmForPaymentsCommand constructor.
-     * @param array $parameters
+     * @param array $addFirmParameters
      * @param UTM5DbService $UTM5DbService
      */
-    public function __construct(array $parameters, UTM5DbService $UTM5DbService)
+    public function __construct(array $addFirmParameters, UTM5DbService $UTM5DbService)
     {
-        $this->files_dir = $parameters['files_dir'];
-        $this->ippark_group = $parameters['ippark_group'];
+        $this->files_dir = $addFirmParameters['files_dir'];
+        $this->ippark_group = $addFirmParameters['ippark_group'];
         $this->UTM5DbService = $UTM5DbService;
         parent::__construct();
     }

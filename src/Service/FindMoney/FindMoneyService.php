@@ -12,24 +12,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class FindMoneyService
 {
-    /**
-     * @var Connection - utm5 connection
-     */
+    /** @var Connection  */
     private $connection;
 
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
 
-    /**
-     * FindMoneyService constructor.
-     * @param Connection $connection
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(Connection $connection, TranslatorInterface $translator)
+    public function __construct(Connection $UTM5Connection, TranslatorInterface $translator)
     {
-        $this->connection = $connection;
+        $this->connection = $UTM5Connection;
         $this->translator = $translator;
     }
 

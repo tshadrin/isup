@@ -4,24 +4,23 @@ declare(strict_types=1);
 namespace App\Repository\Order;
 
 use App\Entity\Order\Order;
-use App\Entity\User\User;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class OrderRepository
  * @package App\Repository\Order
  */
-class OrderRepository extends EntityRepository
+class OrderRepository extends ServiceEntityRepository
 {
-    /**
-     * @var User
-     */
+    /** @var object|string  */
     private $currentUser;
 
-    public function setUser(TokenStorageInterface $tokenStorage): void
+    public function __construct(ManagerRegistry $registry, TokenStorageInterface $tokenStorage)
     {
+        parent::__construct($registry, Order::class);
         $this->currentUser = $tokenStorage->getToken()->getUser();
     }
 

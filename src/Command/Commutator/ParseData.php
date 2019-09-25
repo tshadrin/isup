@@ -16,15 +16,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ParseData extends Command
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    protected static $defaultName = 'commutator:add-switches';
 
-    /**
-     * Папка с файлами отчетов
-     * @var mixed
-     */
+    /** @var EntityManagerInterface  */
+    private $entityManager;
+    /** @var string */
     private $files_dir;
 
 
@@ -33,9 +29,9 @@ class ParseData extends Command
      * @param string $files_dir
      * @param UTM5DbService $UTM5DbService
      */
-    public function __construct(array $parameters, EntityManagerInterface $entityManager)
+    public function __construct(array $addFirmParameters, EntityManagerInterface $entityManager)
     {
-        $this->files_dir = $parameters['files_dir'];
+        $this->files_dir = $addFirmParameters['files_dir'];
         parent::__construct();
         $this->entityManager = $entityManager;
     }

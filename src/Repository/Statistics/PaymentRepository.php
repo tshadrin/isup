@@ -3,12 +3,17 @@ declare(strict_types=1);
 
 namespace App\Repository\Statistics;
 
-
 use App\Entity\Statistics\Payment;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
-class PaymentRepository extends EntityRepository
+class PaymentRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Payment::class);
+    }
+
     /**
      * @param Payment $payment
      * @throws \Doctrine\ORM\ORMException

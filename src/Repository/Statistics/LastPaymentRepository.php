@@ -5,10 +5,16 @@ namespace App\Repository\Statistics;
 
 
 use App\Entity\Statistics\LastPayment;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
-class LastPaymentRepository extends EntityRepository
+class LastPaymentRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, LastPayment::class);
+    }
+
     /**
      * @param LastPayment $payment
      * @throws \Doctrine\ORM\ORMException

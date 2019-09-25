@@ -16,9 +16,9 @@ class SMSCSender implements SenderInterface
      * smscSender constructor.
      * @param $parameters
      */
-    public function __construct(array $parameters)
+    public function __construct(array $SMSCParameters)
     {
-        $this->parameters = $parameters;
+        $this->parameters = $SMSCParameters;
     }
 
     public function send(string $phone, string $message): void

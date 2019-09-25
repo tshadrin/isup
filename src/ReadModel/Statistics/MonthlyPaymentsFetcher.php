@@ -19,9 +19,9 @@ class MonthlyPaymentsFetcher
     /** @var CacheInterface  */
     private $pdo;
 
-    public function __construct(Connection $connection, CacheInterface $pdo)
+    public function __construct(Connection $defaultConnection, CacheInterface $pdo)
     {
-        $this->connection = $connection;
+        $this->connection = $defaultConnection;
         $this->pdo = $pdo;
     }
 

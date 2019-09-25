@@ -18,9 +18,9 @@ class OrdersFetcher
     /** @var int */
     private $currentUserId;
 
-    public function __construct(Connection $connection, TokenStorageInterface $tokenStorage)
+    public function __construct(Connection $defaultConnection, TokenStorageInterface $tokenStorage)
     {
-        $this->connection = $connection;
+        $this->connection = $defaultConnection;
         $user = $tokenStorage->getToken()->getUser();
         $this->currentUserId =
             $user instanceof User ?

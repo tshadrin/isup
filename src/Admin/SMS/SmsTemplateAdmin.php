@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Admin\SMS;
 
+use App\Entity\SMS\SmsTemplate;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\{ DatagridMapper, ListMapper };
 use Sonata\AdminBundle\Form\FormMapper;

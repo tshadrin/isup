@@ -5,25 +5,25 @@ namespace App\Repository\Phone;
 
 use App\Form\Phone\DTO\Filter;
 use App\Entity\Phone\Phone;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * Class PhoneRepository
  * @package App\Repository\Phone
  */
-class PhoneRepository extends EntityRepository
+class PhoneRepository extends ServiceEntityRepository
 {
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
 
-    /**
-     * @param TranslatorInterface $translator
-     */
-    public function setTranslator(TranslatorInterface $translator)
+    public function __construct(ManagerRegistry $registry, TranslatorInterface $translator)
     {
+        parent::__construct($registry, Phone::class);
         $this->translator = $translator;
     }
 

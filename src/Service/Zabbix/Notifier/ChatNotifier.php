@@ -28,10 +28,10 @@ class ChatNotifier implements NotifierInterface
      * ChatNotifier constructor.
      * @param BitrixRestService $bitrixRestService
      */
-    public function __construct(array $parameters, BitrixRestService $bitrixRestService)
+    public function __construct(array $bitrixParameters, BitrixRestService $bitrixRestService)
     {
         $this->bitrixRestService = $bitrixRestService;
-        $this->parameters = $parameters;
+        $this->parameters = $bitrixParameters;
     }
 
     /**

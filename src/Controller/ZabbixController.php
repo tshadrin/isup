@@ -22,9 +22,9 @@ class ZabbixController extends AbstractController
      */
     protected $logger;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $zabbixLogger)
     {
-        $this->logger = $logger;
+        $this->logger = $zabbixLogger;
     }
 
     /**

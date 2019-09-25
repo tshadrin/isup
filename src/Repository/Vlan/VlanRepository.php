@@ -5,14 +5,20 @@ namespace App\Repository\Vlan;
 
 use App\Entity\Vlan\Vlan;
 use App\Form\Vlan\DTO\Filter;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * Class VlanRepository
  * @package App\Repository\Vlan
  */
-class VlanRepository extends EntityRepository
+class VlanRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Vlan::class);
+    }
+
     /**
      * @param Filter $filter
      * @return array

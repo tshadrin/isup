@@ -26,9 +26,9 @@ class GroupMapper
      * @param Connection $connection
      * @param TranslatorInterface $translator
      */
-    public function __construct(Connection $connection, TranslatorInterface $translator)
+    public function __construct(Connection $UTM5Connection, TranslatorInterface $translator)
     {
-        $this->connection = $connection;
+        $this->connection = $UTM5Connection;
         $this->translator = $translator;
     }
 

@@ -30,9 +30,9 @@ class Calendar implements CalendarInterface
      * BitirixCalService constructor.
      * @param array $parameters
      */
-    public function __construct(array $parameters, CacheInterface $redis)
+    public function __construct(array $bitrixCalendarParameters, CacheInterface $redis)
     {
-        $this->parameters = $parameters;
+        $this->parameters = $bitrixCalendarParameters;
         $this->redis = $redis;
     }
 

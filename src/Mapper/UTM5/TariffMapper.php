@@ -27,9 +27,9 @@ class TariffMapper
      */
     private $serviceRepository;
 
-    public function __construct(Connection $connection, TranslatorInterface $translator, ServiceRepository $serviceRepository)
+    public function __construct(Connection $UTM5Connection, TranslatorInterface $translator, ServiceRepository $serviceRepository)
     {
-        $this->connection = $connection;
+        $this->connection = $UTM5Connection;
         $this->translator = $translator;
         $this->serviceRepository = $serviceRepository;
     }

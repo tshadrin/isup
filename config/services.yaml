@@ -66,9 +66,23 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
-            $connection: '@doctrine.dbal.utm5_connection'
             $pdo: '@Symfony\Component\Cache\Adapter\PdoAdapter'
             $redis: '@Symfony\Component\Cache\Adapter\RedisAdapter'
+            $UTM5Connection: '@doctrine.dbal.utm5_connection'
+            $sberbankConnection: '@doctrine.dbal.sberbank_connection'
+            $defaultConnection: '@doctrine.dbal.default_connection'
+            $newlkConnection: '@doctrine.dbal.newlk_connection'
+            $smsLogger: '@monolog.logger.sms'
+            $zabbixLogger: '@monolog.logger.alarm_zabbix'
+            $bitixLogger: '@monolog.logger.bitrix_create'
+            $botPath: "%bot_path%"
+            $bitrixMemberId: '%bitrix_member_id%'
+            $addFirmParameters: '%add_firm%'
+            $SSHParameters: '%ssh%'
+            $bitrixParameters: '%bitrix%'
+            $SMSCParameters: '%smsc%'
+            $bitrixCalendarParameters: '%bitrix_cal%'
+            $URFAParameters: '%urfa%'
     cebe\markdown\MarkdownExtra:
     Redis:
         class: Redis
@@ -99,125 +113,6 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
-    App\Security\Voter\Bitrix\UserAccess:
-        bind:
-            $bitrixMemberId: '%bitrix_member_id%'
-    App\Controller\BitrixController:
-        bind:
-            $logger: '@monolog.logger.bitrix_create'
-    App\Controller\ZabbixController:
-        bind:
-            $logger: '@monolog.logger.alarm_zabbix'
-    App\Controller\SMS\SMSController:
-        bind:
-            $logger: '@monolog.logger.sms'
-    # Репозитори
-    App\Repository\Phone\PhoneRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Phone\Phone'
-        calls:
-            - method: setTranslator
-    App\Repository\UTM5\TypicalCallRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\UTM5\TypicalCall'
-    App\Repository\UTM5\CallRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\UTM5\Call'
-    App\Repository\Statistics\LastPaymentRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Statistics\LastPayment'
-    App\Repository\Statistics\PaymentRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Statistics\Payment'
-    App\Repository\Statistics\OnlineUsersRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Statistics\OnlineUsers'
-    App\Repository\UserRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\User\User'
-    App\Repository\UTM5\UserFillingInDataRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\UTM5\UserFillingInData'
-    App\Repository\Vlan\VlanRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Vlan\Vlan'
-
-    App\ReadModel\Orders\ShowList\OrdersFetcher:
-        bind:
-            $connection: '@doctrine.dbal.default_connection'
-    App\ReadModel\Statistics\OnlineUsersFetcher:
-        bind:
-            $connection: '@doctrine.dbal.default_connection'
-    App\ReadModel\UTM5\CallsFetcher:
-        bind:
-            $connection: '@doctrine.dbal.default_connection'
-    App\ReadModel\Statistics\MonthlyPaymentsFetcher:
-        bind:
-            $connection: '@doctrine.dbal.default_connection'
-    App\ReadModel\Payments\NetPay\PaymentsFetcher:
-        bind:
-            $connection: '@doctrine.dbal.newlk_connection'
-    App\ReadModel\Payments\Qiwi\PaymentsFetcher:
-        bind:
-            $connection: '@doctrine.dbal.sberbank_connection'
-    App\ReadModel\Payments\Sberbank\PaymentsFetcher:
-        bind:
-            $connection: '@doctrine.dbal.sberbank_connection'
-    App\ReadModel\Payments\Sberbank\PaymentsLogFetcher:
-        bind:
-            $connection: '@doctrine.dbal.sberbank_connection'
-    App\Repository\Order\OrderRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Order\Order'
-        calls:
-            - method: setUser
-    App\Repository\Intercom\TaskRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Intercom\Task'
-        calls:
-            - method: setTranslator
-    App\Repository\Commutator\CommutatorRepository:
-        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
-        bind:
-            $entityName: 'App\Entity\Commutator\Commutator'
-        calls:
-            - method: setTranslator
-    ### Сервисы ###
-    App\Service\SSH\SSHService:
-        bind:
-            $parameters: '%ssh%'
-    App\Service\Bot\HttpClient:
-        bind:
-            $botPath: '%bot_path%'
-    App\Service\Bot\Commutator\Parser:
-        bind:
-            $botPath: '%bot_path%'
-    App\Service\UTM5\URFAService:
-        bind:
-            $parameters: '%urfa%'
-    App\Service\UTM5\BitrixRestService:
-        bind:
-            $parameters: '%bitrix%'
-    App\Service\Bitrix\Calendar\Calendar:
-        bind:
-            $parameters: '%bitrix_cal%'
-    App\Service\SMS\SMSCSender:
-        bind:
-            $parameters: '%smsc%'
-    App\Service\Zabbix\Notifier\ChatNotifier:
-      bind:
-        $parameters: '%bitrix%'
     ### Обработчики событий ###
     App\EventListener\SberbankReport\ConfigureMenuListener:
         tags:
@@ -226,7 +121,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: 'App\Event\ConfigureMenuEvent', method: onMenuConfigure }
     App\EventListener\Order\ConfigureMenuListener:
-        tags: #что за priority?
+        tags:
             - { name: kernel.event_listener, event: 'App\Event\ConfigureMenuEvent', method: onMenuConfigure, priority: -1 }
     App\EventListener\UTM5\ConfigureMenuListener:
         tags:
@@ -240,117 +135,62 @@ services:
     App\EventListener\Intercom\SecurityListener:
         tags:
             - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
-    #команды
-    App\Command\UTM5\AddFirmForPaymentsCommand:
-        bind:
-            $parameters: '%add_firm%'
-        tags:
-            - { name: 'console.command', command: 'utm5:add-firm-for-payments' }
-    App\Command\UTM5\ConvertRemindsCommand:
-        tags:
-            - { name: 'console.command', command: 'utm5:convert-reminds' }
-    App\Command\UTM5\AddFirmForAcquiroPaymentsCommand:
-        bind:
-            $parameters: '%add_firm%'
-        tags:
-            - { name: 'console.command', command: 'utm5:add-firm-for-acquiropay-payments' }
-    App\Command\Commutator\ParseData:
-        bind:
-            $parameters: '%add_firm%'
-        tags:
-            - { name: 'console.command', command: 'commutator:add-switches' }
-    App\Command\Commutator\ParseNagios:
-        bind:
-            $parameters: '%add_firm%'
-        tags:
-            - { name: 'console.command', command: 'commutator:add-nagios-link' }
-    App\Command\UTM5\GetUsersByIPList:
-        bind:
-            $parameters: '%add_firm%'
-        tags:
-            - { name: 'console.command', command: 'tv:get-users-from-list' }
     #меню
-    app.menu_builder: #сделан алиас чтоб не орал type-hint
-        alias: App\Menu\Builder
-    app.main_menu:
-        class: Knp\Menu\MenuItem
-        factory: ["@app.menu_builder", build]
+    Knp\Menu\MenuItem:
+        factory: ['@App\Menu\Builder', build]
         tags:
             - { name: knp_menu.menu, alias: main }
     #Админка
-    admin.region:
-        class: 'App\Admin\User\RegionAdmin'
+    App\Admin\User\RegionAdmin:
         arguments: [~, App\Entity\User\Region, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: fos_user, label: Regions }
-        public: true
-    admin.intecomstatus:
-        class: 'App\Admin\Intercom\StatusAdmin'
+    App\Admin\Intercom\StatusAdmin:
         arguments: [~, App\Entity\Intercom\Status, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: intercom, label: statuses }
-        public: true
-    admin.intecomtype:
-        class: 'App\Admin\Intercom\TypeAdmin'
+    App\Admin\Intercom\TypeAdmin:
         arguments: [~, App\Entity\Intercom\Type, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: intercom, label: tasks_types }
-        public: true
-    admin.tasktype:
-        class: 'App\Admin\Intercom\TaskAdmin'
+    App\Admin\Intercom\TaskAdmin:
         arguments: [~, App\Entity\Intercom\Task, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: intercom, label: tasks }
-        public: true
-    admin.user:
+    App\Admin\User\UserAdmin:
         calls:
             - method: setUserManager
               arguments:
                   - '@fos_user.user_manager.default'
-        class: 'App\Admin\User\UserAdmin'
         arguments: [~, App\Entity\User\User, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: fos_user, label: Users, icon: '<i class="fa fa-users "></i>'}
-        public: true
-    admin.order:
-        class: 'App\Admin\Order\OrderAdmin'
+            - { name: sonata.admin, manager_type: orm, group: fos_user, label: Users}
+    App\Admin\Order\OrderAdmin:
         arguments: [~, App\Entity\Order\Order, ~]
         tags:
             - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'orders' }
-        public: true
-    admin.typical_problem:
-        class: 'App\Admin\Order\TypicalProblemAdmin'
+    App\Admin\Order\TypicalProblemAdmin:
         arguments: [~, App\Entity\Order\TypicalProblem, ~]
         tags:
             - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'Typical Problems' }
         public: true
-    admin.typical_call:
-        class: 'App\Admin\Order\TypicalCallAdmin'
+    App\Admin\Order\TypicalCallAdmin:
         arguments: [~, App\Entity\UTM5\TypicalCall, ~]
         tags:
             - { name: 'sonata.admin', manager_type: 'orm', group: 'orders', label: 'Typical Calls' }
-        public: true
-    admin.vlan:
-        class: 'App\Admin\Vlan\VlanAdmin'
+    App\Admin\Vlan\VlanAdmin:
         arguments: [~, App\Entity\Vlan\Vlan, ~]
         tags:
             - { name: 'sonata.admin', manager_type: 'orm', group: 'vlans', label: 'Vlans' }
-        public: true
-    admin.commutator_port_type:
-        class: 'App\Admin\Commutator\PortTypeAdmin'
+    App\Admin\Commutator\PortTypeAdmin:
         arguments: [~, App\Entity\Commutator\PortType, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: commutators, label: port_types }
-        public: true
-    admin.commutator:
-        class: 'App\Admin\Commutator\CommutatorAdmin'
+    App\Admin\Commutator\CommutatorAdmin:
         arguments: [~, App\Entity\Commutator\Commutator, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: commutators, label: commutators }
-        public: true
-    admin.smstemplate:
-        class: 'App\Admin\SMS\SmsTemplateAdmin'
+    App\Admin\SMS\SmsTemplateAdmin:
         arguments: [~, App\Entity\SMS\SmsTemplate, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: sms, label: 'Sms Templates' }
-        public: true

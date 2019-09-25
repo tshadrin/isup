@@ -13,9 +13,9 @@ class CallsFetcher
     /** @var Connection  */
     private $connection;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $defaultConnection)
     {
-        $this->connection = $connection;
+        $this->connection = $defaultConnection;
     }
     public function findByUTM5UserId(int $id): ?array
     {

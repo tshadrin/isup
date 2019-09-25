@@ -16,12 +16,12 @@ class BitrixRestService
     private $chat_id;
     private $channels_chat_id;
 
-    public function __construct($parameters, LoggerInterface $logger)
+    public function __construct(array $bitrixParameters, LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->rest_url = "{$parameters['path']}/{$parameters['user_id']}/{$parameters['key']}";
-        $this->chat_id = $parameters['chat_id'];
-        $this->channels_chat_id = $parameters['channels_chat_id'];
+        $this->rest_url = "{$bitrixParameters['path']}/{$bitrixParameters['user_id']}/{$bitrixParameters['key']}";
+        $this->chat_id = $bitrixParameters['chat_id'];
+        $this->channels_chat_id = $bitrixParameters['channels_chat_id'];
     }
 
     /**

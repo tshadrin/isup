@@ -44,9 +44,9 @@ class UserPreparer
      * UserPreparer constructor.
      * @param Connection $connection
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $UTM5Connection)
     {
-        $this->connection = $connection;
+        $this->connection = $UTM5Connection;
     }
 
     /**

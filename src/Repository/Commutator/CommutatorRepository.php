@@ -4,22 +4,20 @@ declare(strict_types=1);
 namespace App\Repository\Commutator;
 
 use App\Entity\Commutator\Commutator;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityRepository;
 use DomainException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class CommutatorRepository extends EntityRepository
+class CommutatorRepository extends ServiceEntityRepository
 {
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
 
-    /**
-     * @param TranslatorInterface $translator
-     */
-    public function setTranslator(TranslatorInterface $translator): void
+    public function __construct(ManagerRegistry $registry, TranslatorInterface $translator)
     {
+        parent::__construct($registry, Commutator::class);
         $this->translator = $translator;
     }
 

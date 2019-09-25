@@ -14,13 +14,10 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class GetUsersByIPList extends Command
 {
-    /**
-     * @var string
-     */
+    protected static $defaultName="tv:get-users-from-list";
+    /** @var string  */
     protected $files_dir;
-    /**
-     * @var UTM5DbService
-     */
+    /** @var UTM5DbService  */
     protected $UTM5DbService;
 
     /**
@@ -28,9 +25,9 @@ class GetUsersByIPList extends Command
      * @param string $files_dir
      * @param UTM5DbService $UTM5DbService
      */
-    public function __construct(array $parameters, UTM5DbService $UTM5DbService)
+    public function __construct(array $addFirmParameters, UTM5DbService $UTM5DbService)
     {
-        $this->files_dir = $parameters['files_dir'];
+        $this->files_dir = $addFirmParameters['files_dir'];
         $this->UTM5DbService = $UTM5DbService;
         parent::__construct();
     }

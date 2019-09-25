@@ -18,16 +18,13 @@ class URFAService
     const PARAM_BIRTHDAY = 8;
     const PARAM_ADDITIONAL_PHONE = 10;
 
-    /**
-     * @var URFAClient_API
-     */
+    /** @var URFAClient_API */
     private $urfa;
 
-    public function __construct(array $parameters)
+    public function __construct(array $URFAParameters)
     {
         try {
-            /** @noinspection PhpUnhandledExceptionInspection*/
-            $this->urfa = \URFAClient::init($parameters);
+            $this->urfa = \URFAClient::init($URFAParameters);
         } catch (ErrorException $e) {
             //@todo write to log
             $this->urfa = null;

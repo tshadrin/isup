@@ -12,9 +12,9 @@ class OnlineUsersFetcher
     /** @var Connection  */
     private $connection;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $defaultConnection)
     {
-        $this->connection = $connection;
+        $this->connection = $defaultConnection;
     }
 
     public function getByDateInterval(\DateTimeImmutable $start, \DateTimeImmutable $end): array

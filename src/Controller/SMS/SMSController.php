@@ -23,11 +23,11 @@ class SMSController extends AbstractController
     /**
      * @param string $type
      * @param Request $request
-     * @param LoggerInterface $logger
+     * @param LoggerInterface $smsLogger
      * @return JsonResponse
      * @Route("/send/{type}", defaults={"type": "modem"}, name="_send", methods={"GET", "PUT"}, requirements={"type": "smsc|modem|all"})
      */
-    public function sendSMS(string $type, Request $request, LoggerInterface $logger): JsonResponse
+    public function sendSMS(string $type, Request $request, LoggerInterface $smsLogger): JsonResponse
     {
 
         try {
@@ -55,13 +55,13 @@ class SMSController extends AbstractController
                     $this->sendSMSViaModem($phone,$message);
                     $this->sendSMSViaSmsc($phone, $message);
                 }
-                $logger->info("Сообщение \"{$message}\" отправлено на номер {$phone}", ['IP-адрес клиента' => $request->getClientIp()]);
+                $smsLogger->info("Сообщение \"{$message}\" отправлено на номер {$phone}", ['IP-адрес клиента' => $request->getClientIp()]);
                 return new JsonResponse(['message' => 'Сообщение успешно отправлено', 'code' => 0,]);
             } else {
                 throw new \Exception("Не заданы входные параметры запроса", 1);
             }
         } catch (\Exception $e) {
-            $logger->error($e->getMessage(), ['Код ошибки' => $e->getCode(), 'IP-адрес клиента' => $request->getClientIp()]);
+            $smsLogger->error($e->getMessage(), ['Код ошибки' => $e->getCode(), 'IP-адрес клиента' => $request->getClientIp()]);
             return new JsonResponse(['message' => $e->getMessage(), 'code' => $e->getCode(),]);
         }
     }

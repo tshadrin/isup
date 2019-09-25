@@ -19,19 +19,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ConvertRemindsCommand extends Command
 {
-    /**
-     * @var Connection utm5 connection
-     */
+    protected static $defaultName = 'utm5:convert-reminds';
+
+    /** @var Connection  */
     private $connection;
 
-    /**
-     * ConvertRemindsCommand constructor.
-     * @param Connection $connection
-     */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $UTM5Connection)
     {
-        $this->connection = $connection;
-
+        $this->connection = $UTM5Connection;
         parent::__construct();
     }
 

@@ -17,9 +17,9 @@ class SSHService
      * SSHService constructor.
      * @param $parameters
      */
-    public function __construct(array $parameters)
+    public function __construct(array $SSHParameters)
     {
-        $this->parameters = $parameters;
+        $this->parameters = $SSHParameters;
     }
 
     /**

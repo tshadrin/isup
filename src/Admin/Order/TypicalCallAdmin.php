@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Datagrid\{ DatagridMapper, ListMapper };
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\{CheckboxType, ChoiceType, DateTimeType, TextareaType, TextType};
+use Sonata\DoctrineORMAdminBundle\Filter\ChoiceFilter;
 use Symfony\Component\Form\ChoiceList\Loader\CallbackChoiceLoader;
 
 class TypicalCallAdmin extends AbstractAdmin
@@ -41,10 +42,10 @@ class TypicalCallAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper): void
     {
         $datagridMapper->add('id')
-            ->add('description')
             ->add('shortCut')
+            ->add('description')
+            ->add('callGroup',null, [], ChoiceType::class, ['choices' => TypicalCallGroup::getConstants()])
             ->add('enabled')
-
         ;
     }
 
@@ -55,10 +56,10 @@ class TypicalCallAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper->addIdentifier('id')
-            ->add('description')
             ->add('shortCut')
-            ->add('enabled')
+            ->add('description')
             ->add('callGroup','trans')
+            ->add('enabled')
             ->add('_action', null,
                 [
                     'actions' =>
@@ -80,8 +81,9 @@ class TypicalCallAdmin extends AbstractAdmin
     {
         $showMapper
             ->add('id')
-            ->add('description')
             ->add('shortCut')
+            ->add('description')
+            ->add('callGroup','trans')
             ->add('enabled')
         ;
     }
