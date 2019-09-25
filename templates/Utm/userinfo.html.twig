@@ -160,6 +160,20 @@
 
     </div>
 </div>
+{% if calls is not null %}
+    <div class="user-info-block col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 p-2">
+        <div class="user-info-block-inner user-info-block-calls pt-2 pb-2 pl-3 pr-3">
+            <h4>Последние обращения</h4>
+            {% for call in calls %}
+                <div class="row">
+                    <div class="col-12"><small><strong>{{ call.date }} - {{ call.full_name }}</strong></small></div>
+                    <div class="col-12"><small>{{ call.description }}</small></div>
+                    <hr class="col-xs-12">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
 <!--
 <div class="user-info-block user-info-block-zabbix col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 p-2">
     <div class="user-info-block-inner user-info-block-zabbix-notices pt-2 pb-2 pl-3 pr-3">

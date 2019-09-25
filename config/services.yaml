@@ -157,6 +157,9 @@ services:
     App\ReadModel\Statistics\OnlineUsersFetcher:
         bind:
             $connection: '@doctrine.dbal.default_connection'
+    App\ReadModel\UTM5\CallsFetcher:
+        bind:
+            $connection: '@doctrine.dbal.default_connection'
     App\ReadModel\Statistics\MonthlyPaymentsFetcher:
         bind:
             $connection: '@doctrine.dbal.default_connection'

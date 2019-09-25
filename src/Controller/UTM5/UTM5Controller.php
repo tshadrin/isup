@@ -5,6 +5,7 @@ namespace App\Controller\UTM5;
 
 use App\Collection\UTM5\UTM5UserCollection;
 use App\Kernel;
+use App\ReadModel\UTM5\CallsFetcher;
 use App\Repository\UTM5\CallRepository;
 use App\Repository\UTM5\TypicalCallRepository;
 use App\Repository\UTM5\UserFillingInDataRepository;
@@ -71,6 +72,7 @@ class UTM5Controller extends AbstractController
                            URFAService $URFA_service,
                            UTM5UserCommentService $UTM5_user_comment_service,
                            EventDispatcherInterface $event_dispatcher,
+                           CallsFetcher $callsFetcher,
                            PaginatorInterface $paginator): Response
     {
         $this->calEvents();
@@ -105,6 +107,7 @@ class UTM5Controller extends AbstractController
                 $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();
                 $template_data['searchType'] = $type;
+                $template_data['calls'] = $callsFetcher->findByUTM5UserId($search_result->getId());
                 $form = $this->createForm(TypicalCallForm::class);
                 $form->setData(['utm5_id' => $search_result->getId()]);
                 $template_data['callform'] = $form->createView();

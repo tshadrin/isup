@@ -234,6 +234,9 @@ div.user-info-block-inner {
 div.user-info-block-utm5-comments {
     background: #ffffcc;
 }
+div.user-info-block-calls {
+    background: #dbd7d2;
+}
 /* utm/userinfo */
 /*
 div.user-info-block-zabbix-notices {
