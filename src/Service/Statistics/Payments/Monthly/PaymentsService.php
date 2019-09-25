@@ -13,17 +13,17 @@ class PaymentsService
     /** @var MonthlyPaymentsFetcher  */
     private $monthlyPaymentsFetcher;
     /** @var \Redis  */
-    private $pdo;
+    private $redis;
 
-    public function __construct(MonthlyPaymentsFetcher $monthlyPaymentsFetcher, CacheInterface $pdo)
+    public function __construct(MonthlyPaymentsFetcher $monthlyPaymentsFetcher, CacheInterface $redis)
     {
         $this->monthlyPaymentsFetcher = $monthlyPaymentsFetcher;
-        $this->pdo = $pdo;
+        $this->redis = $redis;
     }
 
     public function getMonthlyForLastYearGraphData(): array
     {
-        return $this->pdo->get('payment_reports', function(ItemInterface $item) {
+        return $this->redis->get('payment_reports', function(ItemInterface $item) {
             $item->expiresAfter(600);
 
             $payments = $this->monthlyPaymentsFetcher->getCountByServerForLastYearMonthly();

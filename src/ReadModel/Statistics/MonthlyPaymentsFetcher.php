@@ -17,12 +17,12 @@ class MonthlyPaymentsFetcher
     /** @var Connection  */
     private $connection;
     /** @var CacheInterface  */
-    private $pdo;
+    private $redis;
 
-    public function __construct(Connection $defaultConnection, CacheInterface $pdo)
+    public function __construct(Connection $defaultConnection, CacheInterface $redis)
     {
         $this->connection = $defaultConnection;
-        $this->pdo = $pdo;
+        $this->redis = $redis;
     }
 
     public function getCountByServerForLastYearMonthly():array
@@ -39,7 +39,7 @@ class MonthlyPaymentsFetcher
                 $start = (\DateTime::createFromFormat("!Y-m", $startDate->format("Y-m")));
                 $end = (\DateTime::createFromFormat("!Y-m", $startDate->modify("+1 month")->format("Y-m")));
                 $payments[$startDate->format("M")] =
-                    $this->pdo->get("payments_{$startDate->format("Y_m")}", function (ItemInterface $item) use ($start, $end) {
+                    $this->redis->get("payments_{$startDate->format("Y_m")}", function (ItemInterface $item) use ($start, $end) {
                         return  $this->getByDateRange($start, $end->modify("-1 second"));
                     });
 

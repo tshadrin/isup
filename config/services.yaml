@@ -66,7 +66,6 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
-            $pdo: '@Symfony\Component\Cache\Adapter\PdoAdapter'
             $redis: '@Symfony\Component\Cache\Adapter\RedisAdapter'
             $UTM5Connection: '@doctrine.dbal.utm5_connection'
             $sberbankConnection: '@doctrine.dbal.sberbank_connection'
@@ -84,6 +83,11 @@ services:
             $bitrixCalendarParameters: '%bitrix_cal%'
             $URFAParameters: '%urfa%'
     cebe\markdown\MarkdownExtra:
+    phpcent\Client:
+      arguments:
+        - '%env(CENTRIFUGO_API_HOST)%/api'
+        - '%env(CENTRIFUGO_API_KEY)%'
+        - '%env(CENTRIFUGO_SECRET)%'
     Redis:
         class: Redis
         calls:
@@ -91,17 +95,9 @@ services:
               arguments:
                   - '%env(REDIS_HOST)%'
                   - '%env(REDIS_PORT)%'
-    phpcent\Client:
-      arguments:
-        - '%env(CENTRIFUGO_API_HOST)%/api'
-        - '%env(CENTRIFUGO_API_KEY)%'
-        - '%env(CENTRIFUGO_SECRET)%'
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
             - '@Redis'
-    Symfony\Component\Cache\Adapter\PdoAdapter:
-        arguments:
-            - '@doctrine.dbal.default_connection'
     Symfony\Component\Cache\Adapter\RedisAdapter:
         arguments:
             - '@Redis'
