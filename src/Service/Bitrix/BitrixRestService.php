@@ -10,8 +10,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class BitrixRestService
 {
     const GET_DEAL_COMMAND = 'crm.deal.get';
-    const GET_CONTACT_COMMAND = "crm.contact.get";
-    const UPDATE_DEAL_COMMAND = "'crm.deal.update";
+    const GET_CONTACT_COMMAND = 'crm.contact.get';
+    const UPDATE_DEAL_COMMAND = 'crm.deal.update';
+    const ADD_TASK_COMMAND = 'tasks.task.add';
+    const GET_TASK_COMMAND = 'tasks.task.get';
     const SEND_MESSAGE_TO_CHAT_COMMAND = 'im.message.add.json';
     const DEAL_UTM5_ID_FIELD = 'UF_CRM_5B3A2EC6DC360';
     const DEAL_ADDRESS_FIELD = 'UF_CRM_5B3A2ECB76331';
@@ -69,5 +71,15 @@ class BitrixRestService
         $params = $statement->getParams();
         $result = $this->httpClient->getData(self::SEND_MESSAGE_TO_CHAT_COMMAND, ["CHAT_ID" => $params['chat_id'], "MESSAGE" => $message,]);
         return $result;
+    }
+
+    public function addTask($task): array
+    {
+        return $this->httpClient->getData(self::ADD_TASK_COMMAND, ["fields" => $task]);
+    }
+
+    public function getTask(int $id): array
+    {
+        return $this->httpClient->getData(self::GET_TASK_COMMAND,  ['taskId' => $id]);
     }
 }

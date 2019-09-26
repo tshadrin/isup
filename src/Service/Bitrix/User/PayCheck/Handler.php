@@ -31,13 +31,14 @@ class Handler
         $deal = $this->bitrixRestService->getDeal((int)$dealId);
         $user = $this->UTM5DbService->search((string)$deal->utm5Id, UTM5DbService::SEARCH_TYPE_ID);
         if($this->isEmptyUTM5IdOrStatus($deal)) {
-            throw new \DomainException("Not all required fields fill in deal");
+            $this->logger->info("Deal {$command->document[2]}not updated. Not all required field filled");
+            throw new \DomainException("Deal {$command->document[2]}not updated. Not all required field filled");
         }
         if ($user->hasPaidForServices()) {
             $this->bitrixRestService->setDealWon($deal);
-            $this->logger->info("Deal updated", [$command->document]);
+            $this->logger->info("Deal {$command->document[2]} updated");
         } else {
-            $this->logger->info("Deal not updated", [$command->document]);
+            $this->logger->info("Deal {$command->document[2]} not updated");
         }
     }
 

@@ -5,8 +5,12 @@ namespace App\Controller;
 
 use App\Security\Voter\Bitrix\UserAccess;
 
+use App\Service\Bitrix\BitrixRestService;
 use App\Service\Bitrix\Calendar\CalendarInterface;
 use App\Service\Bitrix\User\{ Add, PayCheck, Remove };
+use App\Service\Bitrix\Task\Add\Feedback;
+use App\Service\Bitrix\Task\Add\ReconciliationReport;
+use App\Service\Bitrix\Task\Add\Invoice;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -78,5 +82,49 @@ class BitrixController extends AbstractController
             $bitrixLogger->error($e->getMessage());
             return $this->json(['result' => 'error']);
         }
+    }
+
+    /**
+     * @IsGranted("ROLE_SUPPORT")
+     * @Route("/add-invoice-request", name=".add_invoice_request", methods={"POST"})
+     */
+    public function addInvoiceRequest(Request $request, Invoice\Handler $handler): JsonResponse
+    {
+        try {
+            $command = new Invoice\Command(419, new \DateTimeImmutable());
+            $handler->handle($command);
+        } catch (\DomainException | \InvalidArgumentException $e) {
+            return $this->json(["result" => "error", "message" => $e->getMessage()]);
+        }
+        return $this->json(['result' => 'success']);
+    }
+    /**
+     * @IsGranted("ROLE_SUPPORT")
+     * @Route("/add-reconciliation-report-request", name=".add_reconciliation_report_request", methods={"POST"})
+     */
+    public function addReconciliationReportRequest(Request $request, ReconciliationReport\Handler $handler): JsonResponse
+    {
+        try {
+            $command = new ReconciliationReport\Command(419, new \DateTimeImmutable());
+            $handler->handle($command);
+        } catch (\DomainException | \InvalidArgumentException $e) {
+            return $this->json(["result" => "error", "message" => $e->getMessage()]);
+        }
+        return $this->json(['result' => 'success']);
+    }
+
+    /**
+     * @IsGranted("ROLE_SUPPORT")
+     * @Route("/add-feedback-request", name=".add_feedback_request", methods={"POST"})
+     */
+    public function addFeedbackRequest(Request $request, Feedback\Handler $handler, BitrixRestService $bitrixRestService): JsonResponse
+    {
+        try {
+            $command = new Feedback\Command(419, "test");
+            $handler->handle($command);
+        } catch (\DomainException | \InvalidArgumentException $e) {
+            return $this->json(["result" => "error", "message" => $e->getMessage()]);
+        }
+        return $this->json(['result' => 'success']);
     }
 }
