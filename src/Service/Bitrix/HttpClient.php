@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace App\Service\Bitrix;
 
-use App\Entity\Zabbix\Statement;
-use App\Service\UTM5\DealData;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Webmozart\Assert\Assert;
 
 class HttpClient
 {
@@ -24,6 +23,12 @@ class HttpClient
 
     public function __construct(array $bitrixParameters, HttpClientInterface $httpClient, LoggerInterface $bitrixLogger)
     {
+        Assert::keyExists($bitrixParameters, 'path');
+        Assert::keyExists($bitrixParameters, 'user_id');
+        Assert::keyExists($bitrixParameters, 'key');
+        Assert::keyExists($bitrixParameters, 'chat_id');
+        Assert::keyExists($bitrixParameters, 'channels_chat_id');
+
         $this->httpClient = $httpClient;
         $this->logger = $bitrixLogger;
         $this->rest_url = "{$bitrixParameters['path']}/{$bitrixParameters['user_id']}/{$bitrixParameters['key']}";
@@ -48,8 +53,9 @@ class HttpClient
             $data = json_decode($result->getContent(), true);
             return $data['result'];
         } catch (ClientException $e) {
-            $this->logger->error($e->getMessage(), [$parameters, json_decode($result->getContent(false), true)]);
-            throw new \DomainException("Error get data from Bitrix");
+            $this->logger->error("Error get data from Bitrix24: {$e->getMessage()}", [$parameters, json_decode($result->getContent(false), true)]);
+            $errorMsg = json_decode($result->getContent(false), true);
+            throw new \DomainException("Error get data from Bitrix24: {$errorMsg['error_description']}");
         }
     }
 }
