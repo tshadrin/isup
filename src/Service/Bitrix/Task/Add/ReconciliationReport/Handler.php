@@ -9,6 +9,12 @@ use App\Service\UTM5\UTM5DbService;
 
 class Handler
 {
+    const RESPONSIBLE_ID = 38;
+    const ACCOMPLICES = 490;
+    const GROUP_ID = 46;
+    const PRIORITY = 2;
+    const AUDITORS = 1;
+
     /** @var UTM5DbService  */
     private $UTM5DbService;
     /** @var BitrixRestService  */
@@ -31,11 +37,11 @@ class Handler
         $data = [
             'TITLE' => "[Mon] Юридическое лицо {$orgName} (id {$utm5Id} - запрос акта сверки",
             'DESCRIPTION' => "Юридическое лицо {$orgName}  (id {$utm5Id}) запрашивает акт сверки за {$date->format("m - Y")} года. Телефон: +7{$phone}, E-mail: {$email}.",
-            'RESPONSIBLE_ID' => 38, // 38, 490 исполнитель
-            'ACCOMPLICES' => "490", //соисполнитель
-            'GROUP_ID' => 46, //группа`
-            'PRIORITY' => 2, // приоритет
-            'AUDITORS' => "1", // наблюдатель
+            'RESPONSIBLE_ID' => self::RESPONSIBLE_ID, // исполнитель
+            'ACCOMPLICES' => self::ACCOMPLICES, // "" соисполнитель
+            'GROUP_ID' => self::GROUP_ID, // группа
+            'PRIORITY' => self::PRIORITY, // приоритет
+            'AUDITORS' => self::AUDITORS, // "" наблюдатель
         ];
         $task = $this->bitrixRestService->addTask($data);
     }

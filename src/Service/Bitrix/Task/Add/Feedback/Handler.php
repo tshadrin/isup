@@ -10,6 +10,12 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class Handler
 {
+    const RESPONSIBLE_ID = 38;
+    const ACCOMPLICES = 490;
+    const GROUP_ID = 46;
+    const PRIORITY = 2;
+    const AUDITORS = 1;
+
     /** @var BitrixRestService  */
     private $bitrixRestService;
     /** @var object|string  */
@@ -36,11 +42,11 @@ class Handler
         $data = [
             'TITLE' => "[Mon] Юридическое лицо {$orgName} (id {$utm5Id} - запрос обратной связи",
             'DESCRIPTION' => "Юридическое лицо {$orgName}  (id {$utm5Id}) запрашивает консультацию менеджера. Телефон: +7{$phone}, E-mail: {$email}.\n",
-            'RESPONSIBLE_ID' => 38, // 38, 490 исполнитель
-            'ACCOMPLICES' => "490", //соисполнитель
-            'GROUP_ID' => 46, //группа`
-            'PRIORITY' => 2, // приоритет
-            'AUDITORS' => "1", // наблюдатель
+            'RESPONSIBLE_ID' => self::RESPONSIBLE_ID, // исполнитель
+            'ACCOMPLICES' => self::ACCOMPLICES, // "" соисполнитель
+            'GROUP_ID' => self::GROUP_ID, // группа
+            'PRIORITY' => self::PRIORITY, // приоритет
+            'AUDITORS' => self::AUDITORS, // "" наблюдатель
         ];
         $data["DESCRIPTION"] .= "Комментарий оператора: {$comment}.\n Запрос сформировал {$user->getFullName()}";
         $task = $this->bitrixRestService->addTask($data);
