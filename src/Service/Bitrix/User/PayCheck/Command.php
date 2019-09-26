@@ -1,9 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-
-namespace App\Service\Bitrix\User\Paycheck;
-
+namespace App\Service\Bitrix\User\PayCheck;
 
 use Webmozart\Assert\Assert;
 
@@ -17,7 +15,7 @@ class Command
 
     public function __construct(array $document)
     {
-        Assert::nullOrCount($document, 3);
+        Assert::count($document, 3);
         $this->document = $document;
     }
 }

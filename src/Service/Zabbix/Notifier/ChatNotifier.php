@@ -6,7 +6,7 @@ namespace App\Service\Zabbix\Notifier;
 
 
 use App\Entity\Zabbix\Alarm;
-use App\Service\UTM5\BitrixRestService;
+use App\Service\Bitrix\BitrixRestService;
 use App\Service\Zabbix\MessagePreparer\ChatPreparer;
 
 /**
