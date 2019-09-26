@@ -5,6 +5,9 @@ namespace App\Service\Bitrix;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Component\HttpClient\Exception\RedirectionException;
+use Symfony\Component\HttpClient\Exception\ServerException;
+use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webmozart\Assert\Assert;
 
@@ -37,25 +40,32 @@ class HttpClient
     }
 
     /**
+     * @param string $command
+     * @param array $parameters
+     * @return array
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function getData(string $command, array $parameters): ?array
+    public function getData(string $command, array $parameters): array
     {
         try {
-            $url = "{$this->rest_url}/{$command}";
-            $result = $this->httpClient->request("POST", $url, [
+            $result = $this->httpClient->request("POST", $this->getUrl($command), [
                 'verify_peer' => 0,
                 'body' => $parameters,
             ]);
             $data = json_decode($result->getContent(), true);
             return $data['result'];
-        } catch (ClientException $e) {
+        } catch (ClientException | RedirectionException | ServerException | TransportException $e) {
             $this->logger->error("Error get data from Bitrix24: {$e->getMessage()}", [$parameters, json_decode($result->getContent(false), true)]);
             $errorMsg = json_decode($result->getContent(false), true);
             throw new \DomainException("Error get data from Bitrix24: {$errorMsg['error_description']}");
         }
+    }
+
+    private function getUrl(string $command): string
+    {
+        return "{$this->rest_url}/{$command}";
     }
 }

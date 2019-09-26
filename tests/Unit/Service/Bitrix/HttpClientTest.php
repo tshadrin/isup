@@ -5,7 +5,9 @@ namespace App\Tests\Unit\Service\Bitrix;
 
 use App\Service\Bitrix\BitrixRestService;
 use App\Service\Bitrix\HttpClient;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HttpClientTest extends KernelTestCase
 {
@@ -19,8 +21,10 @@ class HttpClientTest extends KernelTestCase
 
         self::bootKernel();
         $container = self::$container;
-        $httpClientMock = $this->createMock('Symfony\Contracts\HttpClient\HttpClientInterface');
-        $loggerMock = $this->createMock('Psr\Log\LoggerInterface');
+        /** @var HttpClientInterface $httpClientMock */
+        $httpClientMock = $this->createMock(HttpClientInterface::class);
+        /** @var LoggerInterface $loggerMock */
+        $loggerMock = $this->createMock(LoggerInterface::class);
         $httpClient = new HttpClient([
             'path' => $path,
             'user_id' => $userId,
@@ -37,7 +41,7 @@ class HttpClientTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::$container;
-        $httpClient = $container->get("App\Service\Bitrix\HttpClient");
+        $httpClient = $container->get(HttpClient::class);
         $this->expectExceptionMessage("Error get data from Bitrix24: Method not found!");
         $httpClient->getData('dsgkj', ['dggf']);
     }
@@ -46,7 +50,7 @@ class HttpClientTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::$container;
-        $httpClient = $container->get("App\Service\Bitrix\HttpClient");
+        $httpClient = $container->get(HttpClient::class);
         $this->expectExceptionMessage("Error get data from Bitrix24");
         $this->expectExceptionMessage("Error get data from Bitrix24: Could not find value for ");
         $httpClient->getData(BitrixRestService::GET_TASK_COMMAND, []);
@@ -56,7 +60,7 @@ class HttpClientTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::$container;
-        $httpClient = $container->get("App\Service\Bitrix\HttpClient");
+        $httpClient = $container->get(HttpClient::class);
         $this->expectExceptionMessage("Task not found or not accessible");
         $result = $httpClient->getData(BitrixRestService::GET_TASK_COMMAND, ['taskId' => 5055]);
         dump($result);exit;
@@ -66,8 +70,25 @@ class HttpClientTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::$container;
-        $httpClient = $container->get("App\Service\Bitrix\HttpClient");
+        $httpClient = $container->get(HttpClient::class);
         $result = $httpClient->getData(BitrixRestService::GET_TASK_COMMAND, ['taskId' => 2316]);
         self::assertArrayHasKey('task', $result);
+    }
+
+    public function testWriteErrorToLog(): void
+    {
+        self::bootKernel();
+        $container = self::$container;
+        $httpClient = $container->get(HttpClient::class);
+        $reflection = new \ReflectionClass($httpClient);
+        $reflection_property = $reflection->getProperty('logger');
+        $reflection_property->setAccessible(true);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $reflection_property->setValue($httpClient, $loggerMock);
+        $loggerMock->expects($this->any())
+            ->method('error')
+            ->willThrowException(new \DomainException("Error logger calls"));
+        $this->expectExceptionMessage("Error logger calls");
+        $httpClient->getData("gfgd", []);
     }
 }
