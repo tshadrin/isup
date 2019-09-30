@@ -1,20 +1,28 @@
-FROM php:7.2-cli
+FROM php:7.3-cli
 
 COPY ./php/default.ini /usr/local/etc/php/php.ini
 
 # библиотеки нужны для компиляции расширений
-RUN apt-get update && apt-get install -y zlib1g-dev zip libssh2-1-dev libssh2-1
+RUN apt-get update && apt-get install -y libzip-dev zlib1g-dev zip libssh2-1-dev libssh2-1 wget
 
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install bcmath
 RUN pecl install -o -f redis \
   && docker-php-ext-enable redis \
-  && pecl install -o -f ssh2-1.1.2 \
-  && docker-php-ext-enable ssh2 \
+#  && pecl install -o -f ssh2-1.2 \
+#  && docker-php-ext-enable ssh2 \
   && rm -rf /tmp/pear
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/bin --filename=composer --quiet
+RUN curl -O https://pecl.php.net/get/ssh2 \
+    && tar xvf ssh2 \
+    && cd ssh2-1.2 \
+    && phpize \
+    && ./configure --with-ssh2 \
+    && make \
+    && make install \
+    && docker-php-ext-enable ssh2
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 

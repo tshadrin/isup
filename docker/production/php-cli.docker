@@ -1,7 +1,7 @@
-FROM php:7.2-cli AS builder
+FROM php:7.3-cli AS builder
 
 RUN apt-get update && apt-get install -y unzip libssh2-1-dev libssh2-1 \
-    && pecl install -o -f ssh2-1.1.2 \
+    && pecl install -o -f ssh2-1.2 \
     && docker-php-ext-enable ssh2 \
     && rm -rf /tmp/pear
 
@@ -17,7 +17,7 @@ COPY ./composer.json ./composer.lock ./
 
 RUN composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
-FROM php:7.2-cli
+FROM php:7.3-cli
 
 RUN apt-get update && apt-get install -y unzip libssh2-1-dev libssh2-1 \
     && pecl install -o -f ssh2-1.1.2 \

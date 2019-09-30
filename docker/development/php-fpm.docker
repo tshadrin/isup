@@ -1,15 +1,25 @@
-FROM php:7.2-fpm
+FROM php:7.3-fpm
 
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install mysqli
 RUN docker-php-ext-install bcmath
-RUN apt-get update && apt-get install -y libssh2-1-dev libssh2-1 \
-    && pecl install -o -f ssh2-1.1.2 \
-    && docker-php-ext-enable ssh2 \
+RUN apt-get update && apt-get install -y libzip-dev libssh2-1-dev libssh2-1 \
+#    && pecl install -o -f ssh2-1.2 \
+#    && docker-php-ext-enable ssh2 \
     && pecl install -o -f redis \
     &&  docker-php-ext-enable redis \
     &&  rm -rf /tmp/pear
 
 COPY ./php/default.ini /usr/local/etc/php/php.ini
+
+RUN curl -O https://pecl.php.net/get/ssh2 \
+    && tar xvf ssh2 \
+    && cd ssh2-1.2 \
+    && phpize && \
+    ./configure --with-ssh2 \
+    && make \
+    && make install \
+    && docker-php-ext-enable ssh2
+
 
 WORKDIR /app

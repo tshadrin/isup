@@ -115,7 +115,7 @@ class BitrixController extends AbstractController
 
     /**
      * @IsGranted("ROLE_SUPPORT")
-     * @Route("/add-feedback-request", name=".add_feedback_request", methods={"POST"})
+     * @Route("/add-feedback-request", name=".add_feedback_request", methods={"GET"})
      */
     public function addFeedbackRequest(Request $request, Feedback\Handler $handler, BitrixRestService $bitrixRestService): JsonResponse
     {
