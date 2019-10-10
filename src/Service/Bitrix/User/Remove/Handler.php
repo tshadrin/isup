@@ -36,7 +36,7 @@ class Handler
         }
 
         $this->URFAService->removeUser($deal->utm5Id);
-        $this->bitrixRestService->updateDeal($dealId, [BitrixRestService::DEAL_UTM5_ID_FIELD => 0,]);
+        $this->bitrixRestService->updateDeal((int)$dealId, [BitrixRestService::DEAL_UTM5_ID_FIELD => 0,]);
         $this->logger->info("User {$deal->utm5Id} deleted");
     }
 

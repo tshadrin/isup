@@ -29,7 +29,7 @@ class Handler
         [,$dealId] = explode('_', $command->document[2]); //DEAL_<NUM>
         $deal = $this->bitrixRestService->getDeal((int)$dealId);
         $uid = $this->URFAService->addUser($login, $deal->phone, $deal->address, $deal->name);
-        $this->bitrixRestService->updateDeal($dealId, [BitrixRestService::DEAL_UTM5_ID_FIELD => $uid,]);
+        $this->bitrixRestService->updateDeal((int)$dealId, [BitrixRestService::DEAL_UTM5_ID_FIELD => $uid,]);
         $this->logger->info('User created', [
             'uid' => $uid, 'deal' => $deal->id,
             'phone' => $deal->phone, 'address' => $deal->address,
