@@ -56,7 +56,7 @@ class HttpClient
                 'body' => $parameters,
             ]);
             $data = json_decode($result->getContent(), true);
-            return $data['result'];
+            return is_int($data['result']) ? [$data['result']] : $data['result'];
         } catch (ClientException | RedirectionException | ServerException | TransportException $e) {
             $this->logger->error("Error get data from Bitrix24: {$e->getMessage()}", [$parameters, json_decode($result->getContent(false), true)]);
             $errorMsg = json_decode($result->getContent(false), true);

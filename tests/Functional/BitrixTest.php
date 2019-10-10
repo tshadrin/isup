@@ -1,9 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-
 namespace App\Tests\Functional;
-
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -47,6 +45,7 @@ class BitrixTest extends WebTestCase
             ),
             'the "Content-Type" header is "application/json"' // optional message shown on failure
         );
+        dump($client->getResponse()->getContent());
         $this->assertContains('error', $client->getResponse()->getContent());
         $this->assertContains('document_id not found', $client->getResponse()->getContent());
     }

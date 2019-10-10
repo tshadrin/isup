@@ -44,7 +44,7 @@ class BitrixRestService
         $deal_data =  $this->httpClient->getData(self::GET_DEAL_COMMAND, ["ID" => $id]);
         $deal_contact_data = $this->httpClient->getData(self::GET_CONTACT_COMMAND, ["ID" => $deal_data['CONTACT_ID'],]);
         return new Deal(
-            $deal_data['ID'],
+            (int)$deal_data['ID'],
             $deal_data[self::DEAL_STATUS_FIELD],
             (int)$deal_data[self::DEAL_UTM5_ID_FIELD],
             $deal_data[self::DEAL_ADDRESS_FIELD],

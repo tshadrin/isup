@@ -15,7 +15,7 @@ class Command
 
     public function __construct(array $document)
     {
-        Assert::count($document, 3);
+        Assert::count($document, 3, 'Parameter document_id not found');
         $this->document = $document;
     }
 }

@@ -46,7 +46,7 @@ class BitrixController extends AbstractController
             return $this->json(["result" => "success"]);
         } catch (\InvalidArgumentException | \DomainException $e) {
             $bitrixLogger->error($e->getMessage());
-            return $this->json(['result' => 'error']);
+            return $this->json(['result' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
@@ -63,7 +63,7 @@ class BitrixController extends AbstractController
             return $this->json(["result" => "success"]);
         } catch (\InvalidArgumentException | \DomainException $e) {
             $bitrixLogger->error($e->getMessage());
-            return $this->json(['result' => 'error']);
+            return $this->json(['result' => 'error', $e->getMessage()]);
         }
     }
 
