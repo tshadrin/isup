@@ -27,7 +27,7 @@ class Handler
     public function handle(Command $command): void
     {
         [,$dealId] = explode('_', $command->document[2]); //DEAL <NUM>
-        $deal = $this->bitrixRestService->getDeal($dealId);
+        $deal = $this->bitrixRestService->getDeal((int)$dealId);
         $this->logger->info("Remove user with deal {$command->document[2]}");
 
         if($this->isEmptyUTM5Id($deal)) {
