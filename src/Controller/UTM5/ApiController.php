@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Controller\UTM5;
 
+use App\Entity\UTM5\UserDataType;
+use App\Entity\UTM5\UserFillingInData;
+use App\Repository\UTM5\UserFillingInDataRepository;
 use App\Service\UTM5\CallRegister\Command;
 use App\Service\UTM5\CallRegister\Handler;
 use App\Service\UTM5\URFAService;
@@ -72,7 +75,8 @@ class ApiController extends AbstractController
      */
     public function changeEditableField(Request $request,
                                         URFAService $URFAService,
-                                        TranslatorInterface $translator): JsonResponse
+                                        TranslatorInterface $translator,
+                                        UserFillingInDataRepository $userFillingInDataRepository): JsonResponse
     {
         try {
             if ($request->request->has('name') &&
@@ -97,6 +101,12 @@ class ApiController extends AbstractController
                                     $phone_number,
                                     $request->request->getInt('pk')
                                 );
+                                $userFillingInData = new UserFillingInData(
+                                    $this->getUser(),
+                                    $request->request->getInt('pk'),
+                                    new UserDataType(UserDataType::PHONE)
+                                );
+                                $userFillingInDataRepository->save($userFillingInData);
                                 return $this->json(['result' => 'success', 'message' => $translator->trans('Number edit success'),]);
                             } else {
                                 return $this->json(['result' => 'error', 'message' => $translator->trans('Incorrect phone number'),]);
@@ -108,6 +118,12 @@ class ApiController extends AbstractController
                                     $phone_number,
                                     $request->request->getInt('pk')
                                 );
+                                $userFillingInData = new UserFillingInData(
+                                    $this->getUser(),
+                                    $request->request->getInt('pk'),
+                                    new UserDataType(UserDataType::PHONE)
+                                );
+                                $userFillingInDataRepository->save($userFillingInData);
                                 return $this->json(['result' => 'success', 'message' => $translator->trans('Number edit success'),]);
                             } else {
                                 return $this->json(['result' => 'error', 'message' => $translator->trans('Incorrect phone number'),]);
@@ -131,6 +147,12 @@ class ApiController extends AbstractController
                                 $email,
                                 $request->request->getInt('pk')
                             );
+                            $userFillingInData = new UserFillingInData(
+                                $this->getUser(),
+                                $request->request->getInt('pk'),
+                                new UserDataType(UserDataType::EMAIL)
+                            );
+                            $userFillingInDataRepository->save($userFillingInData);
                             return $this->json(['result' => 'success', 'message' => $translator->trans('Email updated')]);
                         } else {
                             return $this->json(['result' => 'error', 'message' => $translator->trans("Incorrect email")]);
@@ -144,6 +166,12 @@ class ApiController extends AbstractController
                                 $additionalPhone,
                                 $request->request->getInt('pk')
                             );
+                            $userFillingInData = new UserFillingInData(
+                                $this->getUser(),
+                                $request->request->getInt('pk'),
+                                new UserDataType(UserDataType::ADDITIONAL_PHONE)
+                            );
+                            $userFillingInDataRepository->save($userFillingInData);
                             return $this->json(['result' => 'success', 'message' => $translator->trans('Email updated')]);
                         } else {
                             return $this->json(['result' => 'error', 'message' => $translator->trans("Incorrect email")]);

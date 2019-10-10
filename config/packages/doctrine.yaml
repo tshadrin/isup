@@ -27,6 +27,7 @@ doctrine:
                 charset:  UTF8
         types:
             typical_call_group: 'App\Entity\UTM5\TypicalCallGroupType'
+            user_data_type: 'App\Entity\UTM5\UserDataTypeType'
         # configure these for your database server
         #driver: 'pdo_mysql'
         #server_version: '5.7'

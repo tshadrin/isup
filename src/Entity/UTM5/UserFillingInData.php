@@ -38,6 +38,11 @@ class UserFillingInData
      * @ORM\Column(type="datetime")
      */
     private $date;
+    /**
+     * @return UserDataType
+     * @ORM\Column(type="user_data_type", nullable=true)
+     */
+    private $userDataType;
 
     public function getId(): int
     {
@@ -59,10 +64,11 @@ class UserFillingInData
         return $this->date;
     }
 
-    public function __construct(User $user, int $utmId)
+    public function __construct(User $user, int $utmId, UserDataType $userDataType)
     {
         $this->date = new \DateTime();
         $this->user = $user;
         $this->utmId = $utmId;
+        $this->userDataType = $userDataType;
     }
 }
