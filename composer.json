@@ -16,6 +16,7 @@
         "centrifugal/phpcent": "^3.0",
         "friendsofsymfony/jsrouting-bundle": "^2.3",
         "friendsofsymfony/user-bundle": "^2.1",
+        "hackzilla/password-generator": "^1.4",
         "k-shym/urfa-client": "dev-sham-fix",
         "knplabs/knp-menu-bundle": "^2.2",
         "knplabs/knp-paginator-bundle": "^4.0",

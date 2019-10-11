@@ -48,8 +48,8 @@ class BitrixRestService
             $deal_data[self::DEAL_STATUS_FIELD],
             (int)$deal_data[self::DEAL_UTM5_ID_FIELD],
             $deal_data[self::DEAL_ADDRESS_FIELD],
-            $deal_contact_data['NAME'],
-            ltrim($deal_contact_data['PHONE'][0]['VALUE'], '+')
+            $deal_contact_data['PHONE'][0]['VALUE'],
+            $deal_contact_data['NAME']
         );
     }
 

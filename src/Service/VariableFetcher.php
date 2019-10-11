@@ -29,11 +29,11 @@ class VariableFetcher
 
     public function replaceVariables(array $variables): void
     {
-        if(!$this->hasVariables()) {
+        if (!$this->hasVariables()) {
             return;
         }
 
-        if(count(array_intersect_key($this->variables, $variables)) !== count($this->variables)) {
+        if (count(array_intersect_key($this->variables, $variables)) !== count($this->variables)) {
             throw new \InvalidArgumentException("Some variables not set");
         }
 
@@ -50,12 +50,26 @@ class VariableFetcher
 
     public function getVariables(): array
     {
-        $matches = [];
-        preg_match_all(self::VARIABLE_PATTERN, $this->text, $matches);
-        foreach ($matches as $num => $match) {
-            $matches[$num] = preg_replace('/\$\[|\]/', '', $match);
+        if (!is_null($this->variables)) {
+            $matches = [];
+            preg_match_all(self::VARIABLE_PATTERN, $this->text, $matches);
+            foreach ($matches as $num => $match) {
+                $matches[$num] = preg_replace('/\$\[|\]/', '', $match);
+            }
+            $this->variables = array_flip($matches[0]);
         }
-        $this->variables = array_flip($matches[0]);
         return $this->variables;
+    }
+
+    public function hasVariable(string $name): bool
+    {
+        return array_key_exists($name, $this->variables);
+    }
+    public function getVariable(string $name): string
+    {
+        if (!$this->hasVariable($name)) {
+            throw new \DomainException("Variable not found");
+        }
+        return $this->variables[$name];
     }
 }

@@ -20,9 +20,9 @@ class Deal
 
     public function __construct(int $id, string $status, int $utm5Id, string $address, string $phone, string $name)
     {
+        $this->id = $id;
         $this->status = $status;
         $this->utm5Id = $utm5Id;
-        $this->id = $id;
         $this->address = $address;
         $this->phone = $phone;
         $this->name = $name;

@@ -73,7 +73,7 @@ services:
             $newlkConnection: '@doctrine.dbal.newlk_connection'
             $smsLogger: '@monolog.logger.sms'
             $zabbixLogger: '@monolog.logger.alarm_zabbix'
-            $bitixLogger: '@monolog.logger.bitrix_create'
+            $bitrixLogger: '@monolog.logger.bitrix_create'
             $botPath: "%bot_path%"
             $bitrixMemberId: '%bitrix_member_id%'
             $addFirmParameters: '%add_firm%'
@@ -82,6 +82,7 @@ services:
             $SMSCParameters: '%smsc%'
             $bitrixCalendarParameters: '%bitrix_cal%'
             $URFAParameters: '%urfa%'
+            $smotreshka: '%env(SMOTRESHKA_TV_URL)%'
     cebe\markdown\MarkdownExtra:
     phpcent\Client:
       arguments:
@@ -95,6 +96,11 @@ services:
               arguments:
                   - '%env(REDIS_HOST)%'
                   - '%env(REDIS_PORT)%'
+    Hackzilla\PasswordGenerator\Generator\ComputerPasswordGenerator:
+        calls:
+            - method: setLength
+              arguments:
+                  - 7
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
             - '@Redis'

@@ -66,6 +66,8 @@ class UTM5User
     protected $managerNotice;
     /** @var string */
     protected $lifestreamLogin;
+    /** @var string */
+    protected $lifestreamId;
     /** @var int */
     protected $block;
     /** @var string */
@@ -184,6 +186,10 @@ class UTM5User
     public function getLifestreamLogin(): ?string
     {
         return $this->lifestreamLogin;
+    }
+    public function getLifestreamId(): ?string
+    {
+        return $this->lifestreamId;
     }
     public function getBlock(): string
     {
@@ -396,6 +402,10 @@ class UTM5User
     public function setLifestreamLogin(string $lifestreamLogin): void
     {
         $this->lifestreamLogin = $lifestreamLogin;
+    }
+    public function setLifestreamId(string $lifestreamId): void
+    {
+        $this->lifestreamId = $lifestreamId;
     }
     public function setBlock(int $block): void
     {

@@ -32,8 +32,17 @@ class Handler
         $this->bitrixRestService->updateDeal((int)$dealId, [BitrixRestService::DEAL_UTM5_ID_FIELD => $uid,]);
         $this->logger->info('User created', [
             'uid' => $uid, 'deal' => $deal->id,
-            'phone' => $deal->phone, 'address' => $deal->address,
+            'phone' => $this->normalizePhoneNumber($deal->phone), 'address' => $deal->address,
             'name' => $deal->name
         ]);
+    }
+
+    private function normalizePhoneNumber(string $phoneNumber): string
+    {
+        $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+        if (mb_strlen($phoneNumber) === 11 && $phoneNumber[0] === "8") {
+            $phoneNumber = mb_substr($phoneNumber, 1);
+        }
+        return $phoneNumber;
     }
 }

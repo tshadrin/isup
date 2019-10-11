@@ -280,6 +280,28 @@ class UserMapper
     }
 
     /**
+     * @param int $user_id
+     * @return string|null
+     */
+    public function getLifestreamId(int $user_id): ?string
+    {
+        try{
+            $stmt = $this->userPreparer->getLifestreamIdStmt();
+            $stmt->bindValue(':user_id', $user_id, ParameterType::INTEGER);
+            $stmt->execute();
+            if(1 === $stmt->rowCount()) {
+                return $stmt->fetch(FetchMode::COLUMN);
+            }
+            if($stmt->rowCount() > 1) {
+                throw new \DomainException($this->translator->trans("Too many results on lifesteam query"));
+            }
+            return null;
+        } catch (\Exception $e) {
+            throw new \DomainException($this->translator->trans("Routers data query error: %message%", ['%message%' => $e->getMessage()]));
+        }
+    }
+
+    /**
      * @param $user_id
      * @return bool
      */
@@ -380,7 +402,6 @@ class UserMapper
             if (2 === $stmt->rowCount()) {
                 return self::ADMIN_BLOCK;
             }
-            dump($stmt->fetchAll());exit;
         } catch (\Exception $e) {
             throw new \DomainException($this->translator->trans("Check user passport query error: %message%", ['%message%' => $e->getMessage()]));
         }
@@ -458,6 +479,9 @@ class UserMapper
         }
         if(!is_null($lifestreamLogin = $this->getLifestreamLogin($user->getId()))) {
             $user->setLifestreamLogin($lifestreamLogin);
+        }
+        if(!is_null($lifestreamId = $this->getLifestreamId($user->getId()))) {
+            $user->setLifestreamId($lifestreamId);
         }
         if(!is_null($additionalPhone = $this->getAdditionalPhone($user->getId()))) {
             $user->setAdditionalPhone($additionalPhone);
