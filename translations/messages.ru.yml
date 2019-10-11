@@ -373,10 +373,13 @@ juridical: 'Юр. лица'
 passport_form:
     placeholder:
         number: '1234-123456'
-        issued: 'дд.мм.гггг ПОЛНОЕ НАИМЕНОВАНИЕ С ПРОВЕРКОЙ'
+        issued: '11.09.2011 ПОЛНОЕ НАИМЕНОВАНИЕ С ПРОВЕРКОЙ'
         registrationAddress: 'ВЕРНЫЙ АДРЕС С ПРОВЕРКОЙ'
-        authorityCode: '000-000'
-        birthday: 'дд.мм.гггг'
+        authorityCode: '123-123'
+        birthday: '14.08.1945'
     help:
         issued: 'Необходимо проверить на <a href="https://dadata.ru/suggestions/#demo" target="_blank">datata.ru</a>'
         registrationAddress: 'Необходимо проверить на <a href="https://dadata.ru/suggestions/#demo" target="_blank">datata.ru</a>'
+        number: 'Формат 0000-000000'
+        authorityCode: 'Формат 000-000'
+        birthday: 'Формат дд.мм.гггг'

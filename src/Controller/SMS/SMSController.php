@@ -3,18 +3,14 @@ declare(strict_types=1);
 
 namespace App\Controller\SMS;
 
-use App\Entity\UTM5\UTM5User;
-use App\Service\Bitrix\HttpClient;
-use App\Service\SMS\SMSCSender;
 use App\Form\SMS\SmsTemplateForm;
+use App\Service\SMS\Send\Template\Handler;
 use App\Service\UTM5\UTM5DbService;
-use App\Service\VariableFetcher;
 use Hackzilla\PasswordGenerator\Generator\ComputerPasswordGenerator;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, RedirectResponse, Request, Response};
-use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -71,73 +67,31 @@ class SMSController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param SMSCSender $sender
-     * @return RedirectResponse
      * @Route("/sendbytemplate", name="_sendtemplate", methods={"POST"})
      * @IsGranted("ROLE_SUPPORT")
      */
-    public function sendSmsByTemplate(Request $request,
-                                      SMSCSender $sender,
-                                      VariableFetcher $variableFetcher,
-                                      UTM5DbService $UTM5DbService,
-                                      ComputerPasswordGenerator $computerPasswordGenerator,
-                                      string $smotreshka): RedirectResponse
+    public function sendSmsByTemplate(Request $request, Handler $handler): RedirectResponse
     {
         $form = $this->createForm(SmsTemplateForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $smsTemplateData = $form->getData();
-                $variableFetcher->setText($smsTemplateData->getSmstemplate()->getMessage());
-                if ($variableFetcher->hasVariables()) {
-                    try {
-                        $utmUser = $UTM5DbService->search((string)$smsTemplateData->getUtmId());
-                        $replacements = [ //all posible replacements
-                            'login' => $utmUser->getLogin(),
-                            'password' => $utmUser->getPassword(),
-                            'smotreshka_login' => $this->getLifestreamLogin($smotreshka, $utmUser),
-                            'smotreshka_password' => $computerPasswordGenerator->generatePassword(),
-                            'balance' => $utmUser->getBalance(),
-                            'req_payment' => $utmUser->getRequirementPayment(),
-                            'discount_date' => $utmUser->getDiscountDate(),
-                        ];
-                        $variableFetcher->replaceVariables($replacements);
-                        if ($variableFetcher->hasVariable('smotreshka_password')) {
-                            $smotreshkaPassword = $variableFetcher->getVariable('smotreshka_password');
-                            $hc = new CurlHttpClient();
-                            $result = $hc->request("POST", "{$smotreshka}/v2/accounts/{$utmUser->getLifestreamId()}/reset-password", [
-                                'body' => json_encode(['password' => $smotreshkaPassword]),
-                            ]);
-                            $response = json_decode($result->getContent(), true);
-                            if (!(array_key_exists('status', $response) && $response['status'] === "ok")) {
-                                throw new \DomainException("Status is not ok");
-                            }
-                        }
-                    } catch (\DomainException | \InvalidArgumentException $exception) {
-                        $this->addFlash("error", "Sms send error: {$exception->getMessage()}");
-                        return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
-                    }
+                try{
+                    $handler->handle($form->getData());
+                    $this->addFlash("notice", "Message sended");
+                } catch (\DomainException | \InvalidArgumentException $exception) {
+                    $this->addFlash("error", "Sms send error: {$exception->getMessage()}");
+                    return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $form->getData()->getUtmId()]);
                 }
-                $sender->send($smsTemplateData->getPhone(), $variableFetcher->getText());
-                $this->addFlash("notice", "Message sended");
             } else {
                 $errors = $form->getErrors(true);
                 foreach ($errors as $error) {
                     $this->addFlash('error', $error->getMessage());
                 }
             }
-            return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $smsTemplateData->getUtmId()]);
+            return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $form->getData()->getUtmId()]);
         }
         return $this->redirectToRoute("search");
-    }
-
-    private function getLifestreamLogin(string $url, UTM5User $UTM5User): string
-    {
-        $hc = new CurlHttpClient();
-        $rr = $hc->request("GET", "{$url}/v2/accounts/{$UTM5User->getLifestreamId()}");
-        $data = (json_decode($rr->getContent(), true));
-        return $data["username"];
     }
 
     /**
