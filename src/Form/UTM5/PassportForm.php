@@ -11,12 +11,12 @@ class PassportForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('userId', HiddenType::class);
-        $builder->add('number', TextType::class, [ 'required' => false,]);
-        $builder->add('issued', TextType::class, [ 'required' => false,]);
-        $builder->add('authorityCode', TextType::class, [ 'required' => false,]);
-        $builder->add('registrationAddress', TextType::class, [ 'required' => false, ]);
-        $builder->add('birthday', TextType::class, [ 'required' => false, ]);
+        $builder->add('userId', HiddenType::class,);
+        $builder->add('number', TextType::class, [ 'required' => false, 'attr' => ['placeholder' => 'passport_form.placeholder.number',]]);
+        $builder->add('issued', TextType::class, [ 'required' => false, 'help' => 'passport_form.help.issued', 'attr' => ['placeholder' => 'passport_form.placeholder.issued']]);
+        $builder->add('authorityCode', TextType::class, [ 'required' => false, 'attr' => ['placeholder' => 'passport_form.placeholder.authorityCode']]);
+        $builder->add('registrationAddress', TextType::class, [ 'required' => false, 'help' => 'passport_form.help.issued', 'attr' => ['placeholder' => 'passport_form.placeholder.registrationAddress']]);
+        $builder->add('birthday', TextType::class, [ 'required' => false, 'attr' => ['placeholder' => 'passport_form.placeholder.birthday']]);
         $builder->add('save',
         SubmitType::class,
         [

@@ -370,4 +370,13 @@ payment: 'Оплата'
 tv: 'ТВ'
 connection: 'Подключения'
 juridical: 'Юр. лица'
-
+passport_form:
+    placeholder:
+        number: '1234-123456'
+        issued: 'дд.мм.гггг ПОЛНОЕ НАИМЕНОВАНИЕ С ПРОВЕРКОЙ'
+        registrationAddress: 'ВЕРНЫЙ АДРЕС С ПРОВЕРКОЙ'
+        authorityCode: '000-000'
+        birthday: 'дд.мм.гггг'
+    help:
+        issued: 'Необходимо проверить на <a href="https://dadata.ru/suggestions/#demo" target="_blank">datata.ru</a>'
+        registrationAddress: 'Необходимо проверить на <a href="https://dadata.ru/suggestions/#demo" target="_blank">datata.ru</a>'

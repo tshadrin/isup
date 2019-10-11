@@ -56,9 +56,15 @@
         </h3>
         {{ form_row(form.userId) }}
         {{ form_row(form.number) }}
-        {{ form_row(form.issued) }}
+            {{ form_label(form.issued) }}
+        {{ form_widget(form.issued) }}
+            {{ form_errors(form.issued) }}
+            <small id="passport_form_issued_help" class="form-text text-muted">{{form.issued.vars.help|trans|raw }}</small>
         {{ form_row(form.authorityCode) }}
-        {{ form_row(form.registrationAddress) }}
+            {{ form_label(form.registrationAddress) }}
+            {{ form_widget(form.registrationAddress) }}
+            {{ form_errors(form.registrationAddress) }}
+            <small id="passport_form_issued_help" class="form-text text-muted">{{form.registrationAddress.vars.help|trans|raw }}</small>
         {{ form_row(form.birthday) }}
         <div class="form-group">
         {{ form_widget(form.save) }}
