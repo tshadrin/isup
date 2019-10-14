@@ -74,13 +74,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const hide_url = Routing.generate('ajax_showhide', {block_name: this.id, value: value});
             let response = fetch(hide_url, {
                 method: "GET",
-            })
-                .then(response => response.json())
+            }).then(response => response.json())
                 .then(function (data) {
                     if(data.result  === 'error')
                         alert("Ошибка при выполнении запроса.");
                 });
-        })
+        });
     });
 
     const confirm = document.querySelectorAll('[data-toggle="confirmation"]');
@@ -93,4 +92,23 @@ document.addEventListener('DOMContentLoaded', function () {
             btnOkClass: 'h-100 d-flex align-items-center btn btn-sm btn-primary btn-confirmation-sham'
         });
     });
+
+    const forms = document.querySelectorAll("form.task-create-form");
+    if(forms.length > 0) {
+        forms.forEach(function (form) {
+            form.addEventListener("submit", function (event) {
+                let response = fetch(
+                    this.action,
+                    {
+                        method: this.method,
+                        body: new FormData(this)
+                    })
+                    .then(response => response.json())
+                    .then(function (data) {
+                        console.log(data);
+                    });
+                event.preventDefault();
+            });
+        });
+    }
 });

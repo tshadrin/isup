@@ -70,6 +70,9 @@ class Handler
 
     private function getLifestreamLogin(string $url, UTM5User $UTM5User): string
     {
+        if(is_null($UTM5User->getLifestreamId())) {
+            return '';
+        }
         $response = $this->httpClient->request(
             "GET",
             "{$url}/v2/accounts/{$UTM5User->getLifestreamId()}"

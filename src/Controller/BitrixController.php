@@ -115,12 +115,12 @@ class BitrixController extends AbstractController
 
     /**
      * @IsGranted("ROLE_SUPPORT")
-     * @Route("/add-feedback-request", name=".add_feedback_request", methods={"GET"})
+     * @Route("/add-feedback-request", name=".add_feedback_request", methods={"POST"})
      */
     public function addFeedbackRequest(Request $request, Feedback\Handler $handler, BitrixRestService $bitrixRestService): JsonResponse
     {
         try {
-            $command = new Feedback\Command(419, "test");
+            $command = new Feedback\Command($request->request->getInt('utm5id'), $request->request->get('comment'));
             $handler->handle($command);
         } catch (\DomainException | \InvalidArgumentException $e) {
             return $this->json(["result" => "error", "message" => $e->getMessage()]);

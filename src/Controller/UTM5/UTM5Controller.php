@@ -118,7 +118,7 @@ class UTM5Controller extends AbstractController
                     $rows = 25;
                 $paged_users = $paginator->paginate($search_result,
                     $request->query->getInt('page', 1),
-                    $rows=='all'?count($search_result):$rows);
+                    $rows=='all'?count($search_result):(int)$rows);
                 $paged_users->setCustomParameters(['align' => 'center', 'size' => 'small',]);
                 return $this->render('Utm/find.html.twig', ['searchType' => $type, 'users' => $paged_users, 'rows' => $rows]);
             }

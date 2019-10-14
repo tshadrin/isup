@@ -1,12 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\SMS;
+namespace App\Controller;
 
 use App\Form\SMS\SmsTemplateForm;
 use App\Service\SMS\Send\Template\Handler;
-use App\Service\UTM5\UTM5DbService;
-use Hackzilla\PasswordGenerator\Generator\ComputerPasswordGenerator;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -104,19 +102,5 @@ class SMSController extends AbstractController
         if (0 !== $code) {
             throw new \DomainException("Ошибка при отправке сообщения через модем на номер {$phone}", 5);
         }
-    }
-
-    /**
-     * @return Response
-     * @Route("/one", name="_one", methods={"GET"})
-     */
-    public function test(string $smotreshka, UTM5DbService $UTM5DbService, ComputerPasswordGenerator $computerPasswordGenerator): Response
-    {
-        $phoneNumber = preg_replace('/[^0-9]/', '', '8(925)524-0539');
-        if (mb_strlen($phoneNumber) === 11 && $phoneNumber[0] === "8") {
-            $phoneNumber = mb_substr($phoneNumber, 1);
-        }
-        dump($phoneNumber);
-        exit;
     }
 }
