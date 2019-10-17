@@ -74,6 +74,7 @@ services:
             $smsLogger: '@monolog.logger.sms'
             $zabbixLogger: '@monolog.logger.alarm_zabbix'
             $bitrixLogger: '@monolog.logger.bitrix_create'
+            $oneSLogger: '@monolog.logger.one_s'
             $botPath: "%bot_path%"
             $bitrixMemberId: '%bitrix_member_id%'
             $addFirmParameters: '%add_firm%'

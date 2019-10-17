@@ -1,5 +1,5 @@
 monolog:
-    channels: ["sms", "alarm_zabbix", "bitrix_create"]
+    channels: ["sms", "alarm_zabbix", "bitrix_create", "one_s"]
     handlers:
         sms:
             type: stream
@@ -13,3 +13,7 @@ monolog:
             type: stream
             path: "%kernel.logs_dir%/bitrix_create.log"
             channels: ["bitrix_create"]
+        one_s:
+            type: stream
+            path: "%kernel.logs_dir%/1s.log"
+            channels: ["one_s"]

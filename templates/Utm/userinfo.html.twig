@@ -343,9 +343,10 @@
         </div>
         {{ form_end(smsForm) }}
         {% if user.juridical %}
+            <div class="form-group">
             <h5>Создание запроса в Битрикс</h5>
             <h6>Запрос обратной связи</h6>
-            <form method="POST" class="task-create-form" action="{{ path('bitrix.add_feedback_request') }}">
+            <form method="POST" class="task-create-form mb-3" action="{{ path('bitrix.add_feedback_request') }}">
                 <div class="form-row mt-2">
                     <input type="hidden" name="utm5id" value="{{ user.id }}">
                     <div class="col-sm-4">
@@ -380,6 +381,7 @@
                     </div>
                 </div>
             </form>
+            </div>
         {% endif %}
     </div>
 </div>
