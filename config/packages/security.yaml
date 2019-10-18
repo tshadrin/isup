@@ -10,6 +10,7 @@ security:
         ROLE_KNOWLEDGE_BASE_MODERATOR: ~
         ROLE_INTERCOMS: ~
         ROLE_SMS_ADMINISTRATOR: ~
+        ROLE_USERS_ADMINISTRATOR: ~
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:

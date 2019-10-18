@@ -306,6 +306,7 @@ commutators: 'Коммутаторы'
 'role_knowledge_base_moderator': 'Модератор базы знаний'
 'role_intercoms': 'Домофоны'
 'role_sms_administrator': 'Модератор смс шаблонов'
+'role_users_administrator': 'Управление пользователями'
 'admin_sms': 'Смс шаблоны'
 'Bitrix id': 'Идентификатор пользователя в Bitrix'
 #statistics
@@ -383,3 +384,5 @@ passport_form:
         number: 'Формат 0000-000000'
         authorityCode: 'Формат 000-000'
         birthday: 'Формат дд.мм.гггг'
+Internal Number: 'Внутренний номер'
+Bitrix Id: 'Идентификатор в Bitrix24'
