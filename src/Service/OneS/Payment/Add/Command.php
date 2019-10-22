@@ -16,11 +16,11 @@ class Command
 
     public function __construct(int $id, int $inn, float $amount)
     {
-        Assert::greaterThan(0, $inn);
+        Assert::greaterThan($inn, 0);
         $this->inn = $inn;
-        Assert::greaterThan(0, $id);
+        Assert::greaterThan($id, 0);
         $this->id = $id;
-        Assert::greaterThan(1, $amount);
+        Assert::greaterThan($amount, 1);
         $this->amount = $amount;
     }
 }
