@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Service\OneS\GetContragent\All;
 use App\Service\OneS\GetContragent\One;
+use App\Service\OneS\Payment;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,10 +52,21 @@ class OneSController extends AbstractController
 
     /**
      * @return JsonResponse
-     * @Route("/pay", name=".pay")
+     * @Route("/pay", name=".pay", methods={"POST"})
      */
-    public function pay(): JsonResponse
+    public function pay(Request $request, Payment\Add\Handler $handler, LoggerInterface $oneSLogger): JsonResponse
     {
-        return $this->json(['result' => 'success']);
+        try {
+            $command = new Payment\Add\Command(
+                $request->request->getInt('id', 0),
+                $request->request->getInt('inn', 0),
+                $request->request->getInt('amount', 0.0)
+            );
+            $handler->handle($command);
+            return $this->json(['result' => 'success']);
+        } catch (\Exception | \DomainException | \InvalidArgumentException $e ) {
+            $oneSLogger->error("Request from {$request->headers->get('x-forwarded-for')} with inn {$command->inn} and {$command->id} and amount {$command->amount} failed with error: {$e->getMessage()}");
+            return $this->json(['result' => 'error', 'description' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        }
     }
 }

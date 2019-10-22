@@ -386,3 +386,6 @@ passport_form:
         birthday: 'Формат дд.мм.гггг'
 Internal Number: 'Внутренний номер'
 Bitrix Id: 'Идентификатор в Bitrix24'
+Status List: 'Список статусов'
+Fullname: 'Полное имя'
+Sms Template Create: 'Создать новый шаблон CMC'

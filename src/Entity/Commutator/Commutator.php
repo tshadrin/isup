@@ -66,7 +66,7 @@ class Commutator
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -74,7 +74,7 @@ class Commutator
     /**
      * @return string
      */
-    public function getIp(): string
+    public function getIp(): ?string
     {
         return $this->ip;
     }
@@ -82,7 +82,7 @@ class Commutator
     /**
      * @return string
      */
-    public function getMac(): string
+    public function getMac(): ?string
     {
         return $this->mac;
     }
@@ -98,7 +98,7 @@ class Commutator
     /**
      * @return string
      */
-    public function getNotes(): string
+    public function getNotes(): ?string
     {
         return $this->notes;
     }

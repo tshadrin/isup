@@ -6,6 +6,7 @@ namespace App\Service\OneS\ReadModel;
 
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 
 class ContragentFetcher
 {
@@ -80,5 +81,21 @@ ORDER BY u.tax_number, u.id, uggl.group_id";
             throw new \DomainException("Results not found");
         }
         return $stmt->fetchAll();
+    }
+
+    public function checkByIdAndInn(int $id, int $inn): bool
+    {
+        $sql = "SELECT count(*) as count
+                FROM users
+                WHERE id=:id
+                  AND tax_number=:inn
+                  AND is_deleted=0";
+        $stmt = $this->UTM5Connection->prepare($sql);
+        $stmt->execute([':id' => $id, ':inn' => $inn]);
+
+        if ((int)$stmt->fetch(FetchMode::COLUMN) === 1) {
+            return true;
+        }
+        return false;
     }
 }
