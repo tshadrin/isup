@@ -5,19 +5,15 @@ namespace App\Repository\Phone;
 
 use App\Form\Phone\DTO\Filter;
 use App\Entity\Phone\Phone;
+use App\Repository\SaveAndFlush;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-/**
- * Class PhoneRepository
- * @package App\Repository\Phone
- */
 class PhoneRepository extends ServiceEntityRepository
 {
+    use SaveAndFlush;
+
     /** @var TranslatorInterface  */
     private $translator;
 
@@ -27,10 +23,6 @@ class PhoneRepository extends ServiceEntityRepository
         $this->translator = $translator;
     }
 
-    /**
-     * @param Filter $filter
-     * @return array
-     */
     public function getFilteredPhones(Filter $filter): array
     {
         $queryBuilder = $this->createQueryBuilder('p');
@@ -75,29 +67,10 @@ class PhoneRepository extends ServiceEntityRepository
         return $phone;
     }
 
-    /**
-     * Сохранение телефона
-     * @param Phone $phone
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function save(Phone $phone)
-    {
-        $this->getEntityManager()->persist($phone);
-    }
-
     public function delete(Phone $phone)
     {
         $phone->setDeleted(true);
         $this->save($phone);
-    }
-    /**
-     * Выполнение запроса
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function flush()
-    {
-        $this->getEntityManager()->flush();
     }
 
     public function getNew(): Phone

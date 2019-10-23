@@ -5,24 +5,19 @@ namespace App\Repository\Vlan;
 
 use App\Entity\Vlan\Vlan;
 use App\Form\Vlan\DTO\Filter;
+use App\Repository\SaveAndFlush;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-/**
- * Class VlanRepository
- * @package App\Repository\Vlan
- */
 class VlanRepository extends ServiceEntityRepository
 {
+    use SaveAndFlush;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Vlan::class);
     }
 
-    /**
-     * @param Filter $filter
-     * @return array
-     */
     public function getFilteredVlans(Filter $filter): array
     {
         $queryBuilder = $this->createQueryBuilder('v');
@@ -65,17 +60,6 @@ class VlanRepository extends ServiceEntityRepository
     }
 
     /**
-     * Сохранение телефона
-     * @param Vlan $phone
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function save(Vlan $vlan): void
-    {
-        $this->getEntityManager()->persist($vlan);
-    }
-
-    /**
-     * @param Vlan $vlan
      * @throws \Doctrine\ORM\ORMException
      */
     public function delete(Vlan $vlan): void
@@ -84,19 +68,6 @@ class VlanRepository extends ServiceEntityRepository
         $this->save($vlan);
     }
 
-    /**
-     * Выполнение запроса
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function flush(): void
-    {
-        $this->getEntityManager()->flush();
-    }
-
-    /**
-     * @return Vlan
-     */
     public function getNew(): Vlan
     {
         return new Vlan();

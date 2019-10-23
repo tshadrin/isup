@@ -93,6 +93,7 @@ class OrderController extends AbstractController
         try {
             $order->delete($this->getUser());
             $this->orderRepository->save($order);
+            $this->orderRepository->flush();
 
             $this->addFlash('notice', $this->translator->trans('Order %id% deleted', ["%id%" => $order->getId()]));
         } catch (\DomainException $e) {
@@ -118,6 +119,7 @@ class OrderController extends AbstractController
         try {
             $order->delete($this->getUser());
             $this->orderRepository->save($order);
+            $this->orderRepository->flush();
 
             return $this->json([
                 'result' => 'success',
@@ -145,6 +147,7 @@ class OrderController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $order =$form->getData();
             $this->orderRepository->save($order);
+            $this->orderRepository->flush();
 
             $this->addFlash('notice', 'order.order_created');
             if ($form['saveandlist']->isCLicked())
@@ -170,6 +173,7 @@ class OrderController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $order = $form->getData();
             $this->orderRepository->save($order);
+            $this->orderRepository->flush();
 
             $this->addFlash('notice', 'order.order_created');
             if ($form['saveandlist']->isCLicked())

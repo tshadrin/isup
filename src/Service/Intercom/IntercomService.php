@@ -10,24 +10,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
-
 class IntercomService
 {
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface  */
     private $translator;
-    /**
-     * @var PaginatorInterface
-     */
+    /** @var PaginatorInterface  */
     protected $paginator;
-    /**
-     * @var TaskRepository
-     */
+    /** @var TaskRepository  */
     private $taskRepository;
-    /**
-     * @var TokenStorageInterface
-     */
+    /** @var TokenStorageInterface  */
     private $tokenStorage;
 
     /**
@@ -76,6 +67,7 @@ class IntercomService
     public function saveTask(Task $task)
     {
         $this->taskRepository->save($task);
+        $this->taskRepository->flush();
     }
 
     /**

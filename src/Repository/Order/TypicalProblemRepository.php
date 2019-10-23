@@ -4,18 +4,16 @@ declare(strict_types=1);
 namespace App\Repository\Order;
 
 use App\Entity\Order\TypicalProblem;
-use Doctrine\ORM\EntityRepository;
+use App\Repository\SaveAndFlush;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
-class TypicalProblemRepository extends EntityRepository
+class TypicalProblemRepository extends ServiceEntityRepository
 {
-    public function save(TypicalProblem $typicalProblem): void
-    {
-        $this->getEntityManager()->persist($typicalProblem);
-        $this->flush();
-    }
+    use SaveAndFlush;
 
-    public function flush(): void
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->getEntityManager()->flush();
+        parent::__construct($registry, TypicalProblem::class);
     }
 }

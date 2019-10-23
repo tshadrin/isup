@@ -3,19 +3,17 @@ declare(strict_types=1);
 
 namespace App\Repository\Intercom;
 
+use App\Repository\SaveAndFlush;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use App\Entity\Intercom\{ Status, Task, Type };
 use App\Entity\User\User;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * Class TaskRepository
- * @package App\Repository\Intercom
- * @method Task find (integer $id)
- */
 class TaskRepository extends ServiceEntityRepository
 {
+    use SaveAndFlush;
+
     /** @var TranslatorInterface  */
     private $translator;
 
@@ -25,10 +23,6 @@ class TaskRepository extends ServiceEntityRepository
         $this->translator = $translator;
     }
 
-
-    /**
-     * @return array
-     */
     public function findAllNotDeleted(): array
     {
         $query = $this->createQueryBuilder('p')
@@ -43,40 +37,14 @@ class TaskRepository extends ServiceEntityRepository
         return $tasks;
     }
 
-    /**
-     * @param Task $task
-     */
     public function delete(Task $task): void
     {
         $task->setDeleted(true);
         $this->save($task);
-    }
-
-    /**
-     * @param Task $task
-     */
-    public function save(Task $task): void
-    {
-        try {
-            $this->getEntityManager()->persist($task);
-        } catch (\Exception $e) {
-            throw new \DomainException($this->translator->trans("Task delete error: %error%", ['%error%' => $e->getMessage()]));
-        }
         $this->flush();
     }
 
-    public function flush(): void
-    {
-        try {
-            $this->getEntityManager()->flush();
-        } catch (\Exception $e) {
-            throw new \DomainException($this->translator->trans("Task flush error: %error%", ['%error%' => $e->getMessage()]));
-        }
-    }
-
     /**
-     * @param User $user
-     * @return Task
      * @throws \Exception
      */
     public function getNew(User $user): Task

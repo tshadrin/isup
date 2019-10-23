@@ -5,9 +5,9 @@ namespace App\Repository;
 
 trait SaveAndFlush
 {
-    public function save(object $post): void
+    public function save(object $entity): void
     {
-        $this->getEntityManager()->persist($post);
+        $this->getEntityManager()->persist($entity);
     }
     public function flush(): void
     {
