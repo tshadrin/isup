@@ -15,17 +15,26 @@ jQuery(document).ready(function() {
     let editable_field =  jQuery('.x-editable');
     editable_field.editable({
         inputclass: 'form-control form-control-sm w-100',
-        escape:false
+        escape:false,
+        success: function(response, newValue) {
+            if('error' === response.result) {
+                return response.message;
+            }
+        },
+        error: function(response, newValue) {
+            if(404 === response.status) {
+                return "Order not found";
+            }
+        },
     });
     //автоматически изменять размер textarea
     editable_field.on('shown', function(e, editable) {
         if('textarea' === editable.options.type) {
-            editable.input.$input.val(this.dataset.value);
             var editable_order_field_textarea = document.querySelector('textarea');
             editable_order_field_textarea.addEventListener(
                 'focus',
                 function(){ autosize(editable_order_field_textarea); }
-                );
+            );
         }
     });
     editable_field.on('save', function(e, params) {

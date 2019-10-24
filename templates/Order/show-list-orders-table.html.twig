@@ -2,6 +2,7 @@
     {% set hbto = true %}
 {% endif %}
 {% set token = csrf_token('delete') %}
+{% set edit_token = csrf_token('edit') %}
 {% if app.session.get('hide_block_previlous_orders') is defined and app.session.get('hide_block_previlous_orders') == true %}
     {% set hbpo = true %}
 {% endif %}
@@ -74,7 +75,8 @@
                                   data-pk="{{ order.id }}"
                                   data-rows="0"
                                   data-name="comment"
-                                  data-url="{{ path('order.change_editable_field') }}"
+                                  data-params="{token: '{{ edit_token }}'}"
+                                  data-url="{{ path('order.edit.comment', {'order': order.id}) }}"
                             >{{ order.comment|markdown }}</div>
                         </div>
                     </div>
@@ -110,8 +112,9 @@
                                   data-value="{{ order.status_id }}"
                                   data-pk="{{ order.id }}"
                                   data-name="status"
+                                  data-params="{token: '{{ edit_token }}'}"
                                   data-source="{{ path('order.get_statuses') }}"
-                                  data-url="{{ path('order.change_editable_field') }}"
+                                  data-url="{{ path('order.edit.status', {'order': order.id }) }}"
                             ></div>
                         </div>
                     </div>

@@ -1,9 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Service\Order;
 
+use App\Entity\Intercom\Status;
+use App\Entity\User\User;
+use App\Repository\Intercom\StatusRepostory;
 use App\Repository\Order\OrderRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\UserRepository;
 use App\Entity\Order\Order;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -11,78 +15,66 @@ use App\Entity\UTM5\UTM5User;
 
 class OrderService
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface */
     private $translator;
-    /**
-     * @var TokenStorageInterface
-     */
-    private $token_storage;
-    /**
-     * @var OrderRepository
-     */
+    /** @var OrderRepository */
     private $orderRepository;
+    /** @var UserRepository */
+    private $userRepository;
+    /** @var User|string */
+    private $currentUser;
+    /** @var StatusRepostory */
+    private $statusRepostory;
 
-    /**
-     * OrderService constructor.
-     * @param EntityManagerInterface $em
-     * @param TranslatorInterface $translator
-     * @param TokenStorageInterface $token_storage
-     */
-    public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, TokenStorageInterface $token_storage, OrderRepository $orderRepository)
+    public function __construct(
+        TranslatorInterface $translator,
+        TokenStorageInterface $tokenStorage,
+        OrderRepository $orderRepository,
+        UserRepository $userRepository,
+        StatusRepostory $statusRepostory
+    )
     {
-        $this->em = $em;
         $this->translator = $translator;
-        $this->token_storage = $token_storage;
+        $this->currentUser = $tokenStorage->getToken()->getUser();
         $this->orderRepository = $orderRepository;
+        $this->userRepository = $userRepository;
+        $this->statusRepostory = $statusRepostory;
     }
 
     /**
-     * Изменение статуса заявки
-     * @param $order_id
-     * @param $status_id
      * @return mixed
      * @throws \DomainException
      */
-    public function changeOrderStatus($order_id, $status_id)
+    public function changeOrderStatus(int $orderId, $statusId): Order
     {
-        $order = $this->em->getRepository('App:Order\Order')->findOneById($order_id);
-        $status = $this->em->getRepository('App:Intercom\Status')->findOneById($status_id);
-        if($order) {
-            if ($status) {
+        if (($order = $this->orderRepository->findOneById($orderId)) instanceof Order) {
+            if (($status = $this->statusRepostory->findOneById($statusId)) instanceof Status) {
                 $order->setStatus($status);
-                $this->em->persist($order);
-                $this->em->flush();
+                $this->orderRepository->save($order);
+                $this->orderRepository->flush();
                 return $order;
             } else {
-                throw new \DomainException($this->translator->trans('status %status_id% not found', ['%status_is%' => $status_id]));
+                throw new \DomainException($this->translator->trans('Status %status_id% not found', ['%status_id%' => $statusId]));
             }
         } else {
-            throw new \DomainException($this->translator->trans('order not found with id %id%', ['%id%' => $order_id]));
+            throw new \DomainException($this->translator->trans('Order not found with id %id%', ['%id%' => $orderId]));
         }
     }
 
     /**
      * Изменение комментария заявки.
-     * @param $order_id
-     * @param $comment
      * @return mixed
      * @throws \DomainException
      */
     public function changeOrderComment($order_id, $comment)
     {
-        $order = $this->em->getRepository('App:Order\Order')->findOneById($order_id);
-        if($order) {
-                $order->setComment($comment);
-                $this->em->persist($order);
-                $this->em->flush();
-                return $order;
-
+        /** @var Order $order */
+        $order = $this->orderRepository->findOneById($order_id);
+        if ($order) {
+            $order->setComment($comment);
+            $this->orderRepository->save($order);
+            $this->orderRepository->flush();
+            return $order;
         } else {
             throw new \DomainException($this->translator->trans('order not found with id %id%', ['%id%' => $order_id]));
         }
@@ -97,14 +89,14 @@ class OrderService
      */
     public function changeOrderExecuted($order_id, $executed_id)
     {
-        $order = $this->em->getRepository('App:Order\Order')->findOneById($order_id);
-        if($order) {
-            if(0 == $executed_id) {
+        $order = $this->orderRepository->findOneById($order_id);
+        if ($order) {
+            if (0 === $executed_id) {
                 $order->deleteExecuted();
                 $this->saveOrder($order);
                 return $order;
             }
-            $executed = $this->em->getRepository('App:User\User')->findOneById($executed_id);
+            $executed = $this->userRepository->findOneById($executed_id);
             if ($executed) {
                 $order->setExecuted($executed);
                 $this->saveOrder($order);
@@ -122,19 +114,19 @@ class OrderService
      * поля select в списке заявок
      * @return array
      */
-    public function getUsersForFormSelect()
+    public function getUsersForFormSelect(): array
     {
         $users = [];
-        $u = $this->em->getRepository('App:User\User')->findBy(['onWork' => 1], ['fullName' => 'ASC']);
-        foreach ($u as $user) {
-            if (!array_key_exists($user->getRegion()->getDescription(), $users))
-                $users[$user->getRegion()->getDescription()] = [];
-            array_push($users[$user->getRegion()->getDescription()], ['value' => $user->getId(), 'text' => $user->getFullName(),]);
+        $workers = $this->userRepository->findBy(['onWork' => 1], ['fullName' => 'ASC']);
+        foreach ($workers as $worker) {
+            if (!array_key_exists($worker->getRegion()->getDescription(), $users))
+                $users[$worker->getRegion()->getDescription()] = [];
+            array_push($users[$worker->getRegion()->getDescription()], ['value' => $worker->getId(), 'text' => $worker->getFullName(),]);
         }
         $users_to_select = [];
         array_push($users_to_select, ['value' => '', 'text' => '',]);
-        foreach($users as $region => $u) {
-            array_push($users_to_select, ['text' => $region, 'children' => $u]);
+        foreach($users as $region => $workers) {
+            array_push($users_to_select, ['text' => $region, 'children' => $workers]);
         }
         return $users_to_select;
     }
@@ -146,7 +138,7 @@ class OrderService
      */
     public function getStatusesForFormSelect()
     {
-        $statuses = $this->em->getRepository('App:Intercom\Status')->findAll();
+        $statuses = $this->statusRepostory->findAll();
         $statuses_to_select = [];
         foreach($statuses as $status) {
             array_push($statuses_to_select, ['value' => $status->getId(), 'text' => $status->getDescription(),]);
@@ -156,24 +148,28 @@ class OrderService
 
     public function createByUTM5User(UTM5User $user, string $comment)
     {
+        if (!$this->currentUser instanceof User) {
+            throw new \DomainException("User is not logged in");
+        }
         $order = Order::createByUTM5User($user);
         $order->setComment($comment);
-        $order->setUser($this->token_storage->getToken()->getUser());
-        $status = $this->em->getRepository('App:Intercom\Status')->findOneByName('new');
+        $order->setUser($this->currentUser);
+        $status = $this->statusRepostory->findOneByName('new');
         $order->setStatus($status);
         return $order;
     }
 
     public function getLastOrders(UTM5User $user)
     {
-        return $this->em
-            ->getRepository('App:Order\Order')
-           ->findBy(['utmId' => $user->getId()],['id'=> 'DESC']);
+        return $this->orderRepository->findBy(
+            ['utmId' => $user->getId()],
+            ['id'=> 'DESC']
+        );
     }
 
-    public function saveOrder($order)
+    public function saveOrder(Order $order)
     {
-        $this->em->persist($order);
-        $this->em->flush();
+        $this->orderRepository->save($order);
+        $this->orderRepository->flush();
     }
 }

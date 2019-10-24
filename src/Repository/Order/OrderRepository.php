@@ -28,4 +28,11 @@ class OrderRepository extends ServiceEntityRepository
         $order->setUser($this->currentUser);
         return $order;
     }
+
+    public function findOneById(int $id): ?Order
+    {
+        /** @var Order $order */
+        $order = $this->findOneBy(['id' => $id, 'isDeleted' => 0]);
+        return $order;
+    }
 }

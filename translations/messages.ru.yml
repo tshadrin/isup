@@ -389,3 +389,8 @@ Bitrix Id: 'Идентификатор в Bitrix24'
 Status List: 'Список статусов'
 Fullname: 'Полное имя'
 Sms Template Create: 'Создать новый шаблон CMC'
+#Order edit
+Order Status updated: 'Статус заявки обновлен'
+Invalid token: 'Неправильный токен'
+Status %status_id% not found: 'Статус %status_id% не найден'
+Comment updated: 'Комментарий обновлен'

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class Status
  * @package App\Entity\Intercom
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\Intercom\StatusRepostory")
  * @ORM\Table(name="statuses")
  */
 class Status
@@ -37,49 +37,31 @@ class Status
      */
     protected $description;
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @param string $description
-     */
     public function setDescription(string $description): void
     {
         $this->description = $description;
@@ -95,9 +77,6 @@ class Status
         return self::STATUS_CANSEL === $this->name;
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return $this->getDescription();

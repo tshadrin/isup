@@ -10,14 +10,15 @@ use cebe\markdown\MarkdownExtra;
 use App\Form\{ Order\OrderForm, Rows, RowsForm };
 use App\ReadModel\Orders\ShowList\{ Filter, OrdersFetcher };
 use App\Repository\UTM5\PassportRepository;
-use App\Service\{ Order\OrderService, Order\ShowList, UTM5\UTM5DbService };
+use App\Service\{Order\OrderService,
+    Order\ShowList,
+    UTM5\UTM5DbService};
+use App\Service\Order\Edit;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\{ IsGranted, ParamConverter };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request, Session\Session };
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-
 
 /**
  * @Route("/order", name="order")
@@ -249,26 +250,8 @@ class OrderController extends AbstractController
                     FILTER_VALIDATE_REGEXP,
                     ['options' => ['regexp' => '/status|comment|executed|is_deleted/',],]
                 );
+
                 switch ($field) {
-                    case 'status':
-                        $order = $orderService->changeOrderStatus(
-                            $request->request->getInt('pk'),
-                            $request->request->getInt('value')
-                        );
-                        $data = ['id' => "#status-{$order->getId()}",
-                            'value' => $order->getStatus()->getDescription(),
-                            'message' => 'Статус заявки изменен.'];
-                        break;
-                    case 'comment':
-                        $orderService->changeOrderComment(
-                            $request->request->getInt('pk'),
-                            $request->request->get('value')
-                        );
-                        $data = [
-                            'message' => 'Комментарий обновлен.',
-                            'newValue' => $markdownExtra->parse($request->request->get('value')),
-                            ];
-                        break;
                     case 'executed':
                         $orderService->changeOrderExecuted(
                             $request->request->getInt('pk'),
@@ -304,5 +287,52 @@ class OrderController extends AbstractController
             $this->addFlash("error", "Incorrect filter value");
         }
         return $this->redirectToRoute("order");
+    }
+
+    /**
+     * @Route("/{order}/edit/status", name=".edit.status", methods={"POST"})
+     */
+    public function editStatus(Order $order, Request $request, Edit\Status\Handler $handler, TranslatorInterface $translator): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('edit', $request->request->get('token'))) {
+            return $this->json(["result" => "error", "message" => $translator->trans("Invalid token")]);
+        }
+
+        try {
+            $command = new Edit\Status\Command($order, $request->request->getInt('value'));
+            $handler->handle($command);
+        } catch (\InvalidArgumentException | \DomainException $e) {
+            return $this->json(["result" => "error", "message" => $e->getMessage()]);
+        }
+
+        return $this->json(['id' => "#status-{$order->getId()}",
+            'value' => $order->getStatus()->getDescription(),
+            'message' => $translator->trans("Order Status updated")]);
+    }
+
+    /**
+     * @Route("/{order}/edit/comment", name=".edit.comment", methods={"POST"})
+     */
+    public function editComment(Order $order,
+                                Request $request,
+                                Edit\Comment\Handler $handler,
+                                TranslatorInterface $translator,
+                                MarkdownExtra $markdownExtra): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('edit', $request->request->get('token'))) {
+            return $this->json(["result" => "error", "message" => $translator->trans("Invalid token")]);
+        }
+
+        try {
+            $command = new Edit\Comment\Command($order, $request->request->get('value'));
+            $handler->handle($command);
+        } catch (\InvalidArgumentException | \DomainException $e) {
+            return $this->json(["result" => "error", "message" => $e->getMessage()]);
+        }
+
+        return $this->json([
+            'newValue' => $markdownExtra->parse($request->request->get('value')),
+            'message' => $translator->trans("Comment updated"),
+            ]);
     }
 }
