@@ -96,9 +96,10 @@
                                  data-emptytext="Не назначена"
                                  data-value="{{ order.executed is not null ? order.executed : '' }}"
                                  data-pk="{{ order.id }}"
-                                 data-name="executed"
+                                 data-name="executor"
+                                 data-params="{token: '{{ edit_token }}'}"
                                  data-source="{{ path('order.get_employees') }}"
-                                 data-url="{{ path('order.change_editable_field') }}"
+                                 data-url="{{ path('order.edit.executor', {'order': order.id}) }}"
                             ></div>
                         </div>
                     </div>

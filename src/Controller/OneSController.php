@@ -66,7 +66,7 @@ class OneSController extends AbstractController
             return $this->json(['result' => 'success']);
         } catch (\Exception | \DomainException | \InvalidArgumentException $e ) {
             $oneSLogger->error("Request from {$request->headers->get('x-forwarded-for')} with inn {$request->request->getInt('inn')} and {$request->request->getInt('id')} and amount {$request->request->getInt('amount')} failed with error: {$e->getMessage()}");
-            return $this->json(['result' => 'error', 'description' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+            return $this->json(['result' => 'error', 'description' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 }

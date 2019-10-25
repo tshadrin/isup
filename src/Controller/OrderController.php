@@ -6,14 +6,10 @@ namespace App\Controller;
 use App\Entity\Order\Order;
 use App\Entity\UTM5\UTM5User;
 use App\Repository\Order\OrderRepository;
-use cebe\markdown\MarkdownExtra;
 use App\Form\{ Order\OrderForm, Rows, RowsForm };
-use App\ReadModel\Orders\ShowList\{ Filter, OrdersFetcher };
+use App\ReadModel\Orders\ShowList\Filter;
 use App\Repository\UTM5\PassportRepository;
-use App\Service\{Order\OrderService,
-    Order\ShowList,
-    UTM5\UTM5DbService};
-use App\Service\Order\Edit;
+use App\Service\Order\{Edit, OrderService, ShowList };
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\{ IsGranted, ParamConverter };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request, Session\Session };
@@ -165,7 +161,7 @@ class OrderController extends AbstractController
      * @Route("/{utm5_user_id}/add", name=".add_from_user", methods={"GET", "POST"}, requirements={"utm5_user_id": "\d+"})
      * @ParamConverter("UTM5User", options={"id" = "utm5_user_id"})
      */
-    public function addFromUser(UTM5User $UTM5User, Request $request, UTM5DbService $UTM5DbService): Response
+    public function addFromUser(UTM5User $UTM5User, Request $request): Response
     {
         $order = $this->orderService->createByUTM5User($UTM5User, $request->query->get('comment', ''));
 
@@ -191,7 +187,7 @@ class OrderController extends AbstractController
      * @Route("/{order_id}/print", name=".print", methods={"GET"}, requirements={"order_id": "\d+"})
      * @ParamConverter("order", options={"id" = "order_id"})
      */
-    public function print(Order $order, OrderService $orderService, PassportRepository $passportRepository): Response
+    public function print(Order $order, PassportRepository $passportRepository): Response
     {
         try {
             if(!is_null($order->getUtmId())) {
@@ -233,46 +229,6 @@ class OrderController extends AbstractController
     }
 
     /**
-     * Обработка запроса на изменение значения поля заявки
-     * В запросе должны содержаться имя поля, новое значение и id заявки
-     * @return JsonResponse|RedirectResponse
-     * @Route("/ajax/change-editable-filed", name=".change_editable_field", methods={"POST"})
-     */
-    public function changeEditableField(Request $request, OrderService $orderService, MarkdownExtra $markdownExtra): Response
-    {
-        try {
-            if ($request->request->has('name') &&
-                $request->request->has('value') &&
-                $request->request->has('pk')) {
-
-                $field = $request->request->filter(
-                    'name', [],
-                    FILTER_VALIDATE_REGEXP,
-                    ['options' => ['regexp' => '/status|comment|executed|is_deleted/',],]
-                );
-
-                switch ($field) {
-                    case 'executed':
-                        $orderService->changeOrderExecuted(
-                            $request->request->getInt('pk'),
-                            $request->request->get('value')
-                        );
-                        $data = ['message' => 'На выполнение задачи назначен другой сотрудник.'];
-                        break;
-                }
-                return $this->json($data);
-            } else {
-                $this->addFlash('notice', 'Ошибка при изменении заявки.');
-                return $this->redirectToRoute("order");
-            }
-        } catch (\DomainException $e) {
-            $this->addFlash('error', $e->getMessage());
-            $data['refresh'] = true;
-            return $this->json($data);
-        }
-    }
-
-    /**
      * @Route("", name=".rows", methods={"POST"})
      */
     public function rowsPerPage(Request $request, Session $session): RedirectResponse
@@ -295,44 +251,59 @@ class OrderController extends AbstractController
     public function editStatus(Order $order, Request $request, Edit\Status\Handler $handler, TranslatorInterface $translator): JsonResponse
     {
         if (!$this->isCsrfTokenValid('edit', $request->request->get('token'))) {
-            return $this->json(["result" => "error", "message" => $translator->trans("Invalid token")]);
+            return $this->json(["result" => "error", "message" => $translator->trans("Invalid token")], Response::HTTP_BAD_REQUEST);
         }
 
         try {
             $command = new Edit\Status\Command($order, $request->request->getInt('value'));
             $handler->handle($command);
         } catch (\InvalidArgumentException | \DomainException $e) {
-            return $this->json(["result" => "error", "message" => $e->getMessage()]);
+            return $this->json(["result" => "error", "message" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->json(['id' => "#status-{$order->getId()}",
-            'value' => $order->getStatus()->getDescription(),
-            'message' => $translator->trans("Order Status updated")]);
+        return $this->json([
+            'result' => 'success',
+            'message' => $translator->trans("Order status updated")]);
     }
 
     /**
      * @Route("/{order}/edit/comment", name=".edit.comment", methods={"POST"})
      */
-    public function editComment(Order $order,
-                                Request $request,
-                                Edit\Comment\Handler $handler,
-                                TranslatorInterface $translator,
-                                MarkdownExtra $markdownExtra): JsonResponse
+    public function editComment(Order $order, Request $request, Edit\Comment\Handler $handler, TranslatorInterface $translator): JsonResponse
     {
         if (!$this->isCsrfTokenValid('edit', $request->request->get('token'))) {
-            return $this->json(["result" => "error", "message" => $translator->trans("Invalid token")]);
+            return $this->json(["result" => "error", "message" => $translator->trans("Invalid token")], Response::HTTP_BAD_REQUEST);
         }
 
         try {
             $command = new Edit\Comment\Command($order, $request->request->get('value'));
             $handler->handle($command);
         } catch (\InvalidArgumentException | \DomainException $e) {
-            return $this->json(["result" => "error", "message" => $e->getMessage()]);
+            return $this->json(["result" => "error", "message" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
         return $this->json([
-            'newValue' => $markdownExtra->parse($request->request->get('value')),
-            'message' => $translator->trans("Comment updated"),
+            'result' => 'success',
+            'message' => $translator->trans("Order comment updated"),
             ]);
+    }
+
+    /**
+     * @Route("/{order}/edit/executor", name=".edit.executor", methods={"POST"})
+     */
+    public function editExecutor(Order $order, Request $request, Edit\Executor\Handler $handler, TranslatorInterface $translator): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('edit', $request->request->get('token'))) {
+            return $this->json(["result" => "error", "message" => $translator->trans("Invalid token")], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $command = new Edit\Executor\Command($order, $request->request->getInt('value'));
+            $handler->handle($command);
+        } catch (\InvalidArgumentException | \DomainException $e) {
+            return $this->json(["result" => "error", "message" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json(['result' => 'success', 'message' => $translator->trans("Order executor updated")]);
     }
 }
