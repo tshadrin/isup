@@ -90,6 +90,7 @@
                 <td id="td-{{ order.id }}">
                     <div class="row m-0 p-0">
                         <div class="col-12 m-0 p-0">
+                            {% if is_granted('ROLE_CHANGE_ORDER_EXECUTOR') %}
                             <div class="x-editable"
                                  data-mode="inline"
                                  data-type="select"
@@ -101,6 +102,9 @@
                                  data-source="{{ path('order.get_employees') }}"
                                  data-url="{{ path('order.edit.executor', {'order': order.id}) }}"
                             ></div>
+                            {% else %}
+                                {{ order.executed is not null ? order.executor_name : '' }}
+                            {% endif %}
                         </div>
                     </div>
                 </td>

@@ -2,6 +2,7 @@
     {% set isHidden = true %}
 {% endif %}
 {% set token = csrf_token('delete') %}
+{% set edit_token = csrf_token('edit') %}
 {% trans_default_domain("orders") %}
 <div class="last-orders-container table-responsive-sm table-responsive">
     <table class="last-orders-table orders-table generic-table">
@@ -41,14 +42,15 @@
                              data-pk="{{ order.id }}"
                              data-rows="0"
                              data-name="comment"
-                             data-url="{{ path('order.change_editable_field') }}"
+                             data-params="{token: '{{ edit_token }}'}"
+                             data-url="{{ path('order.edit.comment', {'order': order.id}) }}"
                         >{{ order.comment|markdown }}</div>
                     {% else %}
                         {{ order.comment }}
                     {% endif %}
                 </td>
                 <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>
-                    {% if order.isDeleted == false %}
+                    {% if order.isDeleted == false and is_granted("ROLE_CHANGE_ORDER_EXECUTOR") %}
                         <div class="x-editable-order"
                              data-mode="inline"
                              data-type="select"
@@ -56,8 +58,9 @@
                              data-value="{{ order.executed is not null ? order.executed.id : '' }}"
                              data-pk="{{ order.id }}"
                              data-name="executed"
+                             data-params="{token: '{{ edit_token }}'}"
                              data-source="{{ path('order.get_employees') }}"
-                             data-url="{{ path('order.change_editable_field') }}"
+                             data-url="{{ path('order.edit.status', {'order': order.id}) }}"
                         ></div>
                     {% else %}
                         {{ order.executed is not empty?order.executed.fullName:'Nothing processed this order'|trans }}
@@ -71,8 +74,9 @@
                              data-value="{{ order.status.id }}"
                              data-pk="{{ order.id }}"
                              data-name="status"
+                             data-params="{token: '{{ edit_token }}'}"
                              data-source="{{ path('order.get_statuses') }}"
-                             data-url="{{ path('order.change_editable_field') }}"
+                             data-url="{{ path('order.edit.status', {'order': order.id}) }}"
                         ></div>
                     {% else %}
                         {{ order.status }}

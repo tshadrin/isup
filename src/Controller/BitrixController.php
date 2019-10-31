@@ -125,6 +125,7 @@ class BitrixController extends AbstractController
         } catch (\DomainException | \InvalidArgumentException $e) {
             return $this->json(["result" => "error", "message" => $e->getMessage()]);
         }
+
         return $this->json(['result' => 'success']);
     }
 }

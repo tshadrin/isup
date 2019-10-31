@@ -13,19 +13,20 @@ class OrderRepository extends ServiceEntityRepository
 {
     use SaveAndFlush;
 
-    /** @var object|string  */
-    private $currentUser;
+    /** @var TokenStorageInterface  */
+    private $tokenStorage;
 
     public function __construct(ManagerRegistry $registry, TokenStorageInterface $tokenStorage)
     {
         parent::__construct($registry, Order::class);
-        $this->currentUser = $tokenStorage->getToken()->getUser();
+
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function getNew(): Order
     {
         $order = new Order();
-        $order->setUser($this->currentUser);
+        $order->setUser($this->tokenStorage->getToken()->getUser());
         return $order;
     }
 

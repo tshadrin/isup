@@ -32,9 +32,10 @@ class OrdersFetcher
     {
         $queryBuilder = $this->connection->createQueryBuilder();
         $queryBuilder
-            ->select("o.*, c.full_name as created_user_name, s.description as status")
+            ->select("o.*, c.full_name as created_user_name, s.description as status, u.full_name as executor_name")
             ->from("orders", 'o')
             ->innerJoin("o", "userrs", "c", "o.user_id = c.id")
+            ->leftJoin("o", "userrs", "u", "o.executed = u.id")
             ->join("o", 'statuses', 's', "o.status_id = s.id");
 
         if (!is_null($filter->text)) {

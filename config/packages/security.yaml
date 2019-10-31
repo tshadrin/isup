@@ -11,6 +11,7 @@ security:
         ROLE_INTERCOMS: ~
         ROLE_SMS_ADMINISTRATOR: ~
         ROLE_USERS_ADMINISTRATOR: ~
+        ROLE_CHANGE_ORDER_EXECUTOR: ~
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:

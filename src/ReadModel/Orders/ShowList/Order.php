@@ -40,6 +40,8 @@ class Order
     public $created_user_name;
     /** @var bool  */
     public $emptyPassport = false;
+    /** @var string */
+    public $executor_name;
 
     public function isUtm5Order(): bool
     {

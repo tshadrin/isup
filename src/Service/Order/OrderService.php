@@ -21,8 +21,8 @@ class OrderService
     private $orderRepository;
     /** @var UserRepository */
     private $userRepository;
-    /** @var User|string */
-    private $currentUser;
+    /** @var TokenStorageInterface  */
+    private $tokenStorage;
     /** @var StatusRepostory */
     private $statusRepostory;
 
@@ -35,7 +35,7 @@ class OrderService
     )
     {
         $this->translator = $translator;
-        $this->currentUser = $tokenStorage->getToken()->getUser();
+        $this->tokenStorage = $tokenStorage;
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->statusRepostory = $statusRepostory;
@@ -148,12 +148,12 @@ class OrderService
 
     public function createByUTM5User(UTM5User $user, string $comment)
     {
-        if (!$this->currentUser instanceof User) {
+        if (!$this->tokenStorage->getToken()->getUser() instanceof User) {
             throw new \DomainException("User is not logged in");
         }
         $order = Order::createByUTM5User($user);
         $order->setComment($comment);
-        $order->setUser($this->currentUser);
+        $order->setUser($this->tokenStorage->getToken()->getUser());
         $status = $this->statusRepostory->findOneByName('new');
         $order->setStatus($status);
         return $order;

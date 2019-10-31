@@ -307,6 +307,7 @@ commutators: 'Коммутаторы'
 'role_intercoms': 'Домофоны'
 'role_sms_administrator': 'Модератор смс шаблонов'
 'role_users_administrator': 'Управление пользователями'
+'role_change_order_executor': 'Смена исполнителя заявок'
 'admin_sms': 'Смс шаблоны'
 'Bitrix id': 'Идентификатор пользователя в Bitrix'
 #statistics
