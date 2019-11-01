@@ -87,7 +87,18 @@ jQuery(document).ready(function() {
     var editable_order_field = jQuery('.x-editable-order');
     editable_order_field.editable({
         inputclass: 'form-control form-control-sm w-100',
-        escape: false
+        escape: false,
+        success: function(response, newValue) {
+            if('error' === response.result) {
+                return response.message;
+            }
+        },
+        error: function(response, newValue) {
+            if(404 === response.status) {
+                return "Order not found";
+            }
+            return response.responseJSON.message;
+        },
     });
     /**
      * автоматически раздвигать textarea

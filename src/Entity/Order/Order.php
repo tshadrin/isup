@@ -327,7 +327,7 @@ class Order
     /**
      * @param User $executed
      */
-    public function setExecuted(User $executed): void
+    public function setExecuted(?User $executed): void
     {
         $this->executed = $executed;
     }

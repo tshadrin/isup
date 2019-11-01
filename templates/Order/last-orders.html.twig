@@ -60,7 +60,7 @@
                              data-name="executed"
                              data-params="{token: '{{ edit_token }}'}"
                              data-source="{{ path('order.get_employees') }}"
-                             data-url="{{ path('order.edit.status', {'order': order.id}) }}"
+                             data-url="{{ path('order.edit.executor', {'order': order.id}) }}"
                         ></div>
                     {% else %}
                         {{ order.executed is not empty?order.executed.fullName:'Nothing processed this order'|trans }}

@@ -27,12 +27,16 @@ class Handler
 
     public function handle(Command $command): void
     {
-        if (($executor = $this->userRepository->findOneBy(['id' => $command->executorId])) instanceof User) {
-            $command->order->setExecuted($executor);
-            $this->orderRepository->save($command->order);
-            $this->orderRepository->flush();
+        if($command->executorId === 0)  {
+            $command->order->setExecuted(null);
         } else {
-            throw new \DomainException($this->translator->trans('Executor %executor_id% not found', ['%executor_id%' => $command->executorId]));
+            if (($executor = $this->userRepository->findOneBy(['id' => $command->executorId])) instanceof User) {
+                $command->order->setExecuted($executor);
+            } else {
+                throw new \DomainException($this->translator->trans('Executor %executor_id% not found', ['%executor_id%' => $command->executorId]));
+            }
         }
+        $this->orderRepository->save($command->order);
+        $this->orderRepository->flush();
     }
 }
