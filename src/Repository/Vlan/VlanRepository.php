@@ -60,6 +60,38 @@ class VlanRepository extends ServiceEntityRepository
     }
 
     /**
+     * Поиск неудаленного VLAN по id
+     * @param int $id
+     * @return Vlan
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneByNumber(int $number): Vlan
+    {
+        $query = $this->createQueryBuilder('v')
+            ->where('v.deleted = 0')
+            ->andWhere('v.number = :number')
+            ->setParameter(':number', $number)
+            ->getQuery();
+        if (!$vlan = $query->getOneOrNullResult()) {
+            throw new \DomainException("Vlan not found.");
+        }
+        return $vlan;
+    }
+
+    public function findAllNotDeleted(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('v');
+        $queryBuilder->andWhere('v.deleted = 0')
+            ->orderBy('v.number', 'ASC');
+
+        $query = $queryBuilder->getQuery();
+        if (!$vlans = $query->getResult()){
+            throw new \DomainException("VLans not found");
+        }
+        return $vlans;
+    }
+
+    /**
      * @throws \Doctrine\ORM\ORMException
      */
     public function delete(Vlan $vlan): void

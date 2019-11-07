@@ -94,6 +94,9 @@ class Vlan
      */
     public function getPoints(): array
     {
+        if(is_string($this->points)) { //hack
+            $this->points = [$this->points];
+        }
         return $this->points;
     }
 

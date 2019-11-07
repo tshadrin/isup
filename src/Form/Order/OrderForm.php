@@ -110,7 +110,8 @@ class OrderForm  extends AbstractType
                     'group_by' => 'region',
                     'label' => 'order.form.executed',
                     'class' => "App\Entity\User\User",
-                    'required' => false,
+                    'required' => true,
+                    'placeholder' => 'not set',
                     'query_builder' => function (EntityRepository $er) {
                         return $er->createQueryBuilder('u')
                             ->where('u.onWork = 1')
@@ -118,6 +119,7 @@ class OrderForm  extends AbstractType
                             ->orderBy('u.region', 'ASC')
                             ->orderBy('u.fullName', 'ASC');
                     },
+                    'data' => '',
                     'attr' => [
                         'class' => 'form-control',
                     ],

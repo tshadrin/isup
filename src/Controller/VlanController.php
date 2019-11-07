@@ -7,6 +7,7 @@ use App\Entity\Vlan\Vlan;
 use App\Form\Vlan\{DTO\Filter, FilterForm, VlanForm};
 use App\Repository\Vlan\VlanRepository;
 use App\Service\Vlan\PagedVlans\{ Command, Handler };
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,9 +15,6 @@ use Symfony\Component\HttpFoundation\{ Request, Response, RedirectResponse, Sess
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class VlanController
- * @package Mainbundle\Controller\Vlan
- * @IsGranted("ROLE_SUPPORT")
  * @Route("/vlan", name="vlan")
  */
 class VlanController extends AbstractController
@@ -27,6 +25,7 @@ class VlanController extends AbstractController
     /**
      * @return Response
      * @Route("", name="", methods={"GET"})
+     * @IsGranted("ROLE_SUPPORT")
      */
     public function index(Request $request, Session $session, Handler $handler): Response
     {
@@ -59,6 +58,7 @@ class VlanController extends AbstractController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/add", name=".add", methods={"GET", "POST"})
+     * @IsGranted("ROLE_SUPPORT")
      */
     public function add(Request $request, VlanRepository $vlanRepository): Response
     {
@@ -81,6 +81,7 @@ class VlanController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @Route("/{vlan_id}/edit", name=".edit", methods={"GET", "POST"}, requirements={"vlan_id": "\d+"})
      * @ParamConverter("vlan", options={"id" = "vlan_id"})
+     * @IsGranted("ROLE_SUPPORT")
      */
     public function edit(Vlan $vlan, Request $request, VlanRepository $vlanRepository): Response
     {
@@ -122,5 +123,36 @@ class VlanController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
         return $this->redirectToRoute('vlan');
+    }
+
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @Route("/get/{number}", name=".get", methods={"GET","POST"}, requirements={"number": "\d+"})
+     * @Entity("vlan",  expr="repository.findOneByNumber(number)")
+     * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
+     */
+    public function getVlan(Vlan $vlan, Request $request, VlanRepository $vlanRepository): Response
+    {
+        return $this->json(['number' => $vlan->getNumber(), 'name' => $vlan->getName(), 'points' => $vlan->getPoints()]);
+    }
+
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @Route("/get/all", name=".get.all", methods={"GET","POST"})
+     * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
+     */
+    public function getVlans(Request $request, VlanRepository $vlanRepository): Response
+    {
+        $v = [];
+        /** @var Vlan[] $vlans */
+        $vlans = $vlanRepository->findAllNotDeleted();
+        foreach ($vlans as $vlan) {
+            $v[] = ['number' => $vlan->getNumber(), 'name' => $vlan->getName(), 'points' => $vlan->getPoints()];
+        }
+        return $this->json($v);
     }
 }
