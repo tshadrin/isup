@@ -132,6 +132,7 @@ order.placeholder.ip: 'IP адрес...'
 order.placeholder.comment: комментарий...
 order.placeholder.phone: 'введите номер...'
 order.order_created: 'Заявка создана'
+order.order_saved: 'Задача сохранена'
 'order.print.title %num%': 'Isup | Печать заявки %num%'
 'Need to update client passport data': "Необходимо обновить паспортные данные клиента"
 order.print.back: Вернуться

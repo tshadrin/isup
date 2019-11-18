@@ -18,7 +18,7 @@
         <thead {{ isHidden is defined ? 'class="d-none"' }}>
         <tr>
             <th>{{ 'Number'|trans }}</th>
-            <th>{{ 'Creation date'|trans }}</th>
+            <th>{{ 'Created'|trans }}</th>
             <th>{{ 'Comment'|trans }}</th>
             <th>{{ 'Performed'|trans }}</th>
             <th>{{ 'Status'|trans }}</th>
@@ -30,8 +30,14 @@
         <tbody {{ isHidden is defined ? 'class="d-none"' }}>
         {% for order in orders %}
             <tr>
-                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>{{ order.id }}</td>
-                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>{{ order.created|date('d-m-Y')}}</td>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>
+                    {% if order.isDeleted == false %}
+                        <a class="content-link" href="{{ path('order.print', {'order_id': order.id}) }}">
+                    {% endif %}
+                        {{ order.id }}
+                    {% if order.isDeleted == false %}</a>{% endif %}
+                </td>
+                <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>{{ order.user }} {{ order.created|date('d-m-Y')}}</td>
                 <td {% if order.isDeleted == false %}class="{{ order.isActual?'bg-success':'bg-danger' }}"{% endif %}>
                     {% if order.isDeleted == false %}
                         <div class="x-editable-order"
@@ -86,6 +92,12 @@
                     {% if order.isDeleted %}
                         {{ order.deletedId is not null ? order.deletedId.fullName : 'No deleted user found'|trans }}
                     {% else %}
+                        <div class="edit-button-link m-0 pt-1 pb-1 text-nowrap">
+                            <a class="btn btn-sm btn-primary-sham text-white pl-2 pr-2 m-0" href="{{ path('order.print', {'order_id': order.id}) }}">
+                                <i class="fa fa-print" aria-hidden="true"></i>
+                                Печать
+                            </a>
+                        </div>
                         {% if is_granted('ROLE_ORDER_MODERATOR') %}
                             <div class="edit-button-link m-0 pt-1 text-nowrap">
                                 <form action="{{ path('order.delete', {'order_id': order.id }) }}" class="delete-order-form" method="post">

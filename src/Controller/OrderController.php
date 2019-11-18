@@ -13,6 +13,7 @@ use App\Service\Order\{Edit, OrderService, ShowList };
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\{ IsGranted, ParamConverter };
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ JsonResponse, RedirectResponse, Response, Request, Session\Session };
+use Symfony\Component\Form\Form;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -305,5 +306,29 @@ class OrderController extends AbstractController
         }
 
         return $this->json(['result' => 'success', 'message' => $translator->trans("Order executor updated")]);
+    }
+
+    /**
+     * @return RedirectResponse|Response
+     * @Route("/{order}/edit", name=".edit", methods={"GET", "POST"})
+     */
+    public function edit(Order $order, Request $request): Response
+    {
+        $form = $this->createForm(OrderForm::class, $order);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $order =$form->getData();
+            $this->orderRepository->save($order);
+            $this->orderRepository->flush();
+
+            $this->addFlash('notice', 'order.order_saved');
+            if ($form['saveandlist']->isCLicked())
+                return $this->redirectToRoute('order');
+            if ($form['saveandback']->isCLicked())
+                return $this->redirectToRoute('search.by.data',
+                    ['type' => 'id', 'value' => $order->getUtmId(),]);
+        }
+        return $this->render('Order/order_form.html.twig', ['form' => $form->createView(),]);
     }
 }

@@ -82,7 +82,7 @@ class Order
     /**
      * Пользователь выполняющий заявку
      * @var User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", fetch="EAGER")
      * @ORM\JoinColumn(name="executed", referencedColumnName="id", nullable=true)
      */
     private $executed;
