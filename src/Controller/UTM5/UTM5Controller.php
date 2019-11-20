@@ -9,7 +9,7 @@ use App\Repository\UTM5\CallRepository;
 use App\Repository\UTM5\UserFillingInDataRepository;
 use App\Entity\UTM5\{Call, UserDataType, UserFillingInData, UTM5User, Passport};
 use App\Event\UTM5UserFoundEvent;
-use App\Form\SMS\{ SmsTemplateForm, SmsTemplateData };
+use App\Form\SMS\{ SmsTemplateForm, SmsTemplateDTO };
 use App\Form\UTM5\{PassportForm, PassportFormData, TypicalCallForm, UTM5UserCommentForm};
 use App\Service\Bitrix\Calendar\CalendarInterface;
 use App\Service\Bot\Chain;
@@ -96,10 +96,13 @@ class UTM5Controller extends AbstractController
                 $comment->setUtmId($search_result->getId());
                 $form = $this->createForm(UTM5UserCommentForm::class, $comment);
                 $form->handleRequest($request);
-                $smsTemplateData = new SmsTemplateData();
-                $smsTemplateData->setUtmId($search_result->getId());
-                $smsTemplateData->setPhone($search_result->getMobilePhone());
-                $smsTemplateForm = $this->createForm(SmsTemplateForm::class, $smsTemplateData);
+                $smsTemplateForm = $this->createForm(
+                    SmsTemplateForm::class,
+                    SmsTemplateDTO::create( //tdo
+                        $search_result->getId(), //utm5id
+                        $search_result->getMobilePhone()->getValue() //mobile phone
+                    )
+                );
                 $smsTemplateForm->handleRequest($request);
                 $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();

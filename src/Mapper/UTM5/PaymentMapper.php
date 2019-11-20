@@ -36,7 +36,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM UTM5.payment_transactions p
 				INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -47,7 +48,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2019 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -58,7 +60,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2018_2 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -69,7 +72,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2018 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -94,7 +98,7 @@ class PaymentMapper
                 $payments = new PaymentCollection();
                 foreach($data as $row) {
                     $payment = new Payment($row['amount'], \DateTimeImmutable::createFromFormat("U", $row['payment_date']),
-                        (int)$row['transaction_number'], $row['method'], $row['receive'], $row['user_comment']);
+                        (int)$row['transaction_number'], $row['method'], $row['receive'], $row['user_comment'], $row['admin_comment']);
                     $payments->add($payment);
                 }
                 return $payments;
@@ -116,7 +120,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM UTM5.payment_transactions p
 				INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -127,7 +132,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2019 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -138,7 +144,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2018_2 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -149,7 +156,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2018 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -160,7 +168,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2016_2 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -171,7 +180,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2016_1 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -182,7 +192,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2015_2 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -193,7 +204,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2015_1 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -204,7 +216,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2014 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -215,7 +228,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2013_1 p
                 INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -226,7 +240,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2012_2 p
 				INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive
@@ -237,7 +252,8 @@ class PaymentMapper
                        p.payment_ext_number AS transaction_number,
                        pm.name AS method,
                        s.login AS receive,
-                       p.comments_for_user AS user_comment
+                       p.comments_for_user AS user_comment,
+                       p.comments_for_admins AS admin_comment
                 FROM archive.pt_2012_1 p
 				INNER JOIN UTM5.payment_methods pm ON pm.id=p.method
                 INNER JOIN UTM5.system_accounts s ON s.id=p.who_receive

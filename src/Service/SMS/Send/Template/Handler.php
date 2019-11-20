@@ -6,7 +6,7 @@ namespace App\Service\SMS\Send\Template;
 
 
 use App\Entity\UTM5\UTM5User;
-use App\Form\SMS\SmsTemplateData;
+use App\Form\SMS\SmsTemplateDTO;
 use App\Service\SMS\SenderInterface;
 use App\Service\UTM5\UTM5DbService;
 use App\Service\VariableFetcher;
@@ -43,7 +43,7 @@ class Handler
         $this->httpClient = $httpClient;
     }
 
-    public function handle(SmsTemplateData $smsTemplateData): void
+    public function handle(SmsTemplateDTO $smsTemplateData): void
     {
         $this->variableFetcher->setText($smsTemplateData->getSmstemplate()->getMessage());
         if ($this->variableFetcher->hasVariables()) {

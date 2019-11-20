@@ -223,7 +223,7 @@ class UTM5User
         }
         return null;
     }
-    public function getMobilePhone(): ?string
+    public function getMobilePhone(): ?MobilePhone
     {
         if(array_key_exists('mobile', $phones = $this->getPhones())) {
             return $phones['mobile'];
@@ -436,7 +436,7 @@ class UTM5User
         $this->juridical = $juridical;
     }
     /** custom setters */
-    public function setMobilePhone(string $phone): void
+    public function setMobilePhone(MobilePhone $phone): void
     {
         $this->phones['mobile'] = $phone;
     }

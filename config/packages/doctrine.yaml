@@ -13,6 +13,7 @@ doctrine:
                 driver:   pdo_mysql
                 url: '%env(resolve:ISUP_DATABASE_URL)%'
                 charset:  UTF8
+                server_version: '5.5'
             sberbank:
                 driver:   pdo_mysql
                 url: '%env(resolve:SBERBANK_DATABASE_URL)%'

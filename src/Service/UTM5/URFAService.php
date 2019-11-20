@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\UTM5;
 
+use App\Entity\UTM5\MobilePhone;
 use App\Entity\UTM5\Passport;
 use App\Entity\UTM5\UTM5UrfaUser;
 use ErrorException;
@@ -93,21 +94,26 @@ class URFAService
         $user = $this->getUrfa()->rpcf_get_userinfo(['user_id' => $id]);
         // hack to save additional fields
         $user['parameters_count'] = $user['parameters_size'];
-        if (array_key_exists('user_id', $user))
+        if (array_key_exists('user_id', $user)) {
             return $user;
+        }
         throw new \DomainException("User not found");
     }
 
-    /**
-     * @param string $phone
-     * @param int $id
-     */
     public function editMobilePhone(string $phone, int $id): void
     {
         $user = $this->getUserInfo($id);
         $user['mob_tel'] = $phone;
         $this->urfa->rpcf_edit_user_new($user);
     }
+
+    public function addComment(string $comment, int $id): void
+    {
+        $user = $this->getUserInfo($id);
+        $user['comments'] .= "\n$comment";
+        $this->urfa->rpcf_edit_user_new($user);
+    }
+
     /**
      * @param string $phone
      * @param int $id

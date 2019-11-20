@@ -79,7 +79,7 @@ class SMSController extends AbstractController
                     $this->addFlash("notice", "Message sended");
                 } catch (\DomainException | \InvalidArgumentException $exception) {
                     $this->addFlash("error", "Sms send error: {$exception->getMessage()}");
-                    return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $form->getData()->getUtmId()]);
+                    return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $form->getData()->utmId]);
                 }
             } else {
                 $errors = $form->getErrors(true);
@@ -87,7 +87,7 @@ class SMSController extends AbstractController
                     $this->addFlash('error', $error->getMessage());
                 }
             }
-            return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $form->getData()->getUtmId()]);
+            return $this->redirectToRoute("search.by.data", ['type' => 'id', 'value' => $form->getData()->utmId]);
         }
         return $this->redirectToRoute("search");
     }

@@ -454,7 +454,7 @@ class UserMapper
         $user->setBalance((float)$data['balance']);
         $user->setInternetStatus((bool)$data['int_status']);
         if(!empty($data['mobile_telephone'])) {
-            $user->setMobilePhone($data['mobile_telephone']);
+            $user->setMobilePhone(new Entity\MobilePhone($data['mobile_telephone']));
         }
         if(!empty($data['home_telephone'])) {
             $user->setHomePhone($data['home_telephone']);

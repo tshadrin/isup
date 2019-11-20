@@ -29,6 +29,10 @@ class Payment
      * @var string
      */
     private $userComment;
+    /**
+     * @var string
+     */
+    private $adminComment;
 
     /**
      * @return int
@@ -125,15 +129,20 @@ class Payment
     }
 
     /**
-     * Payment constructor.
-     * @param int $amount
-     * @param \DateTimeImmutable $date
-     * @param int $transactionNumber
-     * @param string $method
-     * @param string $receiver
-     * @param string $userComment
+     * @return string
      */
-    public function __construct(int $amount, \DateTimeImmutable $date, int $transactionNumber, string $method, string $receiver, string $userComment)
+    public function getAdminComment(): string
+    {
+        return $this->adminComment;
+    }
+
+    public function __construct(int $amount,
+                                \DateTimeImmutable $date,
+                                int $transactionNumber,
+                                string $method,
+                                string $receiver,
+                                string $userComment,
+                                string $adminComment)
     {
         $this->date = $date;
         $this->transactionNumber = $transactionNumber;
@@ -141,5 +150,6 @@ class Payment
         $this->receiver = $receiver;
         $this->userComment = $userComment;
         $this->amount = $amount;
+        $this->adminComment = $adminComment;
     }
 }
