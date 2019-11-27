@@ -71,10 +71,6 @@ services:
             $sberbankConnection: '@doctrine.dbal.sberbank_connection'
             $defaultConnection: '@doctrine.dbal.default_connection'
             $newlkConnection: '@doctrine.dbal.newlk_connection'
-            $smsLogger: '@monolog.logger.sms'
-            $zabbixLogger: '@monolog.logger.alarm_zabbix'
-            $bitrixLogger: '@monolog.logger.bitrix_create'
-            $oneSLogger: '@monolog.logger.one_s'
             $botPath: "%bot_path%"
             $bitrixMemberId: '%bitrix_member_id%'
             $addFirmParameters: '%add_firm%'
