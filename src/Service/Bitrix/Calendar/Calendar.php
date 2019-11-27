@@ -68,8 +68,12 @@ class Calendar implements CalendarInterface
      */
     private function getCalendar(): IcalParser
     {
-        $calendar = new IcalParser();
-        $calendar->parseFile($this->parameters['path']);
+        try {
+            $calendar = new IcalParser();
+            $calendar->parseFile($this->parameters['path']);
+        } catch (\ErrorException | \RuntimeException $e) {
+            throw new \DomainException($e->getMessage());
+        }
 
         return $calendar;
     }

@@ -48,17 +48,20 @@ class Handler
 
         foreach ($payments as $num => $payment) {
             $paymentDate = \DateTimeImmutable::createFromFormat("U", $payment['payment_enter_date']);
-            $user = $this->UTM5DbService->search($payment['account_id'], UTM5DbService::SEARCH_TYPE_ACCOUNT);
-
-            $payment = new Payment(
-                (new \DateTime)->setTimestamp($paymentDate->getTimestamp()),
-                (float)$payment['payment_incurrency'],
-                (int)$payment['method'],
-                $user->getId(),
-                $this->getRouterName($user->getRouters()),
-                (new \DateTime)->setTimestamp($user->getCreated()->getTimestamp())
-            );
-            $this->save($payment);
+            try {
+                $user = $this->UTM5DbService->search($payment['account_id'], UTM5DbService::SEARCH_TYPE_ACCOUNT);
+                $payment = new Payment(
+                    (new \DateTime)->setTimestamp($paymentDate->getTimestamp()),
+                    (float)$payment['payment_incurrency'],
+                    (int)$payment['method'],
+                    $user->getId(),
+                    $this->getRouterName($user->getRouters()),
+                    (new \DateTime)->setTimestamp($user->getCreated()->getTimestamp())
+                );
+                $this->save($payment);
+            } catch (\DomainException $e) {
+                echo $e->getMessage();
+            }
             if ($this->isNeedFlush($num)) {
                 $this->flush();
             }

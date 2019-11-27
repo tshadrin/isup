@@ -18,14 +18,17 @@ doctrine:
                 driver:   pdo_mysql
                 url: '%env(resolve:SBERBANK_DATABASE_URL)%'
                 charset:  UTF8
+                server_version: '5.5'
             utm5:
                 driver:   pdo_mysql
                 url: '%env(resolve:UTM5_DATABASE_URL)%'
                 charset:  UTF8
+                server_version: '5.5'
             newlk:
                 driver:   pdo_mysql
                 url: '%env(resolve:NEWLK_DATABASE_URL)%'
                 charset:  UTF8
+                server_version: '5.5'
         types:
             typical_call_group: 'App\Entity\UTM5\TypicalCallGroupType'
             user_data_type: 'App\Entity\UTM5\UserDataTypeType'

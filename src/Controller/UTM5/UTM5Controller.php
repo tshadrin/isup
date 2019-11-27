@@ -42,9 +42,13 @@ class UTM5Controller extends AbstractController
 
     private function calEvents(): void
     {
-        $events = $this->calendar->getActualEvents();
-        foreach ($events as $event) {
-            $this->addFlash('info', "{$event['title']} {$event['description']}");
+        try {
+            $events = $this->calendar->getActualEvents();
+            foreach ($events as $event) {
+                $this->addFlash('info', "{$event['title']} {$event['description']}");
+            }
+        } catch (\DomainException $e) {
+            $this->addFlash("error", $e->getMessage());
         }
     }
 
@@ -98,9 +102,9 @@ class UTM5Controller extends AbstractController
                 $form->handleRequest($request);
                 $smsTemplateForm = $this->createForm(
                     SmsTemplateForm::class,
-                    SmsTemplateDTO::create( //tdo
-                        $search_result->getId(), //utm5id
-                        $search_result->getMobilePhone()->getNormalized() //mobile phone
+                    SmsTemplateDTO::create( // tdo
+                        $search_result->getId(), // utm5id
+                        $search_result->getMobilePhone()->getNormalized() // mobile phone
                     )
                 );
                 $smsTemplateForm->handleRequest($request);
