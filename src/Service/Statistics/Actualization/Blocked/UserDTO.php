@@ -18,4 +18,15 @@ class UserDTO
     public $flat_number;
     public $phone;
     public $balance;
+
+    public function setupAddress(): void
+    {
+        $this->address .= !empty($this->flat_number) ? " - {$this->flat_number}" : "";
+    }
+
+    public function setupPhone(): void
+    {
+        $this->phone = !empty($this->mobile) ? $this->mobile : "";
+        $this->phone .= !empty($this->home) ? empty($this->phone) ? $this->home : ", {$this->home}" : "";
+    }
 }

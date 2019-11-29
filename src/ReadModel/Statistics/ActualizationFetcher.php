@@ -20,12 +20,13 @@ class ActualizationFetcher
 
     public function getUsersInfoByFilter(): array
     {
-        $sql = "SELECT u.id,
-                       u.full_name as fullname,
-                       u.mobile_telephone as mobile,
-                       u.home_telephone as home,
+        $sql = "
+            SELECT u.id,
+                       u.full_name AS fullname,
+                       u.mobile_telephone AS mobile,
+                       u.home_telephone AS home,
                        u.email,
-                       u.actual_address as address, u.flat_number
+                       u.actual_address AS address, u.flat_number
                 FROM users u
                     LEFT JOIN (
                         SELECT group_id AS gid1107, user_id
@@ -45,12 +46,13 @@ class ActualizationFetcher
                 WHERE u.is_deleted=0
                   AND g1107.gid1107 IS NOT NULL
                   AND g1111.gid1111 IS NULL
-                  AND u.login NOT LIKE \"deal_%\"
+                  AND u.login NOT LIKE \"deal_ % \"
                   AND g401.gid401 IS NULL
-                  AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-01-01 00:00:00\", \"%Y-%m-%d %H:%i:%s\"))";
+                  AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-01-01 00:00:00\", \"%Y-%m-%d %H:%i:%s\"))
+        ";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
-        if ($stmt->rowCount() === 0) {
+        if (0 === $stmt->rowCount()) {
             throw new \DomainException("Records not found");
         }
         return $stmt->fetchAll(FetchMode::CUSTOM_OBJECT,UserDTO::class);
@@ -59,26 +61,51 @@ class ActualizationFetcher
     public function getUsersInfoWithoutFilter(): array
     {
         $sql = "
-SELECT u.id,
-       u.full_name as fullname,
-       u.mobile_telephone as mobile,
-       u.home_telephone as home,
-       u.email,
-       u.actual_address as address, u.flat_number,
-       a.balance,
-       bi.block_type
-FROM users u
-         JOIN accounts a on u.basic_account=a.id
-LEFT JOIN (select * from blocks_info bi where bi.is_deleted=0)  bi on bi.account_id = a.id
-WHERE u.is_deleted=0
-  AND a.is_deleted=0
-  AND u.login NOT LIKE \"deal_%\"
-  AND bi.block_type is not null
-  AND u.is_juridical=0
-  AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-06-01 00:00:00\", \"%Y-%m-%d %H:%i:%s\"))";
+            SELECT u.id,
+                   u.full_name AS fullname,
+                   u.mobile_telephone AS mobile,
+                   u.home_telephone AS home,
+                   u.email,
+                   u.actual_address AS address,
+                   u.flat_number,
+                   a.balance,
+                   bi.block_type
+            FROM users u
+                JOIN accounts a ON u.basic_account=a.id
+                LEFT JOIN (
+                    SELECT * 
+                    FROM blocks_info bi 
+                    WHERE bi.is_deleted=0
+                ) bi ON bi.account_id = a.id
+                LEFT JOIN (
+                    SELECT group_id AS gid401, user_id
+                    FROM users_groups_link
+                    WHERE group_id=401
+                ) AS g401 ON g401.user_id=u.id
+         LEFT JOIN (
+    SELECT group_id AS gid904, user_id
+    FROM users_groups_link
+    WHERE group_id=904
+) AS g904 ON g904.user_id=u.id
+            WHERE u.is_deleted=0
+              AND a.is_deleted=0
+              AND u.login NOT LIKE \"deal_%\"
+              AND bi.block_type IS NOT NULL
+              AND u.is_juridical=0
+              AND g401.gid401 IS NULL
+  AND g904.gid904 IS NULL
+  AND lower(u.full_name) not like \"%расторг%\"
+  AND lower(u.full_name) not like \"%расторже%\"
+  AND lower(u.comments) not like \"%расторг%\"
+  AND lower(u.comments) not like \"%расторже%\"
+  AND lower(u.comments) not like \"%перее%\"
+  AND lower(u.comments) not like \"%перезакл%\"
+  AND lower(u.full_name) not like \"%перезакл%\"
+              AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-06-01 00:00:00\", \"%Y-%m-%d %H:%i:%s\"))
+        ";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
-        if ($stmt->rowCount() === 0) {
+        if (0 === $stmt->rowCount()) {
             throw new \DomainException("Records not found");
         }
         return $stmt->fetchAll(FetchMode::CUSTOM_OBJECT,BlockedUserDTO::class);

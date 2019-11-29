@@ -28,63 +28,51 @@ class Handler
     {
         /** @var UserDTO[] $users */
         $users = $this->actualizationFetcher->getUsersInfoByFilter();
+
         $h = fopen($this->dir."/report.csv", "w");
         fputcsv($h, ["ID", "ФИО", "Телефон", "Email", "Тарифы", "Адрес", "Платил", "Месяцы без оплаты"], ";");
-        foreach($users as $num => $user) {
-            if (!is_null($user->flat_number)) {
-                $user->address = "{$user->address} - {$user->flat_number}";
-            }
-            if (!empty($user->mobile) && !empty($users->home)) {
-                $user->phone = "{$user->mobile}, {$user->home}";
-            }
-            if (!empty($user->mobile) && empty($users->home)) {
-                $user->phone = $user->mobile;
-            }
-            if (empty($user->mobile) && !empty($users->home)) {
-                $user->phone = $user->home;
-            }
+
+        foreach ($users as $num => $user) {
+            $user->address .= !empty($user->flat_number) ? " - {$user->flat_number}" : "";
+
+            $user->phone = !empty($user->mobile) ? $user->mobile : "";
+            $user->phone .= !empty($user->home) ? empty($user->phone) ? $user->home : ", {$user->home}" : "";
+
             /** @var UTM5User $u */
             $u = $this->UTM5DbService->search($user->id);
+
             /** @var Tariff[] $tariffs */
-            $tariffs = $u->getTariffs();
-            if(!is_null($tariffs)) {
+            if (!is_null($tariffs = $u->getTariffs())) {
                 foreach ($tariffs as $k => $tariff) {
-                    if ($k === 0) {
-                        $user->tariffs = $tariff->getName();
-                    } else {
-                        $user->tariffs .= ", {$tariff->getName()}";
-                    }
+                    $user->tariffs = 0 === $k ? $tariff->getName(): ", {$tariff->getName()}";
                 }
             } else {
                 $user->tariffs = UserDTO::NO_TARIFFS;
             }
+
             /** @var Payment[] $payments */
             $payments = $u->getPayments();
-            if(!is_null($payments)) {
+            if (!is_null($payments)) {
                 foreach ($payments as $payment) {
                     if ($payment->getAmount() > 0 && $payment->getAdminComment() !== "обнуление") {
                         $pay_date = $payment->getDate()->setTimezone( new \DateTimeZone("Europe/Moscow"));
                         if ($pay_date >= ($now_month = $this->getDateNowMonth())) {
                             $user->group = UserDTO::GROUP_NOV_MONTH;
                             $user->month = 1;
-                            break;
                         } else if ($pay_date >= $now_month->modify("-1 month")) {
                             $user->group = UserDTO::GROUP_OCT_MONTH;
                             $user->month = 2;
-                            break;
                         } else if ($pay_date >= $now_month->modify("-2 month")) {
                             $user->group = UserDTO::GROUP_SEP_MONTH;
                             $user->month = 3;
-                            break;
                         } else if ($pay_date >= $now_month->modify("-3 month")) {
                             $user->group = UserDTO::GROUP_AUG_MONTH;
                             $user->month = 4;
-                            break;
                         } else {
                             $user->group = UserDTO::GROUP_MANY_MONTH;
                             $user->month = 5;
-                            break;
                         }
+                        break;
                     } else {
                         continue;
                     }
@@ -99,6 +87,6 @@ class Handler
     public function getDateNowMonth(): \DateTimeImmutable
     {
         $date =  (new \DateTimeImmutable())->setTime(0,0,0);
-        return $date->setDate((int)$date->format("Y"),(int)$date->format("m"), 1);
+        return $date->setDate((int)$date->format("Y"), (int)$date->format("m"), 1);
     }
 }
