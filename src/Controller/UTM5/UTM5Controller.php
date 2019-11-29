@@ -104,7 +104,7 @@ class UTM5Controller extends AbstractController
                     SmsTemplateForm::class,
                     SmsTemplateDTO::create( // tdo
                         $search_result->getId(), // utm5id
-                        $search_result->getMobilePhone()->getNormalized() // mobile phone
+                        !is_null($search_result->getMobilePhone()) ? $search_result->getMobilePhone()->getNormalized() : ''
                     )
                 );
                 $smsTemplateForm->handleRequest($request);
