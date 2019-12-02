@@ -13,6 +13,7 @@ class Handler
 {
     private const CSV_DELIMITER = ";";
     private const FILEDS_NAMES =  ["ID", "ФИО", "Телефон", "Email", "Тарифы", "Адрес", "Последний платеж", "Поле сортировки"];
+    private const REPORT_FILENAME = "report.csv";
     /** @var UTM5DbService */
     private $UTM5DbService;
     /** @var ActualizationFetcher */
@@ -92,7 +93,7 @@ class Handler
 
     public function setupCsvHandler(): void
     {
-        if (!($this->csvHandler = fopen("{$this->filesDir}/report_blocked.csv", "w"))) {
+        if (!($this->csvHandler = fopen($this->filesDir.DIRECTORY_SEPARATOR.self::REPORT_FILENAME, "w"))) {
             throw new \DomainException("Error init csv file handler");
         }
     }
