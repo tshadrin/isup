@@ -46,9 +46,9 @@ class ActualizationFetcher
                 WHERE u.is_deleted=0
                   AND g1107.gid1107 IS NOT NULL
                   AND g1111.gid1111 IS NULL
-                  AND u.login NOT LIKE \"deal_ % \"
+                  AND u.login NOT LIKE \"deal_%\"
                   AND g401.gid401 IS NULL
-                  AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-01-01 00:00:00\", \"%Y-%m-%d %H:%i:%s\"))
+                  AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-01-01 00:00:00\", \" %Y-%m-%d %H:%i:%s\"))
         ";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
@@ -69,12 +69,16 @@ class ActualizationFetcher
                    u.actual_address AS address,
                    u.flat_number,
                    a.balance,
-                   bi.block_type
+                   bi.block_type,
+                   g900.gid900,
+                   g902.gid902,
+                   g912.gid912,
+                   g913.gid913
             FROM users u
                 JOIN accounts a ON u.basic_account=a.id
                 LEFT JOIN (
-                    SELECT * 
-                    FROM blocks_info bi 
+                    SELECT *
+                    FROM blocks_info bi
                     WHERE bi.is_deleted=0
                 ) bi ON bi.account_id = a.id
                 LEFT JOIN (
@@ -82,27 +86,56 @@ class ActualizationFetcher
                     FROM users_groups_link
                     WHERE group_id=401
                 ) AS g401 ON g401.user_id=u.id
-         LEFT JOIN (
-    SELECT group_id AS gid904, user_id
-    FROM users_groups_link
-    WHERE group_id=904
-) AS g904 ON g904.user_id=u.id
+                LEFT JOIN (
+                    SELECT group_id AS gid904, user_id
+                    FROM users_groups_link
+                    WHERE group_id=904
+                ) AS g904 ON g904.user_id=u.id
+                LEFT JOIN (
+                    SELECT group_id AS gid909, user_id
+                    FROM users_groups_link
+                    WHERE group_id=909
+                ) AS g909 ON g909.user_id=u.id
+                LEFT JOIN (
+                    SELECT group_id AS gid900, user_id
+                    FROM users_groups_link
+                    WHERE group_id=900
+                ) AS g900 ON g900.user_id=u.id
+                LEFT JOIN (
+                    SELECT group_id AS gid902, user_id
+                    FROM users_groups_link
+                    WHERE group_id=902
+                ) AS g902 ON g902.user_id=u.id
+                LEFT JOIN (
+                    SELECT group_id AS gid912, user_id
+                    FROM users_groups_link
+                    WHERE group_id=912
+                ) AS g912 ON g912.user_id=u.id
+                LEFT JOIN (
+                    SELECT group_id AS gid913, user_id
+                    FROM users_groups_link
+                    WHERE group_id=913
+                ) AS g913 ON g913.user_id=u.id
             WHERE u.is_deleted=0
               AND a.is_deleted=0
               AND u.login NOT LIKE \"deal_%\"
               AND bi.block_type IS NOT NULL
               AND u.is_juridical=0
               AND g401.gid401 IS NULL
-  AND g904.gid904 IS NULL
-  AND lower(u.full_name) not like \"%расторг%\"
+              AND g909.gid909 IS NULL
+              AND g904.gid904 IS NULL
+              AND lower(u.comments) not like \"%перее%\"
+              AND lower(u.comments) not like \"%перезакл%\"
+              AND lower(u.full_name) not like \"%перее%\"
+              AND lower(u.full_name) not like \"%перезакл%\"
+              AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-06-01 00:00:00\", \"%Y-%m-%d %H:%i:%s\"))
+        ";
+  /*
+   *   AND lower(u.full_name) not like \"%расторг%\"
   AND lower(u.full_name) not like \"%расторже%\"
   AND lower(u.comments) not like \"%расторг%\"
   AND lower(u.comments) not like \"%расторже%\"
-  AND lower(u.comments) not like \"%перее%\"
-  AND lower(u.comments) not like \"%перезакл%\"
-  AND lower(u.full_name) not like \"%перезакл%\"
-              AND u.create_date <= UNIX_TIMESTAMP(STR_TO_DATE(\"2019-06-01 00:00:00\", \"%Y-%m-%d %H:%i:%s\"))
-        ";
+   */
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         if (0 === $stmt->rowCount()) {

@@ -12,8 +12,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Handler
 {
-    private const CSV_DELIMITER = ';';
-    private const FILEDS_NAMES = ["ID", "ФИО", "Телефон", "Email", "Тарифы", "Адрес", "Баланс"];
+    private const CSV_DELIMITER = ";";
+    private const FILEDS_NAMES = ["ID", "ФИО", "Телефон", "Email", "Тарифы", "Адрес", "Баланс", "Зона"];
 
     /** @var UTM5DbService */
     private $UTM5DbService;
@@ -42,6 +42,7 @@ class Handler
         foreach ($users as $user) {
             $user->setupAddress();
             $user->setupPhone();
+            $user->setupZone();
 
             /** @var UTM5User $u */
             $u = $this->UTM5DbService->search($user->id);
@@ -58,15 +59,7 @@ class Handler
             /** @var ArrayCollection $payments */
             $payments = $u->getPayments();
             if (is_null($payments) || $this->hasLastPaymentBeforeMinimalDate($payments)) {
-                $this->writeCsvRow([
-                    $user->id,
-                    $user->fullname,
-                    $user->phone,
-                    $user->email,
-                    $user->tariffs,
-                    $user->address,
-                    round($user->balance, 2),
-                    ]);
+                $this->writeCsvRow([$user->id, $user->fullname, $user->phone, $user->email, $user->tariffs, $user->address, round($user->balance, 2), $user->zone]);
             }
         }
     }
@@ -85,7 +78,7 @@ class Handler
 
     public function writeCsvRow(array $fields): void
     {
-        if(count($fields) !== count(self::FILEDS_NAMES))  {
+        if (count($fields) !== count(self::FILEDS_NAMES))  {
             throw new \DomainException("Not all fields set");
         }
         fputcsv($this->csvHandler, $fields, self::CSV_DELIMITER);

@@ -11,17 +11,20 @@ use App\Service\UTM5\UTM5DbService;
 
 class Handler
 {
+    private const CSV_DELIMITER = ";";
+    private const FILEDS_NAMES =  ["ID", "ФИО", "Телефон", "Email", "Тарифы", "Адрес", "Последний платеж", "Поле сортировки"];
     /** @var UTM5DbService */
     private $UTM5DbService;
     /** @var ActualizationFetcher */
     private $actualizationFetcher;
-    private $dir;
+    private $filesDir;
+    private $csvHandler;
 
     public function __construct(UTM5DbService $UTM5DbService, ActualizationFetcher $actualizationFetcher, array $addFirmParameters)
     {
         $this->UTM5DbService = $UTM5DbService;
         $this->actualizationFetcher = $actualizationFetcher;
-        $this->dir = $addFirmParameters['files_dir'];
+        $this->filesDir = $addFirmParameters['files_dir'];
     }
 
     public function handle(Command $command): void
@@ -29,14 +32,12 @@ class Handler
         /** @var UserDTO[] $users */
         $users = $this->actualizationFetcher->getUsersInfoByFilter();
 
-        $h = fopen($this->dir."/report.csv", "w");
-        fputcsv($h, ["ID", "ФИО", "Телефон", "Email", "Тарифы", "Адрес", "Платил", "Месяцы без оплаты"], ";");
+        $this->setupCsvHandler();
+        $this->writeCsvRow(self::FILEDS_NAMES);
 
         foreach ($users as $num => $user) {
-            $user->address .= !empty($user->flat_number) ? " - {$user->flat_number}" : "";
-
-            $user->phone = !empty($user->mobile) ? $user->mobile : "";
-            $user->phone .= !empty($user->home) ? empty($user->phone) ? $user->home : ", {$user->home}" : "";
+            $user->setupAddress();
+            $user->setupPhone();
 
             /** @var UTM5User $u */
             $u = $this->UTM5DbService->search($user->id);
@@ -73,14 +74,13 @@ class Handler
                             $user->month = 5;
                         }
                         break;
-                    } else {
-                        continue;
                     }
                 }
             } else {
                 $user->group = UserDTO::GROUP_MANY_MONTH;
+                $user->month = 5;
             }
-            fputcsv($h, [$user->id, $user->fullname, $user->phone, $user->email, $user->tariffs, $user->address, $user->group, $user->month], ";");
+            $this->writeCsvRow([$user->id, $user->fullname, $user->phone, $user->email, $user->tariffs, $user->address, $user->group, $user->month]);
         }
     }
 
@@ -88,5 +88,20 @@ class Handler
     {
         $date =  (new \DateTimeImmutable())->setTime(0,0,0);
         return $date->setDate((int)$date->format("Y"), (int)$date->format("m"), 1);
+    }
+
+    public function setupCsvHandler(): void
+    {
+        if (!($this->csvHandler = fopen("{$this->filesDir}/report_blocked.csv", "w"))) {
+            throw new \DomainException("Error init csv file handler");
+        }
+    }
+
+    public function writeCsvRow(array $fields): void
+    {
+        if (count($fields) !== count(self::FILEDS_NAMES))  {
+            throw new \DomainException("Not all fields set");
+        }
+        fputcsv($this->csvHandler, $fields, self::CSV_DELIMITER);
     }
 }

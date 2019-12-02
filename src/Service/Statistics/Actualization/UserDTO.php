@@ -5,11 +5,11 @@ namespace App\Service\Statistics\Actualization;
 
 class UserDTO
 {
-    public const GROUP_NOV_MONTH = "платил в ноябре";
-    public const GROUP_OCT_MONTH = "платил в октябре";
-    public const GROUP_SEP_MONTH = "платил в сентябре";
-    public const GROUP_AUG_MONTH = "платил в августе";
-    public const GROUP_MANY_MONTH = "платил давно";
+    public const GROUP_NOV_MONTH = "в ноябре";
+    public const GROUP_OCT_MONTH = "в октябре";
+    public const GROUP_SEP_MONTH = "в сентябре";
+    public const GROUP_AUG_MONTH = "в августе";
+    public const GROUP_MANY_MONTH = "давно";
     public const NO_TARIFFS = "нет тарифов";
 
     public $id;
@@ -23,4 +23,15 @@ class UserDTO
     public $flat_number;
     public $month;
     public $phone;
+
+    public function setupAddress(): void
+    {
+        $this->address .= !empty($this->flat_number) ? " - {$this->flat_number}" : "";
+    }
+
+    public function setupPhone(): void
+    {
+        $this->phone = !empty($this->mobile) ? $this->mobile : "";
+        $this->phone .= !empty($this->home) ? empty($this->phone) ? $this->home : ", {$this->home}" : "";
+    }
 }
