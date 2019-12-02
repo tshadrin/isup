@@ -7,7 +7,7 @@ use App\Collection\UTM5\UTM5UserCollection;
 use App\ReadModel\UTM5\CallsFetcher;
 use App\Repository\UTM5\CallRepository;
 use App\Repository\UTM5\UserFillingInDataRepository;
-use App\Entity\UTM5\{Call, UserDataType, UserFillingInData, UTM5User, Passport};
+use App\Entity\UTM5\{Call, MobilePhone, UserDataType, UserFillingInData, UTM5User, Passport};
 use App\Event\UTM5UserFoundEvent;
 use App\Form\SMS\{ SmsTemplateForm, SmsTemplateDTO };
 use App\Form\UTM5\{PassportForm, PassportFormData, TypicalCallForm, UTM5UserCommentForm};
@@ -54,19 +54,10 @@ class UTM5Controller extends AbstractController
 
     /**
      * Поиск пользователей в базе данных
-     * @param $type - тип поискового запроса
-     * @param $value - значение для поиска
-     * @param Request $request
-     * @param UTM5DbService $UTM5_db_service
-     * @param URFAService $URFA_service
-     * @param UTM5UserCommentService $UTM5_user_comment_service
-     * @param EventDispatcherInterface $event_dispatcher
-     * @param PaginatorInterface $paginator
-     * @return Response
      * @Route("/search/{type}/{value}", name="search.by.data", methods={"GET"}, requirements={"type": "id|fullname|address|ip|login|phone"})
      */
-    public function search(string $type,
-                           $value,
+    public function search(string $type, // тип поискового запроса
+                           $value, // значение для поиска
                            Request $request,
                            Chain\Parser $parser,
                            UTM5DbService $UTM5_db_service,
@@ -100,6 +91,15 @@ class UTM5Controller extends AbstractController
                 $comment->setUtmId($search_result->getId());
                 $form = $this->createForm(UTM5UserCommentForm::class, $comment);
                 $form->handleRequest($request);
+
+                if (!is_null($search_result->getMobilePhone()) && !$search_result->getMobilePhone()->isNormalized()) {
+                    $phone = new MobilePhone($search_result->getMobilePhone()->getNormalized());
+                    if ($phone->isNormalized()) {
+                        $search_result->setMobilePhone($phone);
+                        $URFA_service->editMobilePhone($phone->getValue(),$search_result->getId());
+                    }
+                }
+
                 $smsTemplateForm = $this->createForm(
                     SmsTemplateForm::class,
                     SmsTemplateDTO::create( // tdo
@@ -107,6 +107,7 @@ class UTM5Controller extends AbstractController
                         !is_null($search_result->getMobilePhone()) ? $search_result->getMobilePhone()->getNormalized() : ''
                     )
                 );
+
                 $smsTemplateForm->handleRequest($request);
                 $template_data['smsForm'] = $smsTemplateForm->createView();
                 $template_data['form'] = $form->createView();

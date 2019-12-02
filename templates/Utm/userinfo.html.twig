@@ -19,9 +19,7 @@
                      data-mode="inline"
                      data-type="text"
                      data-emptytext="нет данных"
-                     data-value="{% if user.mobilePhone is not null %}
-                                    {{ user.mobilePhone.normalized }}
-                                    {% endif %}"
+                     data-value="{% if user.mobilePhone is not null %}{{ user.mobilePhone.normalized }}{% endif %}"
                      data-pk="{{ user.id }}"
                      data-name="mobile_phone"
                      data-url="{{ path('user_change_editable_field') }}"
