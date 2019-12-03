@@ -43,9 +43,9 @@ class Handler
 
     public function handle(SmsTemplateDTO $smsTemplateData): void
     {
-        $this->variableFetcher->setText($smsTemplateData->smsTemplate->getMessage());
+        $this->variableFetcher->setText($smsTemplateData->getSmstemplate()->getMessage());
         if ($this->variableFetcher->hasVariables()) {
-            $utmUser = $this->UTM5DbService->search((string)$smsTemplateData->utmId);
+            $utmUser = $this->UTM5DbService->search((string)$smsTemplateData->getUtmId());
             $replacements = [ //all posible replacements
                 'login' => $utmUser->getLogin(),
                 'password' => $utmUser->getPassword(),
@@ -63,7 +63,7 @@ class Handler
                 );
             }
         }
-        $this->sender->send($smsTemplateData->phone, $this->variableFetcher->getText());
+        $this->sender->send($smsTemplateData->getPhone(), $this->variableFetcher->getText());
     }
 
     private function getLifestreamLogin(string $url, UTM5User $UTM5User): string

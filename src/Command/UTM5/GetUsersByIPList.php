@@ -1,9 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-
 namespace App\Command\UTM5;
-
 
 use App\Service\UTM5\UTM5DbService;
 use Symfony\Component\Console\Command\Command;
