@@ -47,6 +47,9 @@ isup-test-functional:
 isup-assets-dev:
 	docker-compose run --rm isup-node yarn encore dev
 
+isup-clear-cache:
+	docker-compose run --rm isup-php-cli php bin/console cache:clear
+
 build-production:
 	docker build --pull --file=docker/production/nginx.docker --tag ${REGISTRY_ADDRESS}/isup-nginx:${IMAGE_TAG} ./
 	docker build --pull --file=docker/production/php-fpm.docker --tag ${REGISTRY_ADDRESS}/isup-php-fpm:${IMAGE_TAG} ./
