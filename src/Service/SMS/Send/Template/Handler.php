@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-
 namespace App\Service\SMS\Send\Template;
-
 
 use App\Entity\UTM5\UTM5User;
 use App\Form\SMS\SmsTemplateDTO;

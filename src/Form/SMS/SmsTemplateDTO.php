@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Form\SMS;
 
-
 use App\Entity\SMS\SmsTemplate;
 use Symfony\Component\Validator\Constraints as Assert;
 
