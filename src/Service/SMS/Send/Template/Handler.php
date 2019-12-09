@@ -57,6 +57,9 @@ class Handler
             ];
             $this->variableFetcher->replaceVariables($replacements);
             if ($this->variableFetcher->hasVariable('smotreshka_password')) {
+                if (is_null($utmUser->getLifestreamId())) {
+                    throw new \DomainException("User not registered in smotreshka.tv");
+                }
                 $this->applySmotreshkaPassword(
                     $this->variableFetcher->getVariable('smotreshka_password'),
                     $utmUser->getLifestreamId()
@@ -68,15 +71,12 @@ class Handler
 
     private function getLifestreamLogin(string $url, UTM5User $UTM5User): string
     {
-        if(is_null($UTM5User->getLifestreamId())) {
+        if (is_null($UTM5User->getLifestreamId())) {
             return '';
         }
-        $response = $this->httpClient->request(
-            "GET",
-            "{$url}/v2/accounts/{$UTM5User->getLifestreamId()}"
-        );
+        $response = $this->httpClient->request("GET", "{$url}/v2/accounts/{$UTM5User->getLifestreamId()}");
         $data = json_decode($response->getContent(), true);
-        if(!array_key_exists('username', $data)) {
+        if (!array_key_exists('username', $data)) {
             throw new \DomainException("Error account request.");
         }
         return $data["username"];

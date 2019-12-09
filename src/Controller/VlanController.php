@@ -7,11 +7,6 @@ use App\Entity\Vlan\Vlan;
 use App\Form\Vlan\{DTO\Filter, FilterForm, VlanForm};
 use App\Repository\Vlan\VlanRepository;
 use App\Service\Vlan\PagedVlans\{ Command, Handler };
-use PAMI\Message\Action\QueueMemberRingInUse;
-use PAMI\Message\Action\QueuesAction;
-use PAMI\Message\Action\QueueStatusAction;
-use PAMI\Message\Action\QueueSummaryAction;
-use PAMI\Message\Event\DialBeginEvent;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -159,37 +154,5 @@ class VlanController extends AbstractController
             $v[] = ['number' => $vlan->getNumber(), 'name' => $vlan->getName(), 'points' => $vlan->getPoints()];
         }
         return $this->json($v);
-    }
-
-    /**
-     * @Route("/test", name=".get.all", methods={"GET","POST"})
-     * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
-     */
-    public function test(): Response
-    {
-        $options = array(
-            'host' => '10.3.7.43',
-            'scheme' => 'tcp://',
-            'port' => 5038,
-            'username' => 'monast',
-            'secret' => 'ddcc93fa8e2959241f4ba9e7bd0022b1',
-            'connect_timeout' => 10,
-            'read_timeout' => 10
-        );
-        $client = new \PAMI\Client\Impl\ClientImpl($options);
-        $client->open();
-        dump($response = $client->send(new QueueStatusAction('586')));
-        $client->close();
-        exit;
-        //$client->registerEventListener(function ($event) {
-        //    if($event instanceof DialBeginEvent) {
-        //        dump($event);
-        //        exit;
-        //    }
-        //});
-       // while(true) {
-      //      $client->process();
-       //     usleep(1000);
-      //  }
     }
 }
