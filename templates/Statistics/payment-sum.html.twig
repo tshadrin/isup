@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Статистика платежей за последние 36 месяцев
+{% endblock %}
+{% block context %}
+    Статистика платежей за последние 36 месяцев
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="mt-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% set breadcrumbs = knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('main')) %}
+                {% for breadcrumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.uri }}">{{ breadcrumb.label|trans }}</a></li>
+                    {% else %}
+                        <li class="breadcrumb-item active">{{ breadcrumb.label|trans }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="row p-0 m-0 pb-2">
+        {% set menu = knp_menu_get('main') %}
+        {#{{ knp_menu_render(menu['Control']['Statistics'],  {'currentAsLink': true, 'currentClass': 'active', 'template': "widget\\tab-menu\\menu.html.twig"}) }}#}
+    </div>
+    <div class="row m-0 pt-2">
+        <table class="table table-bordered table-striped table-hover bg-light">
+            <caption class="pl-3"><a href="{{ path("statistics.show.payments-sum.csv") }}">Скачать csv</a></caption>
+            <tr>
+                <th>Период</th>
+                <th>Количество плательщиков</th>
+                <th>Сумма, всего</th>
+                <th>Отрицательные</th>
+                <th>Сумма, с отрицательными</th>
+            </tr>
+        {% for row in data %}
+            <tr>
+                <td>{{ row.month }}</td>
+                <td>{{ row.count }}</td>
+                <td>{{ row.plus }}</td>
+                <td>{{ row.minus }}</td>
+                <td>{{ row.all }}</td></tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('payments_statistics') }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('payments_statistics') }}
+{% endblock %}
+
