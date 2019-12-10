@@ -29,24 +29,26 @@
         {#{{ knp_menu_render(menu['Control']['Statistics'],  {'currentAsLink': true, 'currentClass': 'active', 'template': "widget\\tab-menu\\menu.html.twig"}) }}#}
     </div>
     <div class="row m-0 pt-2">
-        <table class="table table-bordered table-striped table-hover bg-light">
-            <caption class="pl-3"><a href="{{ path("statistics.show.payments-sum.csv") }}">Скачать csv</a></caption>
+        <div class="col-6">
+        <table class="table  table-bordered table-striped table-hover bg-light">
+            <caption class="bg-light pl-3"><a href="{{ path("statistics.show.payments-sum.csv") }}">Скачать csv</a></caption>
             <tr>
-                <th>Период</th>
-                <th>Количество плательщиков</th>
-                <th>Сумма, всего</th>
-                <th>Отрицательные</th>
-                <th>Сумма, с отрицательными</th>
+                <th class="p-2">Период</th>
+                <th class="p-2">Количество плательщиков</th>
+                <th class="p-2">Сумма, всего</th>
+                <th class="p-2">Отрицательные</th>
+                <th class="p-2">Сумма, с отрицательными</th>
             </tr>
         {% for row in data %}
             <tr>
-                <td>{{ row.month }}</td>
-                <td>{{ row.count }}</td>
-                <td>{{ row.plus }}</td>
-                <td>{{ row.minus }}</td>
-                <td>{{ row.all }}</td></tr>
+                <td class="p-2">{{ row.month }}</td>
+                <td class="p-2">{{ row.count }}</td>
+                <td class="p-2">{{ row.plus }}</td>
+                <td class="p-2">{{ row.minus }}</td>
+                <td class="p-2">{{ row.all }}</td></tr>
         {% endfor %}
         </table>
+        </div>
     </div>
 {% endblock %}
 
