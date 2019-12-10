@@ -28,7 +28,7 @@
         {% set menu = knp_menu_get('main') %}
         {#{{ knp_menu_render(menu['Control']['Statistics'],  {'currentAsLink': true, 'currentClass': 'active', 'template': "widget\\tab-menu\\menu.html.twig"}) }}#}
     </div>
-    <div class="row m-0 pt-2">
+    <div class="row m-0 pt-2 justify-content-center">
         <div class="col-6">
         <table class="table  table-bordered table-striped table-hover bg-light">
             <caption class="bg-light pl-3"><a href="{{ path("statistics.show.payments-sum.csv") }}">Скачать csv</a></caption>
