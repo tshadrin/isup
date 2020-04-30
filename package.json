@@ -11,7 +11,7 @@
     "chart.js": "^2.8.0",
     "core-js": "^3.0.0",
     "expose-loader": "^0.7.5",
-    "jquery": "^3.4.0",
+    "jquery": "^3.5.0",
     "jquery-date-range-picker": "https://github.com/longbill/jquery-date-range-picker.git",
     "node-sass": "^4.11.0",
     "popper.js": "^1.15.0",
